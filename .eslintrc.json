@@ -15,6 +15,9 @@
   "settings": {
     "import/resolver": {
       "typescript": {}
+    },
+    "react": {
+      "version": "detect"
     }
   },
   "rules": {
@@ -48,7 +51,15 @@
       }
     ],
     "react/react-in-jsx-scope": ["off"],
-    "no-console": ["warn"],
-    "@typescript-eslint/array-type": ["error"]
+    "no-console": ["warn", { "allow": ["error"] }],
+    "@typescript-eslint/array-type": ["error"],
+    "@typescript-eslint/quotes": [
+      "error",
+      "single",
+      {
+        "avoidEscape": true,
+        "allowTemplateLiterals": true
+      }
+    ]
   }
 }
