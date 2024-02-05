@@ -6,21 +6,21 @@ import Subtitle from '../../components/Subtitle'
 import Title from '../../components/Title'
 import Word from '../../components/Word'
 import { generateMnemonic } from 'bip39'
-import { ConfigContext } from '../../providers/config'
 import { NavigationContext, Pages } from '../../providers/navigation'
 import { Mnemonic } from '../../lib/types'
+import { WalletContext } from '../../providers/wallet'
 
 function InitNew() {
-  const { config, updateConfig } = useContext(ConfigContext)
   const { navigate } = useContext(NavigationContext)
+  const { wallet, updateWallet } = useContext(WalletContext)
 
   const mnemonic = generateMnemonic() as Mnemonic
 
   const handleCancel = () => navigate(Pages.Init)
 
   const handleProceed = () => {
-    updateConfig({ ...config, mnemonic })
-    navigate(Pages.Wallet)
+    updateWallet({ ...wallet, mnemonic })
+    navigate(Pages.InitPassword)
   }
 
   return (

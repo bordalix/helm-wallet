@@ -1,14 +1,13 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react'
-import { readConfig, saveConfig } from '../lib/storage'
+import { clearStorage, readConfig, saveConfig } from '../lib/storage'
 import { NavigationContext, Pages } from './navigation'
 import { ExplorerName } from '../lib/explorers'
-import { NetworkName } from '../lib/networks'
-import { Mnemonic } from '../lib/types'
+import { NetworkName } from '../lib/network'
+import { Mnemonic, XPubs } from '../lib/types'
 
 export interface Config {
-  explorer: string
+  explorer: ExplorerName
   network: NetworkName
-  mnemonic: Mnemonic
   notifications: boolean
   password: string
 }
@@ -16,6 +15,7 @@ export interface Config {
 interface ConfigContextProps {
   config: Config
   loading: boolean
+  resetConfig: () => void
   showConfig: boolean
   toggleShowConfig: () => void
   updateConfig: (arg0: Config) => void
@@ -23,8 +23,7 @@ interface ConfigContextProps {
 
 const defaultConfig: Config = {
   explorer: ExplorerName.Mempool,
-  network: NetworkName.Liquid,
-  mnemonic: '',
+  network: NetworkName.Testnet,
   notifications: false,
   password: '',
 }
@@ -32,6 +31,7 @@ const defaultConfig: Config = {
 export const ConfigContext = createContext<ConfigContextProps>({
   config: defaultConfig,
   loading: true,
+  resetConfig: () => {},
   showConfig: false,
   toggleShowConfig: () => {},
   updateConfig: () => {},
@@ -54,8 +54,11 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
     }
     setConfig(data)
     saveConfig(data)
-    // if user logout, send him to initial screen
-    if (!data.mnemonic) navigate(Pages.Init)
+  }
+
+  const resetConfig = () => {
+    clearStorage()
+    updateConfig(defaultConfig)
   }
 
   useEffect(() => {
@@ -63,13 +66,12 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
     readConfig().then((data) => {
       setLoading(false)
       if (data) setConfig(data)
-      navigate(data?.mnemonic ? Pages.Wallet : Pages.Init)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading])
 
   return (
-    <ConfigContext.Provider value={{ config, loading, showConfig, toggleShowConfig, updateConfig }}>
+    <ConfigContext.Provider value={{ config, loading, resetConfig, showConfig, toggleShowConfig, updateConfig }}>
       {children}
     </ConfigContext.Provider>
   )

@@ -28,7 +28,7 @@ function Password({ onChange }: any) {
   return (
     <div>
       <InputPassword onChange={handleChangeInsert} label='Insert password' />
-      <div className='relative mb-32 mt-2 text-sm text-gray-500'>
+      <div className='relative mb-16 mt-2 text-sm text-gray-500'>
         <div className='w-full bg-gray-200 rounded-full h-1.5 mb-4'>
           <div className='bg-gray-700 h-1.5 rounded-full' style={{ width: `${strength}%` }} />
         </div>

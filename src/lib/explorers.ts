@@ -1,5 +1,5 @@
 import { Config } from '../providers/config'
-import { NetworkName } from './networks'
+import { NetworkName } from './network'
 
 export enum ExplorerName {
   Blockstream = 'Blockstream',
@@ -38,7 +38,7 @@ const explorers: Explorer[] = [
       websocketExplorerURL: 'wss://esplora.blockstream.com/liquid/electrum-websocket/api',
     },
     [NetworkName.Testnet]: {
-      webExplorerURL: 'https://liquid.network/testnet',
+      webExplorerURL: 'https://liquid.network/liquidtestnet',
       websocketExplorerURL: 'wss://esplora.blockstream.com/liquidtestnet/electrum-websocket/api',
     },
   },
@@ -51,4 +51,25 @@ const explorers: Explorer[] = [
   },
 ]
 
-export const explorerNames = ({ network }: Config) => explorers.filter((e: any) => e[network]).map((e) => e.name)
+export const getExplorerNames = ({ network }: Config) => explorers.filter((e: any) => e[network]).map((e) => e.name)
+
+export const getExplorerURL = ({ network, explorer }: Config) => {
+  const exp = explorers.find((e) => e.name === explorer)
+  if (exp && exp[network]) return exp[network]?.webExplorerURL
+}
+
+export const fetchAddress = async (config: Config, address: string) => {
+  const explorerURL = getExplorerURL(config)
+  const url = `${explorerURL}/api/address/${address}`
+  const response = await fetch(url)
+  return await response.json()
+}
+
+export const fetchUtxos = async (config: Config, address: string) => {
+  const data = await fetchAddress(config, address)
+  if (data?.chain_stats?.tx_count > 0) {
+    const explorerURL = getExplorerURL(config)
+    const response = await fetch(`${explorerURL}/api/address/${address}/utxo`)
+    return await response.json()
+  }
+}

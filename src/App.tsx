@@ -16,12 +16,16 @@ import SendSuccess from './screens/Wallet/Send/Success'
 import ReceiveSuccess from './screens/Wallet/Receive/Success'
 import { ConfigContext } from './providers/config'
 import { NavigationContext, Pages } from './providers/navigation'
+import InitPassword from './screens/Init/Password'
+import { WalletContext } from './providers/wallet'
 
 const App = () => {
   const { config, loading, showConfig } = useContext(ConfigContext)
+  const { wallet } = useContext(WalletContext)
   const { screen } = useContext(NavigationContext)
 
-  console.log('config', config)
+  console.log('settings', { ...config, ...wallet }, loading)
+
   if (loading) return <Loading />
 
   if (showConfig) return <Settings />
@@ -33,6 +37,7 @@ const App = () => {
         {screen === Pages.Init && <Init />}
         {screen === Pages.InitNew && <InitNew />}
         {screen === Pages.InitOld && <InitOld />}
+        {screen === Pages.InitPassword && <InitPassword />}
         {screen === Pages.Wallet && <Wallet />}
         {screen === Pages.SendInvoice && <SendInvoice />}
         {screen === Pages.SendConfirm && <SendConfirm />}

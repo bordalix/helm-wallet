@@ -4,7 +4,7 @@ import ButtonsOnBottom from '../../components/ButtonsOnBottom'
 import Subtitle from '../../components/Subtitle'
 import Title from '../../components/Title'
 import { ConfigContext } from '../../providers/config'
-import { explorerNames } from '../../lib/explorers'
+import { getExplorerNames } from '../../lib/explorers'
 
 function Explorer() {
   const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)
@@ -17,7 +17,7 @@ function Explorer() {
         <Title text='Explorer' />
         <Subtitle text='Change your explorer' />
         <select className='py-3 px-4 text-lg border-2 mt-10' onChange={handleChange} value={config.explorer}>
-          {explorerNames(config).map((e, i) => (
+          {getExplorerNames(config).map((e, i) => (
             <option key={e}>{e}</option>
           ))}
         </select>

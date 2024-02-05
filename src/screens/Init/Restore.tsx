@@ -8,10 +8,12 @@ import Columns from '../../components/Columns'
 import Word from '../../components/Word'
 import { ConfigContext } from '../../providers/config'
 import { NavigationContext, Pages } from '../../providers/navigation'
+import { WalletContext } from '../../providers/wallet'
 
 function InitOld() {
   const { config, updateConfig } = useContext(ConfigContext)
   const { navigate } = useContext(NavigationContext)
+  const { wallet, updateWallet } = useContext(WalletContext)
 
   const [invalid, setInvalid] = useState(false)
   const [passphrase, setPassphrase] = useState(['', '', '', '', '', '', '', '', '', '', '', ''])
@@ -39,8 +41,9 @@ function InitOld() {
   const handleCancel = () => navigate(Pages.Init)
 
   const handleProceed = () => {
-    updateConfig({ ...config, mnemonic: passphrase.join(' ') })
-    navigate(Pages.Wallet)
+    const mnemonic = passphrase.join(' ')
+    updateWallet({ ...wallet, mnemonic })
+    navigate(Pages.InitPassword)
   }
 
   return (

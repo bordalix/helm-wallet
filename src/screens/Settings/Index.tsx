@@ -3,20 +3,18 @@ import Logout from './Logout'
 import Explorer from './Explorer'
 import Network from './Network'
 import Header from './Header'
-import Encrypt from './Encrypt'
 import Footer from '../../components/Footer'
 import { ConfigContext } from '../../providers/config'
 import ExplorerIcon from '../../icons/Explorer'
-import EncryptIcon from '../../icons/Encrypt'
 import LogoutIcon from '../../icons/Logout'
 import NetworkIcon from '../../icons/Network'
 import ArrowIcon from '../../icons/Arrow'
 import NotificationIcon from '../../icons/Notification'
 import Notifications from './Notifications'
+import { WalletContext } from '../../providers/wallet'
 
 enum Options {
   Menu = 'menu',
-  Encrypt = 'encrypt',
   Explorer = 'explorer',
   Logout = 'logout',
   Network = 'network',
@@ -29,7 +27,7 @@ interface Option {
 }
 
 function Settings() {
-  const { config } = useContext(ConfigContext)
+  const { wallet } = useContext(WalletContext)
 
   const [option, setOption] = useState(Options.Menu)
 
@@ -45,10 +43,6 @@ function Settings() {
       option: Options.Network,
     },
     {
-      icon: <EncryptIcon />,
-      option: Options.Encrypt,
-    },
-    {
       icon: <NotificationIcon />,
       option: Options.Notifications,
     },
@@ -59,7 +53,7 @@ function Settings() {
   ]
 
   const validOptions = (): Option[] => {
-    if (config.mnemonic) return options
+    if (wallet.mnemonic) return options
     return options.filter((o) => o.option !== 'logout')
   }
 
@@ -89,7 +83,6 @@ function Settings() {
         {option === Options.Explorer && <Explorer />}
         {option === Options.Network && <Network />}
         {option === Options.Logout && <Logout />}
-        {option === Options.Encrypt && <Encrypt />}
         {option === Options.Notifications && <Notifications />}
       </div>
       <Footer />

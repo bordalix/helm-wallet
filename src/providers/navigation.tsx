@@ -4,6 +4,7 @@ export enum Pages {
   Init,
   InitNew,
   InitOld,
+  InitPassword,
   Wallet,
   SendInvoice,
   SendConfirm,

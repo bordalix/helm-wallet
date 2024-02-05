@@ -4,7 +4,7 @@ import ButtonsOnBottom from '../../components/ButtonsOnBottom'
 import Subtitle from '../../components/Subtitle'
 import Title from '../../components/Title'
 import { ConfigContext } from '../../providers/config'
-import { networkNames } from '../../lib/networks'
+import { getNetworkNames } from '../../lib/network'
 
 function Network() {
   const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)
@@ -17,7 +17,7 @@ function Network() {
         <Title text='Network' />
         <Subtitle text='Change your network' />
         <select className='py-3 px-4 text-lg border-2 mt-10' onChange={handleChange} value={config.network}>
-          {networkNames.map((e) => (
+          {getNetworkNames().map((e) => (
             <option key={e} value={e}>
               {e}
             </option>

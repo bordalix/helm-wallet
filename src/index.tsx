@@ -6,18 +6,21 @@ import * as serviceWorkerRegistration from './serviceWorkerRegistration'
 import { ConfigProvider } from './providers/config'
 import { NavigationProvider } from './providers/navigation'
 import { FlowProvider } from './providers/flow'
+import { WalletProvider } from './providers/wallet'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
-  <React.StrictMode>
-    <NavigationProvider>
-      <ConfigProvider>
+  // <React.StrictMode>
+  <NavigationProvider>
+    <ConfigProvider>
+      <WalletProvider>
         <FlowProvider>
           <App />
         </FlowProvider>
-      </ConfigProvider>
-    </NavigationProvider>
-  </React.StrictMode>,
+      </WalletProvider>
+    </ConfigProvider>
+  </NavigationProvider>,
+  // </React.StrictMode>,
 )
 
 // If you want your app to work offline and load faster, you can change

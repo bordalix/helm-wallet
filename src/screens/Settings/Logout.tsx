@@ -4,12 +4,14 @@ import ButtonsOnBottom from '../../components/ButtonsOnBottom'
 import Subtitle from '../../components/Subtitle'
 import Title from '../../components/Title'
 import { ConfigContext } from '../../providers/config'
+import { WalletContext } from '../../providers/wallet'
 
 function Logout() {
-  const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)
+  const { toggleShowConfig } = useContext(ConfigContext)
+  const { resetWallet } = useContext(WalletContext)
 
   const handleProceed = () => {
-    updateConfig({ ...config, mnemonic: '' })
+    resetWallet()
     toggleShowConfig()
   }
 

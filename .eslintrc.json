@@ -21,7 +21,6 @@
     }
   },
   "rules": {
-    "camelcase": "error",
     "spaced-comment": "error",
     "no-duplicate-imports": "error",
     "array-callback-return": ["error", { "allowImplicit": true }],
@@ -51,7 +50,7 @@
       }
     ],
     "react/react-in-jsx-scope": ["off"],
-    "no-console": ["warn", { "allow": ["error"] }],
+    // "no-console": ["warn", { "allow": ["log", "error"] }],
     "@typescript-eslint/array-type": ["error"],
     "@typescript-eslint/quotes": [
       "error",

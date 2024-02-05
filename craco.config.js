@@ -1,4 +1,5 @@
 const webpack = require('webpack')
+const path = require('path-browserify')
 
 module.exports = {
   webpack: {
@@ -26,6 +27,7 @@ module.exports = {
         path: require.resolve('path-browserify'),
         crypto: require.resolve('crypto-browserify'),
         stream: require.resolve('stream-browserify'),
+        fs: false,
       }
       return webpackConfig
     },
