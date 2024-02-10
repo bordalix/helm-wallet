@@ -30,7 +30,7 @@ function Notifications() {
         </select>
       </div>
       <ButtonsOnBottom>
-        <Button onClick={toggleShowConfig} label='Back to wallet' />
+        <Button onClick={toggleShowConfig} label='Back to wallet' secondary />
       </ButtonsOnBottom>
     </div>
   )

@@ -5,6 +5,7 @@ import { NavigationContext, Pages } from '../../../providers/navigation'
 import { FlowContext } from '../../../providers/flow'
 import Title from '../../../components/Title'
 import Subtitle from '../../../components/Subtitle'
+import Decimal from 'decimal.js'
 
 function ReceiveAmount() {
   const { navigate } = useContext(NavigationContext)
@@ -12,10 +13,23 @@ function ReceiveAmount() {
 
   const [amount, setAmount] = useState(0)
   const [note, setNote] = useState('')
+  const [sats, setSats] = useState(true)
+
+  const handleUnitChange = () => {
+    setSats(!sats)
+  }
 
   const handleProceed = () => {
     setRecvInfo({ amount, note })
     navigate(Pages.ReceiveInvoice)
+  }
+
+  const alternativeAmount = () => {
+    console.log(amount, typeof amount, Number(amount))
+    if (!amount) return sats ? '0 BTC' : '0 sats'
+    return sats
+      ? Decimal.div(amount, 100_000_000).toNumber() + ' BTC'
+      : Decimal.mul(amount, 100_000_000).toNumber() + ' sats'
   }
 
   return (
@@ -31,7 +45,7 @@ function ReceiveAmount() {
             <label htmlFor='toggle' className='inline-flex items-center space-x-4 text-sm cursor-pointer'>
               <span>Sats</span>
               <span className='relative'>
-                <input id='toggle' type='checkbox' className='hidden peer' />
+                <input id='toggle' type='checkbox' className='hidden peer' onClick={handleUnitChange} />
                 <div className='w-10 h-4 rounded-full shadow bg-gray-200' />
                 <div className='absolute left-0 w-6 h-6 rounded-full shadow -inset-y-1 peer-checked:right-0 peer-checked:left-auto bg-gray-800' />
               </span>
@@ -43,9 +57,10 @@ function ReceiveAmount() {
             type='text'
             name='amount'
             placeholder='0'
-            onChange={(e) => setAmount(parseInt(e.target.value))}
+            onChange={(e) => setAmount(Number(e.target.value))}
             className='w-full border pr-2 py-2 text-right rounded-md border-gray-800 text-gray-800 bg-gray-100'
           />
+          <p className='text-right text-sm'>{alternativeAmount()}</p>
         </fieldset>
         <fieldset className='text-left mt-8'>
           <label htmlFor='url' className='block font-medium mb-2'>

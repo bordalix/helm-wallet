@@ -4,7 +4,6 @@ import Explorer from './Explorer'
 import Network from './Network'
 import Header from './Header'
 import Footer from '../../components/Footer'
-import { ConfigContext } from '../../providers/config'
 import ExplorerIcon from '../../icons/Explorer'
 import LogoutIcon from '../../icons/Logout'
 import NetworkIcon from '../../icons/Network'
@@ -12,6 +11,8 @@ import ArrowIcon from '../../icons/Arrow'
 import NotificationIcon from '../../icons/Notification'
 import Notifications from './Notifications'
 import { WalletContext } from '../../providers/wallet'
+import Reload from './Reload'
+import ReloadIcon from '../../icons/Reload'
 
 enum Options {
   Menu = 'menu',
@@ -19,6 +20,7 @@ enum Options {
   Logout = 'logout',
   Network = 'network',
   Notifications = 'notifications',
+  Reload = 'reload',
 }
 
 interface Option {
@@ -45,6 +47,10 @@ function Settings() {
     {
       icon: <NotificationIcon />,
       option: Options.Notifications,
+    },
+    {
+      icon: <ReloadIcon />,
+      option: Options.Reload,
     },
     {
       icon: <LogoutIcon />,
@@ -84,6 +90,7 @@ function Settings() {
         {option === Options.Network && <Network />}
         {option === Options.Logout && <Logout />}
         {option === Options.Notifications && <Notifications />}
+        {option === Options.Reload && <Reload />}
       </div>
       <Footer />
     </div>

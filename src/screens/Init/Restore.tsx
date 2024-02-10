@@ -6,14 +6,12 @@ import Title from '../../components/Title'
 import ButtonsOnBottom from '../../components/ButtonsOnBottom'
 import Columns from '../../components/Columns'
 import Word from '../../components/Word'
-import { ConfigContext } from '../../providers/config'
 import { NavigationContext, Pages } from '../../providers/navigation'
 import { WalletContext } from '../../providers/wallet'
 
 function InitOld() {
-  const { config, updateConfig } = useContext(ConfigContext)
   const { navigate } = useContext(NavigationContext)
-  const { wallet, updateWallet } = useContext(WalletContext)
+  const { wallet, reloadUtxos } = useContext(WalletContext)
 
   const [invalid, setInvalid] = useState(false)
   const [passphrase, setPassphrase] = useState(['', '', '', '', '', '', '', '', '', '', '', ''])
@@ -42,7 +40,7 @@ function InitOld() {
 
   const handleProceed = () => {
     const mnemonic = passphrase.join(' ')
-    updateWallet({ ...wallet, mnemonic })
+    reloadUtxos({ ...wallet, mnemonic })
     navigate(Pages.InitPassword)
   }
 

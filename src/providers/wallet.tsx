@@ -4,11 +4,10 @@ import { NavigationContext, Pages } from './navigation'
 import { NetworkName } from '../lib/network'
 import { Mnemonic, XPubs } from '../lib/types'
 import { ConfigContext } from './config'
-import { fetchUnspents } from '../lib/utxo'
-import { unblindUnspents } from '../lib/blinder'
+import { getUtxos } from '../lib/utxo'
+import { getXPubs } from '../lib/derivation'
 
 export interface Wallet {
-  masterBlindingKey: string
   network: NetworkName
   nextIndex: number
   mnemonic: Mnemonic
@@ -18,13 +17,14 @@ export interface Wallet {
 
 interface WalletContextProps {
   loading: boolean
+  reloading: boolean
+  reloadUtxos: (arg0: Wallet, gap?: number) => void
   resetWallet: () => void
   updateWallet: (arg0: Wallet) => void
   wallet: Wallet
 }
 
 const defaultWallet: Wallet = {
-  masterBlindingKey: '',
   network: NetworkName.Testnet,
   nextIndex: 1,
   mnemonic: '',
@@ -37,10 +37,12 @@ const defaultWallet: Wallet = {
 }
 
 export const WalletContext = createContext<WalletContextProps>({
-  wallet: defaultWallet,
   loading: true,
+  reloading: false,
+  reloadUtxos: () => {},
   resetWallet: () => {},
   updateWallet: () => {},
+  wallet: defaultWallet,
 })
 
 export const WalletProvider = ({ children }: { children: ReactNode }) => {
@@ -49,6 +51,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
 
   const [wallet, setWallet] = useState<Wallet>(defaultWallet)
   const [loading, setLoading] = useState(true)
+  const [reloading, setReloading] = useState(false)
 
   const updateWallet = (data: Wallet) => {
     setWallet(data)
@@ -60,25 +63,30 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     navigate(Pages.Init)
   }
 
+  const reloadUtxos = async (wallet: Wallet, gap = 20) => {
+    console.log('reloadUtxos', wallet)
+    if (reloading) return
+    setReloading(true)
+    if (!wallet.xpubs.testnet) wallet.xpubs = await getXPubs(wallet)
+    const utxos = await getUtxos(config, wallet, gap)
+    updateWallet({ ...wallet, utxos })
+    setReloading(false)
+  }
+
   useEffect(() => {
     if (!loading) return
     readWallet().then((wallet: Wallet | undefined) => {
       setLoading(false)
       if (!wallet) return navigate(Pages.Init)
-      if (wallet.utxos.length === 0) {
-        fetchUnspents(config, wallet).then((blindedUtxos) => {
-          // unblindUnspents(blindedUtxos).then((utxos) => updateWallet({ ...wallet, utxos }))
-          updateWallet({ ...wallet, utxos: blindedUtxos })
-        })
-      } else {
-        setWallet(wallet)
-      }
+      setWallet(wallet)
       navigate(wallet.mnemonic ? Pages.Wallet : Pages.Init)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading])
 
   return (
-    <WalletContext.Provider value={{ loading, resetWallet, updateWallet, wallet }}>{children}</WalletContext.Provider>
+    <WalletContext.Provider value={{ loading, reloading, reloadUtxos, resetWallet, updateWallet, wallet }}>
+      {children}
+    </WalletContext.Provider>
   )
 }

@@ -17,17 +17,12 @@ import ReceiveSuccess from './screens/Wallet/Receive/Success'
 import { ConfigContext } from './providers/config'
 import { NavigationContext, Pages } from './providers/navigation'
 import InitPassword from './screens/Init/Password'
-import { WalletContext } from './providers/wallet'
 
 const App = () => {
-  const { config, loading, showConfig } = useContext(ConfigContext)
-  const { wallet } = useContext(WalletContext)
+  const { loading, showConfig } = useContext(ConfigContext)
   const { screen } = useContext(NavigationContext)
 
-  console.log('settings', { ...config, ...wallet }, loading)
-
   if (loading) return <Loading />
-
   if (showConfig) return <Settings />
 
   return (

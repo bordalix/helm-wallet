@@ -6,7 +6,7 @@ import Title from '../../components/Title'
 import { ConfigContext } from '../../providers/config'
 import Password from '../../components/Password'
 import { NavigationContext, Pages } from '../../providers/navigation'
-import { getXPubsAndBlindingKey } from '../../lib/liquid'
+import { getXPubs } from '../../lib/derivation'
 import { WalletContext } from '../../providers/wallet'
 
 function InitPassword() {
@@ -16,9 +16,9 @@ function InitPassword() {
   const [password, setPassword] = useState('')
 
   const handleProceed = () => {
-    getXPubsAndBlindingKey(wallet).then(({ masterBlindingKey, xpubs }) => {
+    getXPubs(wallet).then((xpubs) => {
       updateConfig({ ...config, password })
-      updateWallet({ ...wallet, masterBlindingKey, xpubs })
+      updateWallet({ ...wallet, xpubs })
       navigate(Pages.Wallet)
     })
   }

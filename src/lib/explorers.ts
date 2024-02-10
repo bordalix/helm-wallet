@@ -58,18 +58,47 @@ export const getExplorerURL = ({ network, explorer }: Config) => {
   if (exp && exp[network]) return exp[network]?.webExplorerURL
 }
 
-export const fetchAddress = async (config: Config, address: string) => {
+export interface AddressInfo {
+  address: string
+  chain_stats: {
+    funded_txo_count: number
+    spent_txo_count: number
+    tx_count: number
+  }
+  mempool_stats: {
+    funded_txo_count: number
+    spent_txo_count: number
+    tx_count: number
+  }
+}
+
+export const fetchAddress = async (config: Config, address: string): Promise<AddressInfo> => {
   const explorerURL = getExplorerURL(config)
   const url = `${explorerURL}/api/address/${address}`
   const response = await fetch(url)
   return await response.json()
 }
 
-export const fetchUtxos = async (config: Config, address: string) => {
-  const data = await fetchAddress(config, address)
-  if (data?.chain_stats?.tx_count > 0) {
-    const explorerURL = getExplorerURL(config)
-    const response = await fetch(`${explorerURL}/api/address/${address}/utxo`)
-    return await response.json()
+export interface UtxoInfo {
+  txid: string
+  vout: number
+  status: {
+    confirmed: boolean
+    block_height: number
+    block_hash: string
+    block_time: number
   }
+  asset: string
+  value: number
+  valuecommitment: string
+  assetcommitment: string
+  noncecommitment: string
+}
+
+export const fetchUtxos = async (config: Config, address: string): Promise<UtxoInfo[]> => {
+  const data = await fetchAddress(config, address)
+  if (!data?.chain_stats?.tx_count) return []
+  const explorerURL = getExplorerURL(config)
+  const response = await fetch(`${explorerURL}/api/address/${address}/utxo`)
+  return await response.json()
 }

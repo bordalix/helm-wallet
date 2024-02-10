@@ -50,7 +50,7 @@
       }
     ],
     "react/react-in-jsx-scope": ["off"],
-    // "no-console": ["warn", { "allow": ["log", "error"] }],
+    "no-console": ["warn", { "allow": ["log", "error"] }],
     "@typescript-eslint/array-type": ["error"],
     "@typescript-eslint/quotes": [
       "error",
