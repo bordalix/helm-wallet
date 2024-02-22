@@ -9,6 +9,7 @@ import { generateMnemonic } from 'bip39'
 import { NavigationContext, Pages } from '../../providers/navigation'
 import { Mnemonic } from '../../lib/types'
 import { WalletContext } from '../../providers/wallet'
+import Content from '../../components/Content'
 
 function InitNew() {
   const { navigate } = useContext(NavigationContext)
@@ -25,7 +26,7 @@ function InitNew() {
 
   return (
     <div className='flex flex-col h-full justify-between'>
-      <div>
+      <Content>
         <Title text='Your new wallet' />
         <Subtitle text='Write down the following words' />
         <div className='grow'>
@@ -35,7 +36,7 @@ function InitNew() {
             ))}
           </Columns>
         </div>
-      </div>
+      </Content>
       <ButtonsOnBottom>
         <Button onClick={handleCancel} label='Cancel' secondary />
         <Button onClick={handleProceed} label='Continue' />

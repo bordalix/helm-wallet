@@ -5,6 +5,8 @@ import Subtitle from '../../components/Subtitle'
 import Title from '../../components/Title'
 import { ConfigContext } from '../../providers/config'
 import { getExplorerNames } from '../../lib/explorers'
+import Select from '../../components/Select'
+import SuccessIcon from '../../icons/Success'
 
 function Explorer() {
   const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)
@@ -13,14 +15,14 @@ function Explorer() {
 
   return (
     <div className='flex flex-col h-full justify-between'>
-      <div>
+      <div className='w-80 mx-auto'>
         <Title text='Explorer' />
         <Subtitle text='Change your explorer' />
-        <select className='py-3 px-4 text-lg border-2 mt-10' onChange={handleChange} value={config.explorer}>
+        <Select onChange={handleChange} value={config.explorer}>
           {getExplorerNames(config).map((e, i) => (
             <option key={e}>{e}</option>
           ))}
-        </select>
+        </Select>
       </div>
       <ButtonsOnBottom>
         <Button onClick={toggleShowConfig} label='Back to wallet' secondary />

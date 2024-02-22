@@ -4,6 +4,8 @@ import ButtonsOnBottom from '../../components/ButtonsOnBottom'
 import Subtitle from '../../components/Subtitle'
 import Title from '../../components/Title'
 import { ConfigContext } from '../../providers/config'
+import Select from '../../components/Select'
+import Content from '../../components/Content'
 
 function Notifications() {
   const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)
@@ -21,14 +23,14 @@ function Notifications() {
 
   return (
     <div className='flex flex-col h-full justify-between'>
-      <div>
+      <Content>
         <Title text='Notifications' />
         <Subtitle text='Allow to receive notifications' />
-        <select className='py-3 px-4 text-lg border-2 mt-10' onChange={handleChange} value={value}>
+        <Select onChange={handleChange} value={value}>
           <option value='0'>Not allowed</option>
           <option value='1'>Allowed</option>
-        </select>
-      </div>
+        </Select>
+      </Content>
       <ButtonsOnBottom>
         <Button onClick={toggleShowConfig} label='Back to wallet' secondary />
       </ButtonsOnBottom>

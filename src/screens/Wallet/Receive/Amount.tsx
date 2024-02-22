@@ -6,6 +6,7 @@ import { FlowContext } from '../../../providers/flow'
 import Title from '../../../components/Title'
 import Subtitle from '../../../components/Subtitle'
 import Decimal from 'decimal.js'
+import Content from '../../../components/Content'
 
 function ReceiveAmount() {
   const { navigate } = useContext(NavigationContext)
@@ -34,10 +35,10 @@ function ReceiveAmount() {
 
   return (
     <div className='flex flex-col h-full justify-between'>
-      <div className='w-full mx-auto'>
+      <Content>
         <Title text='Receive' />
         <Subtitle text='Define amount and optional note' />
-        <fieldset className='text-left text-gray-800 mt-10'>
+        <fieldset className='text-left text-gray-800 mt-10 mx-auto'>
           <div className='flex justify-between mb-2'>
             <label htmlFor='url' className='block font-medium'>
               Amount
@@ -61,11 +62,14 @@ function ReceiveAmount() {
             className='w-full border pr-2 py-2 text-right rounded-md border-gray-800 text-gray-800 bg-gray-100'
           />
           <p className='text-right text-sm'>{alternativeAmount()}</p>
-        </fieldset>
-        <fieldset className='text-left mt-8'>
-          <label htmlFor='url' className='block font-medium mb-2'>
-            Note
-          </label>
+          <div className='flex justify-between mb-2 mt-10'>
+            <label htmlFor='url' className='font-medium'>
+              Note
+            </label>
+            <label htmlFor='url' className='text-sm'>
+              Optional
+            </label>
+          </div>
           <input
             id='url'
             name='url'
@@ -74,7 +78,7 @@ function ReceiveAmount() {
             className='w-full border pl-2 py-2 rounded-md border-gray-800 text-gray-800 bg-gray-100'
           />
         </fieldset>
-      </div>
+      </Content>
       <ButtonsOnBottom>
         <Button onClick={handleProceed} label='Generate invoice' />
       </ButtonsOnBottom>

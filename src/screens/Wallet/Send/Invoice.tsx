@@ -7,6 +7,9 @@ import ButtonsOnBottom from '../../../components/ButtonsOnBottom'
 import { NavigationContext, Pages } from '../../../providers/navigation'
 import { FlowContext, emptySendInfo } from '../../../providers/flow'
 import Input from '../../../components/Input'
+import Content from '../../../components/Content'
+import Subtitle from '../../../components/Subtitle'
+import Title from '../../../components/Title'
 
 function SendInvoice() {
   const { navigate } = useContext(NavigationContext)
@@ -52,18 +55,22 @@ function SendInvoice() {
 
   return (
     <div className='flex flex-col h-full justify-between'>
-      <div className='grow'>
-        {error ? (
-          <div className='mt-8'>
-            <Error error={error} />
-          </div>
-        ) : (
-          <div className='flex flex-col h-full justify-between'>
-            <BarcodeScanner setData={setData} setError={setError} />
-            {firefox ? <Input label='Paste your invoice here' left='&#9889;' onChange={handleChange} /> : null}
-          </div>
-        )}
-      </div>
+      <Content>
+        <Title text='Send' />
+        <Subtitle text='Scan or paste invoice' />
+        <div className='grow'>
+          {error ? (
+            <div className='mt-8'>
+              <Error error={error} />
+            </div>
+          ) : (
+            <div className='flex flex-col h-full justify-between'>
+              <BarcodeScanner setData={setData} setError={setError} />
+              {firefox ? <Input label='Paste your invoice here' left='&#9889;' onChange={handleChange} /> : null}
+            </div>
+          )}
+        </div>
+      </Content>
       <ButtonsOnBottom>
         <Button onClick={handleCancel} label='Cancel' secondary />
         {!firefox && <Button onClick={handlePaste} label={buttonLabel} />}

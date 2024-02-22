@@ -5,6 +5,7 @@ import Title from '../../../components/Title'
 import Subtitle from '../../../components/Subtitle'
 import ButtonsOnBottom from '../../../components/ButtonsOnBottom'
 import { NavigationContext, Pages } from '../../../providers/navigation'
+import Content from '../../../components/Content'
 
 function SendSuccess() {
   const { navigate } = useContext(NavigationContext)
@@ -13,7 +14,7 @@ function SendSuccess() {
 
   return (
     <div className='flex flex-col h-full justify-between'>
-      <div>
+      <Content>
         <Title text='Success' />
         <Subtitle text='Payment sent' />
         <div className='flex h-60'>
@@ -21,7 +22,7 @@ function SendSuccess() {
             <SuccessIcon />
           </div>
         </div>
-      </div>
+      </Content>
       <ButtonsOnBottom>
         <Button onClick={handleBackToWallet} label='Back to wallet' />
       </ButtonsOnBottom>

@@ -5,6 +5,7 @@ import Subtitle from '../../components/Subtitle'
 import Title from '../../components/Title'
 import { ConfigContext } from '../../providers/config'
 import { WalletContext } from '../../providers/wallet'
+import Content from '../../components/Content'
 
 function Logout() {
   const { toggleShowConfig } = useContext(ConfigContext)
@@ -17,10 +18,10 @@ function Logout() {
 
   return (
     <div className='flex flex-col h-full justify-between'>
-      <div>
+      <Content>
         <Title text='Are you sure?' />
         <Subtitle text='This operation cannot be undone' />
-      </div>
+      </Content>
       <ButtonsOnBottom>
         <Button onClick={toggleShowConfig} label='Cancel' secondary />
         <Button onClick={handleProceed} label='Proceed' />

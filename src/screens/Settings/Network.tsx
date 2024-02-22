@@ -5,6 +5,8 @@ import Subtitle from '../../components/Subtitle'
 import Title from '../../components/Title'
 import { ConfigContext } from '../../providers/config'
 import { getNetworkNames } from '../../lib/network'
+import Select from '../../components/Select'
+import Content from '../../components/Content'
 
 function Network() {
   const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)
@@ -13,17 +15,17 @@ function Network() {
 
   return (
     <div className='flex flex-col h-full justify-between'>
-      <div>
+      <Content>
         <Title text='Network' />
         <Subtitle text='Change your network' />
-        <select className='py-3 px-4 text-lg border-2 mt-10' onChange={handleChange} value={config.network}>
+        <Select onChange={handleChange} value={config.network}>
           {getNetworkNames().map((e) => (
             <option key={e} value={e}>
               {e}
             </option>
           ))}
-        </select>
-      </div>
+        </Select>
+      </Content>
       <ButtonsOnBottom>
         <Button onClick={toggleShowConfig} label='Back to wallet' secondary />
       </ButtonsOnBottom>

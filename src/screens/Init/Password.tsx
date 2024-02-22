@@ -8,6 +8,7 @@ import Password from '../../components/Password'
 import { NavigationContext, Pages } from '../../providers/navigation'
 import { getXPubs } from '../../lib/derivation'
 import { WalletContext } from '../../providers/wallet'
+import Content from '../../components/Content'
 
 function InitPassword() {
   const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)
@@ -25,13 +26,13 @@ function InitPassword() {
 
   return (
     <div className='flex flex-col h-full justify-between'>
-      <div>
+      <Content>
         <Title text='Password' />
         <Subtitle text='Leave blank to reset password' />
         <div className='text-center px-8 mt-10'>
           <Password onChange={setPassword} />
         </div>
-      </div>
+      </Content>
       <ButtonsOnBottom>
         <Button onClick={toggleShowConfig} label='Cancel' secondary />
         <Button onClick={handleProceed} label='Continue' />

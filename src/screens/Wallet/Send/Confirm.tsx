@@ -4,6 +4,9 @@ import { formatInvoice } from '../../../lib/format'
 import ButtonsOnBottom from '../../../components/ButtonsOnBottom'
 import { NavigationContext, Pages } from '../../../providers/navigation'
 import { FlowContext, emptySendInfo } from '../../../providers/flow'
+import Content from '../../../components/Content'
+import Subtitle from '../../../components/Subtitle'
+import Title from '../../../components/Title'
 
 const Item = ({ title, body }: any) => {
   return (
@@ -18,6 +21,8 @@ function SendConfirm() {
   const { navigate } = useContext(NavigationContext)
   const { sendInfo, setSendInfo } = useContext(FlowContext)
 
+  const boltzFees = 148
+
   const handlePay = () => navigate(Pages.SendPayment)
 
   const handleCancel = () => {
@@ -27,14 +32,17 @@ function SendConfirm() {
 
   return (
     <div className='flex flex-col h-full justify-between'>
-      <div>
-        <div className='mt-8'>
+      <Content>
+        <Title text='Invoice' />
+        <Subtitle text='Payment details' />
+        <div className='mt-10'>
           <Item title='Satoshis' body={sendInfo.satoshis} />
           <Item title='Note' body={sendInfo.note} />
           <Item title='Invoice' body={formatInvoice(sendInfo.invoice)} />
-          <Item title='Boltz fees' body='148 sats' />
+          <Item title='Boltz fees' body={`${boltzFees} sats`} />
+          <Item title='Total' body={`${boltzFees + sendInfo.satoshis} sats`} />
         </div>
-      </div>
+      </Content>
       <ButtonsOnBottom>
         <Button onClick={handleCancel} label='Cancel' secondary />
         <Button onClick={handlePay} label='Pay' />

@@ -8,6 +8,7 @@ import Columns from '../../components/Columns'
 import Word from '../../components/Word'
 import { NavigationContext, Pages } from '../../providers/navigation'
 import { WalletContext } from '../../providers/wallet'
+import Content from '../../components/Content'
 
 function InitOld() {
   const { navigate } = useContext(NavigationContext)
@@ -46,7 +47,7 @@ function InitOld() {
 
   return (
     <div className='flex flex-col h-full justify-between'>
-      <div>
+      <Content>
         <Title text='Restore wallet' />
         <Subtitle text='Insert your secret words' />
         <div className='grow'>
@@ -63,7 +64,7 @@ function InitOld() {
           </Columns>
           {invalid ? <p className='mt-4 text-red-600'>Invalid mnemonic</p> : null}
         </div>
-      </div>
+      </Content>
       <ButtonsOnBottom>
         <Button onClick={handleCancel} label='Cancel' secondary />
         {completed && !invalid ? <Button onClick={handleProceed} label='Continue' /> : null}

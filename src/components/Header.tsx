@@ -13,7 +13,7 @@ function Header() {
   console.log('reloading', reloading)
 
   return (
-    <header className='mb-2'>
+    <header className='mb-8'>
       <div className='flex justify-between w-full'>
         <button
           onClick={() => navigate(Pages.Wallet)}

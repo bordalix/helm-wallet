@@ -4,6 +4,9 @@ import { formatInvoice } from '../../../lib/format'
 import Button from '../../../components/Button'
 import ButtonsOnBottom from '../../../components/ButtonsOnBottom'
 import { NavigationContext, Pages } from '../../../providers/navigation'
+import Content from '../../../components/Content'
+import Subtitle from '../../../components/Subtitle'
+import Title from '../../../components/Title'
 
 function ReceiveInvoice() {
   const { navigate } = useContext(NavigationContext)
@@ -25,12 +28,17 @@ function ReceiveInvoice() {
     navigate(Pages.ReceiveSuccess)
   }
 
+  console.log('window', window.innerWidth)
   return (
     <div className='flex flex-col h-full justify-between'>
-      <div className='mx-auto mt-8'>
-        <QRCode value={invoice} />
-        <p className='mt-4'>{formatInvoice(invoice)}</p>
-      </div>
+      <Content>
+        <Title text='Invoice' />
+        <Subtitle text='payment details' />
+        <div className='mx-auto mt-8'>
+          <QRCode size={320} value={invoice} />
+          <p className='mt-4'>{formatInvoice(invoice)}</p>
+        </div>
+      </Content>
       <ButtonsOnBottom>
         <Button onClick={copy} label={buttonLabel} secondary />
         <Button onClick={handleSuccess} label='Success' />
