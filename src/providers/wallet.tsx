@@ -64,7 +64,6 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const reloadUtxos = async (wallet: Wallet, gap = 20) => {
-    console.log('reloadUtxos', wallet)
     if (reloading) return
     setReloading(true)
     if (!wallet.xpubs.testnet) wallet.xpubs = await getXPubs(wallet)

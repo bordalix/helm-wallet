@@ -7,80 +7,32 @@ import Title from '../../../components/Title'
 import Subtitle from '../../../components/Subtitle'
 import Decimal from 'decimal.js'
 import Content from '../../../components/Content'
+import InputAmount from '../../../components/InputAmount'
+import { BoltzContext } from '../../../providers/boltz'
 
 function ReceiveAmount() {
   const { navigate } = useContext(NavigationContext)
   const { setRecvInfo } = useContext(FlowContext)
+  const { limits } = useContext(BoltzContext)
 
   const [amount, setAmount] = useState(0)
-  const [note, setNote] = useState('')
-  const [sats, setSats] = useState(true)
-
-  const handleUnitChange = () => {
-    setSats(!sats)
-  }
 
   const handleProceed = () => {
-    setRecvInfo({ amount, note })
+    setRecvInfo({ amount })
     navigate(Pages.ReceiveInvoice)
   }
 
-  const alternativeAmount = () => {
-    console.log(amount, typeof amount, Number(amount))
-    if (!amount) return sats ? '0 BTC' : '0 sats'
-    return sats
-      ? Decimal.div(amount, 100_000_000).toNumber() + ' BTC'
-      : Decimal.mul(amount, 100_000_000).toNumber() + ' sats'
-  }
+  const disabled = amount < limits.minimal || amount > limits.maximal
 
   return (
     <div className='flex flex-col h-full justify-between'>
       <Content>
         <Title text='Receive' />
-        <Subtitle text='Define amount and optional note' />
-        <fieldset className='text-left text-gray-800 mt-10 mx-auto'>
-          <div className='flex justify-between mb-2'>
-            <label htmlFor='url' className='block font-medium'>
-              Amount
-            </label>
-            <label htmlFor='toggle' className='inline-flex items-center space-x-4 text-sm cursor-pointer'>
-              <span>Sats</span>
-              <span className='relative'>
-                <input id='toggle' type='checkbox' className='hidden peer' onClick={handleUnitChange} />
-                <div className='w-10 h-4 rounded-full shadow bg-gray-200' />
-                <div className='absolute left-0 w-6 h-6 rounded-full shadow -inset-y-1 peer-checked:right-0 peer-checked:left-auto bg-gray-800' />
-              </span>
-              <span>BTC</span>
-            </label>
-          </div>
-          <input
-            id='amount'
-            type='text'
-            name='amount'
-            placeholder='0'
-            onChange={(e) => setAmount(Number(e.target.value))}
-            className='w-full border pr-2 py-2 text-right rounded-md border-gray-800 text-gray-800 bg-gray-100'
-          />
-          <p className='text-right text-sm'>{alternativeAmount()}</p>
-          <div className='flex justify-between mb-2 mt-10'>
-            <label htmlFor='url' className='font-medium'>
-              Note
-            </label>
-            <label htmlFor='url' className='text-sm'>
-              Optional
-            </label>
-          </div>
-          <input
-            id='url'
-            name='url'
-            type='text'
-            onChange={(e) => setNote(e.target.value)}
-            className='w-full border pl-2 py-2 rounded-md border-gray-800 text-gray-800 bg-gray-100'
-          />
-        </fieldset>
+        <Subtitle text={`Max: ${limits.maximal} Min: ${limits.minimal} sats`} />
+        <InputAmount label='Amount' onChange={setAmount} />
       </Content>
       <ButtonsOnBottom>
-        <Button onClick={handleProceed} label='Generate invoice' />
+        <Button onClick={handleProceed} label='Generate invoice' disabled={disabled} />
       </ButtonsOnBottom>
     </div>
   )

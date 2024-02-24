@@ -7,6 +7,7 @@ import { ConfigProvider } from './providers/config'
 import { NavigationProvider } from './providers/navigation'
 import { FlowProvider } from './providers/flow'
 import { WalletProvider } from './providers/wallet'
+import { BoltzProvider } from './providers/boltz'
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
@@ -14,9 +15,11 @@ root.render(
   <NavigationProvider>
     <ConfigProvider>
       <WalletProvider>
-        <FlowProvider>
-          <App />
-        </FlowProvider>
+        <BoltzProvider>
+          <FlowProvider>
+            <App />
+          </FlowProvider>
+        </BoltzProvider>
       </WalletProvider>
     </ConfigProvider>
   </NavigationProvider>,

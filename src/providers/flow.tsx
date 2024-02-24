@@ -2,7 +2,6 @@ import { ReactNode, createContext, useState } from 'react'
 
 export interface RecvInfo {
   amount: number
-  note: string
 }
 
 export interface SendInfo {
@@ -20,7 +19,6 @@ interface FlowContextProps {
 
 export const emptyRecvInfo: RecvInfo = {
   amount: 0,
-  note: '',
 }
 
 export const emptySendInfo: SendInfo = {

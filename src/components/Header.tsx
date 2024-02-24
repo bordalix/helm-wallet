@@ -10,8 +10,6 @@ function Header() {
   const { navigate } = useContext(NavigationContext)
   const { reloading } = useContext(WalletContext)
 
-  console.log('reloading', reloading)
-
   return (
     <header className='mb-8'>
       <div className='flex justify-between w-full'>

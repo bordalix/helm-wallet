@@ -1,9 +1,7 @@
-import { ReactNode, createContext, useContext, useEffect, useState } from 'react'
+import { ReactNode, createContext, useEffect, useState } from 'react'
 import { clearStorage, readConfig, saveConfig } from '../lib/storage'
-import { NavigationContext, Pages } from './navigation'
 import { ExplorerName } from '../lib/explorers'
 import { NetworkName } from '../lib/network'
-import { Mnemonic, XPubs } from '../lib/types'
 
 export interface Config {
   explorer: ExplorerName
@@ -38,8 +36,6 @@ export const ConfigContext = createContext<ConfigContextProps>({
 })
 
 export const ConfigProvider = ({ children }: { children: ReactNode }) => {
-  const { navigate } = useContext(NavigationContext)
-
   const [config, setConfig] = useState<Config>(defaultConfig)
   const [loading, setLoading] = useState(true)
   const [showConfig, setShowConfig] = useState(false)

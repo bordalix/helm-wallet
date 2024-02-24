@@ -20,7 +20,6 @@ export const getUtxos = async (config: Config, wallet: Wallet, defaultGap = 20):
           utxos.push(utxo)
         }
       }
-      console.log(chain, index, data)
       index += 1
       gap -= 1
     }
