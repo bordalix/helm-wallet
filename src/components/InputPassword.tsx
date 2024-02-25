@@ -1,19 +1,21 @@
 import { useState } from 'react'
 import EyeOpenIcon from '../icons/EyeOpen'
 import EyeClosedIcon from '../icons/EyeClosed'
+import Label from './Label'
 
-function InputPassword({ label, name, onChange }: any) {
+interface InputPasswordProps {
+  label: string
+  onChange: (arg0: any) => void
+}
+
+function InputPassword({ label, onChange }: InputPasswordProps) {
   const [type, setType] = useState('password')
 
   const toggleVisibility = () => setType(type === 'text' ? 'password' : 'text')
 
   return (
     <div>
-      {label ? (
-        <label htmlFor={name} className='block text-sm text-left font-medium mb-1'>
-          {label}
-        </label>
-      ) : null}
+      {label ? <Label text={label} /> : null}
       <div className='flex items-center h-12 rounded-l-md bg-gray-100'>
         <input className='w-full p-3 text-sm font-semibold rounded-l-md bg-gray-100' onChange={onChange} type={type} />
         <div

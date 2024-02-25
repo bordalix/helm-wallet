@@ -32,7 +32,7 @@ function InitNew() {
         <div className='grow'>
           <Columns>
             {mnemonic.split(' ').map((word, i) => (
-              <Word key={word} i={i} left={i + 1} word={word} />
+              <Word key={word} left={i + 1} text={word} />
             ))}
           </Columns>
         </div>

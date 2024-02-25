@@ -33,7 +33,7 @@ function ReceiveInvoice() {
     <div className='flex flex-col h-full justify-between'>
       <Content>
         <Title text='Invoice' />
-        <Subtitle text='payment details' />
+        <Subtitle text='Payment details' />
         <div className='mx-auto mt-8'>
           <QRCode size={320} value={invoice} />
           <p className='mt-4'>{formatInvoice(invoice)}</p>

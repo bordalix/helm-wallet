@@ -6,7 +6,6 @@ import Title from '../../components/Title'
 import { ConfigContext } from '../../providers/config'
 import { getExplorerNames } from '../../lib/explorers'
 import Select from '../../components/Select'
-import SuccessIcon from '../../icons/Success'
 
 function Explorer() {
   const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)

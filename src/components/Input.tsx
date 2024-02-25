@@ -1,4 +1,15 @@
-function Input({ label, left, name, onChange, placeholder, right, type }: any) {
+import Label from './Label'
+
+interface InputProps {
+  label?: string
+  left?: string
+  onChange: (arg0: any) => void
+  placeholder?: string
+  right?: string
+  type?: string
+}
+
+function Input({ label, left, onChange, placeholder, right, type }: InputProps) {
   const commonSidesClassName = 'w-16 pt-3 mx-auto text-sm bg-gray-700 text-gray-100'
 
   const inputClassName =
@@ -6,20 +17,10 @@ function Input({ label, left, name, onChange, placeholder, right, type }: any) {
 
   return (
     <fieldset className='w-full text-gray-800'>
-      {label ? (
-        <label htmlFor={name} className='block text-sm text-left font-medium mb-1'>
-          {label}
-        </label>
-      ) : null}
+      {label ? <Label text={label} /> : null}
       <div className='flex'>
         {left ? <p className={`${commonSidesClassName} rounded-l-md`}>{left}</p> : null}
-        <input
-          className={inputClassName}
-          name={name ?? ''}
-          onChange={onChange}
-          placeholder={placeholder}
-          type={type ?? 'text'}
-        />
+        <input className={inputClassName} onChange={onChange} placeholder={placeholder} type={type ?? 'text'} />
         {right ? <p className={`${commonSidesClassName} rounded-r-md`}>{right}</p> : null}
       </div>
     </fieldset>

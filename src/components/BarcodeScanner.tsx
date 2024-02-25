@@ -1,7 +1,12 @@
 import { useRef, useEffect } from 'react'
 import { BrowserMultiFormatReader } from '@zxing/library'
 
-function BarcodeScanner({ setData, setError }: any) {
+interface BarcodeScannerProps {
+  setData: (arg0: string) => void
+  setError: (arg0: string) => void
+}
+
+function BarcodeScanner({ setData, setError }: BarcodeScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const reader = useRef(new BrowserMultiFormatReader())
 

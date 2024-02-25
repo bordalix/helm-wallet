@@ -3,11 +3,11 @@ import { Satoshis } from '../lib/types'
 import Subtitle from './Subtitle'
 import Title from './Title'
 
-interface Props {
+interface BalanceProps {
   value: Satoshis
 }
 
-function Balance({ value }: Props) {
+function Balance({ value }: BalanceProps) {
   return (
     <div>
       <Title text={prettyNumber(fromSatoshis(value)) + ' BTC'} />

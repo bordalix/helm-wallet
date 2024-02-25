@@ -25,7 +25,7 @@ function Reload() {
       <Content>
         <Title text='Reload' />
         <Subtitle text='Reload your UTXOs' />
-        <Select onChange={handleChange} value={config.explorer}>
+        <Select label='Gap limit' onChange={handleChange} value={config.explorer}>
           {[20, 40, 80].map((e, i) => (
             <option key={e}>{e}</option>
           ))}

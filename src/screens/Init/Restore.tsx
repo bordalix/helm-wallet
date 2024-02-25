@@ -10,20 +10,25 @@ import { NavigationContext, Pages } from '../../providers/navigation'
 import { WalletContext } from '../../providers/wallet'
 import Content from '../../components/Content'
 
+enum ButtonLabel {
+  Incomplete = 'Incomplete mnemonic',
+  Invalid = 'Invalid mnemonic',
+  Ok = 'Continue',
+}
+
 function InitOld() {
   const { navigate } = useContext(NavigationContext)
   const { wallet, reloadUtxos } = useContext(WalletContext)
 
-  const [invalid, setInvalid] = useState(false)
+  const [label, setLabel] = useState(ButtonLabel.Incomplete)
   const [passphrase, setPassphrase] = useState(['', '', '', '', '', '', '', '', '', '', '', ''])
 
-  const completed = [...passphrase].filter((a) => a)?.length === 12
-
   useEffect(() => {
-    setInvalid(false)
-    if (!completed) return
-    setInvalid(!validateMnemonic(passphrase.join(' ')))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const completed = [...passphrase].filter((a) => a)?.length === 12
+    if (!completed) return setLabel(ButtonLabel.Incomplete)
+    const valid = validateMnemonic(passphrase.join(' '))
+    if (!valid) return setLabel(ButtonLabel.Invalid)
+    setLabel(ButtonLabel.Ok)
   }, [passphrase])
 
   const handleChange = (e: any, i: number) => {
@@ -45,6 +50,8 @@ function InitOld() {
     navigate(Pages.InitPassword)
   }
 
+  const disabled = label !== ButtonLabel.Ok
+
   return (
     <div className='flex flex-col h-full justify-between'>
       <Content>
@@ -53,21 +60,15 @@ function InitOld() {
         <div className='grow'>
           <Columns>
             {[...passphrase].map((word, i) => (
-              <Word
-                // eslint-disable-next-line react/no-array-index-key
-                key={i}
-                left={i + 1}
-                onChange={(e: any) => handleChange(e, i)}
-                value={passphrase[i]}
-              />
+              // eslint-disable-next-line react/no-array-index-key
+              <Word key={i} left={i + 1} onChange={(e: any) => handleChange(e, i)} text={word} />
             ))}
           </Columns>
-          {invalid ? <p className='mt-4 text-red-600'>Invalid mnemonic</p> : null}
         </div>
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handleCancel} label='Cancel' secondary />
-        {completed && !invalid ? <Button onClick={handleProceed} label='Continue' /> : null}
+        <Button onClick={handleProceed} label={label} disabled={disabled} />
       </ButtonsOnBottom>
     </div>
   )
