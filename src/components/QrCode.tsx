@@ -1,0 +1,17 @@
+import { formatInvoice } from '../lib/format'
+import QRCode from 'react-qr-code'
+
+interface QrCodeProps {
+  invoice: string
+}
+
+function QrCode({ invoice }: QrCodeProps) {
+  return (
+    <div className='mx-auto my-10'>
+      <QRCode size={320} value={invoice} />
+      <p className='mt-4'>{formatInvoice(invoice)}</p>
+    </div>
+  )
+}
+
+export default QrCode
