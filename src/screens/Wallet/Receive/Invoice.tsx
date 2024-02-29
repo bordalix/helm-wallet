@@ -1,12 +1,12 @@
 import { useContext, useState } from 'react'
-import QRCode from 'react-qr-code'
-import { formatInvoice } from '../../../lib/format'
 import Button from '../../../components/Button'
-import ButtonsOnBottom from '../../../components/ButtonsOnBottom'
 import { NavigationContext, Pages } from '../../../providers/navigation'
 import Content from '../../../components/Content'
 import Subtitle from '../../../components/Subtitle'
 import Title from '../../../components/Title'
+import QrCode from '../../../components/QrCode'
+import Container from '../../../components/Container'
+import ButtonsOnBottom from '../../../components/ButtonsOnBottom'
 
 function ReceiveInvoice() {
   const { navigate } = useContext(NavigationContext)
@@ -30,20 +30,16 @@ function ReceiveInvoice() {
   }
 
   return (
-    <div className='flex flex-col h-full justify-between'>
+    <Container>
       <Content>
         <Title text='Invoice' />
-        <Subtitle text='Payment details' />
-        <div className='mx-auto mt-8'>
-          <QRCode size={320} value={invoice} />
-          <p className='mt-4'>{formatInvoice(invoice)}</p>
-        </div>
+        <QrCode invoice={invoice} />
       </Content>
       <ButtonsOnBottom>
-        <Button onClick={handleCopy} label={buttonLabel} secondary />
-        <Button onClick={handleSuccess} label='Success' />
+        <Button onClick={handleCopy} label={buttonLabel} />
+        <Button onClick={handleSuccess} label='Success' secondary />
       </ButtonsOnBottom>
-    </div>
+    </Container>
   )
 }
 

@@ -10,6 +10,7 @@ import Input from '../../../components/Input'
 import Content from '../../../components/Content'
 import Subtitle from '../../../components/Subtitle'
 import Title from '../../../components/Title'
+import Container from '../../../components/Container'
 
 function SendInvoice() {
   const { navigate } = useContext(NavigationContext)
@@ -54,28 +55,26 @@ function SendInvoice() {
   const handleChange = (e: any) => setData(e.target.value)
 
   return (
-    <div className='flex flex-col h-full justify-between'>
+    <Container>
       <Content>
         <Title text='Send' />
         <Subtitle text='Scan or paste invoice' />
-        <div className='grow'>
-          {error ? (
-            <div className='mt-8'>
-              <Error error={error} />
-            </div>
-          ) : (
-            <div className='flex flex-col h-full justify-between'>
-              <BarcodeScanner setData={setData} setError={setError} />
-              {firefox ? <Input label='Paste your invoice here' left='&#9889;' onChange={handleChange} /> : null}
-            </div>
-          )}
-        </div>
+        {error ? (
+          <div className='mt-8'>
+            <Error error={error} />
+          </div>
+        ) : (
+          <div className='flex flex-col h-full justify-between'>
+            <BarcodeScanner setData={setData} setError={setError} />
+            {firefox ? <Input label='Paste your invoice here' left='&#9889;' onChange={handleChange} /> : null}
+          </div>
+        )}
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handleCancel} label='Cancel' secondary />
         {!firefox && <Button onClick={handlePaste} label={buttonLabel} />}
       </ButtonsOnBottom>
-    </div>
+    </Container>
   )
 }
 

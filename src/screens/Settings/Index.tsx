@@ -13,13 +13,19 @@ import Notifications from './Notifications'
 import { WalletContext } from '../../providers/wallet'
 import Reload from './Reload'
 import ReloadIcon from '../../icons/Reload'
+import EncryptIcon from '../../icons/Encrypt'
+import Backup from './Backup'
+import BackupIcon from '../../icons/Backup'
+import Password from './Password'
 
 enum Options {
   Menu = 'menu',
+  Backup = 'backup',
   Explorer = 'explorer',
   Logout = 'logout',
   Network = 'network',
   Notifications = 'notifications',
+  Password = 'password',
   Reload = 'reload',
 }
 
@@ -37,6 +43,10 @@ function Settings() {
 
   const options: Option[] = [
     {
+      icon: <BackupIcon />,
+      option: Options.Backup,
+    },
+    {
       icon: <ExplorerIcon />,
       option: Options.Explorer,
     },
@@ -47,6 +57,10 @@ function Settings() {
     {
       icon: <NotificationIcon />,
       option: Options.Notifications,
+    },
+    {
+      icon: <EncryptIcon />,
+      option: Options.Password,
     },
     {
       icon: <ReloadIcon />,
@@ -86,11 +100,13 @@ function Settings() {
             ))}
           </div>
         )}
+        {option === Options.Backup && <Backup />}
         {option === Options.Explorer && <Explorer />}
         {option === Options.Network && <Network />}
-        {option === Options.Logout && <Logout />}
         {option === Options.Notifications && <Notifications />}
+        {option === Options.Password && <Password />}
         {option === Options.Reload && <Reload />}
+        {option === Options.Logout && <Logout />}
       </div>
       <Footer />
     </div>

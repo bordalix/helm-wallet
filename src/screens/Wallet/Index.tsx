@@ -6,6 +6,8 @@ import { NavigationContext, Pages } from '../../providers/navigation'
 import { ConfigContext } from '../../providers/config'
 import { WalletContext } from '../../providers/wallet'
 import { balance } from '../../lib/utxo'
+import Container from '../../components/Container'
+import Content from '../../components/Content'
 
 function Wallet() {
   const { config } = useContext(ConfigContext)
@@ -13,20 +15,20 @@ function Wallet() {
   const { wallet } = useContext(WalletContext)
 
   const debug = () => {
-    console.log({ ...config, ...wallet })
+    console.log('config', config)
+    console.log('wallet', wallet)
   }
 
   return (
-    <div className='flex flex-col h-full justify-between'>
-      <div className='mt-24'>
+    <Container>
+      <Content>
         <Balance value={balance(wallet)} />
-      </div>
+      </Content>
       <ButtonsOnBottom>
         <Button onClick={() => navigate(Pages.SendInvoice)} label='Send' />
         <Button onClick={() => navigate(Pages.ReceiveAmount)} label='Receive' />
-        <Button onClick={debug} label='Debug' />
       </ButtonsOnBottom>
-    </div>
+    </Container>
   )
 }
 

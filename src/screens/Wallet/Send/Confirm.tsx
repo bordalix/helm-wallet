@@ -1,12 +1,14 @@
 import { useContext } from 'react'
 import Button from '../../../components/Button'
 import { formatInvoice } from '../../../lib/format'
-import ButtonsOnBottom from '../../../components/ButtonsOnBottom'
 import { NavigationContext, Pages } from '../../../providers/navigation'
 import { FlowContext, emptySendInfo } from '../../../providers/flow'
 import Content from '../../../components/Content'
-import Subtitle from '../../../components/Subtitle'
 import Title from '../../../components/Title'
+import Columns from '../../../components/Columns'
+import Container from '../../../components/Container'
+import ButtonsOnBottom from '../../../components/ButtonsOnBottom'
+import InvoiceDetails from '../../../components/InvoiceDetails'
 
 const Item = ({ title, body }: any) => {
   return (
@@ -19,9 +21,7 @@ const Item = ({ title, body }: any) => {
 
 function SendConfirm() {
   const { navigate } = useContext(NavigationContext)
-  const { sendInfo, setSendInfo } = useContext(FlowContext)
-
-  const boltzFees = 148
+  const { setSendInfo } = useContext(FlowContext)
 
   const handlePay = () => navigate(Pages.SendPayment)
 
@@ -31,23 +31,16 @@ function SendConfirm() {
   }
 
   return (
-    <div className='flex flex-col h-full justify-between'>
+    <Container>
       <Content>
-        <Title text='Invoice' />
-        <Subtitle text='Payment details' />
-        <div className='mt-10'>
-          <Item title='Satoshis' body={sendInfo.satoshis} />
-          <Item title='Note' body={sendInfo.note} />
-          <Item title='Invoice' body={formatInvoice(sendInfo.invoice)} />
-          <Item title='Boltz fees' body={`${boltzFees} sats`} />
-          <Item title='Total' body={`${boltzFees + sendInfo.satoshis} sats`} />
-        </div>
+        <Title text='Payment details' />
+        <InvoiceDetails />
       </Content>
       <ButtonsOnBottom>
-        <Button onClick={handleCancel} label='Cancel' secondary />
         <Button onClick={handlePay} label='Pay' />
+        <Button onClick={handleCancel} label='Cancel' secondary />
       </ButtonsOnBottom>
-    </div>
+    </Container>
   )
 }
 

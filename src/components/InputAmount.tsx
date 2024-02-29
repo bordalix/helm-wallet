@@ -27,7 +27,7 @@ function InputAmount({ label, onChange }: InputAmountProps) {
   const unit = sats ? UnitLabel.Sats : UnitLabel.BTC
   const className =
     'w-full p-3 pr-6 text-sm text-right font-semibold rounded-l-md -mr-4 bg-gray-100 focus-visible:outline-none'
-  const isMobile = /portrait/.test(screen.orientation.type) // TODO
+  const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints // TODO
 
   const clickHandler = (key: string) => {
     if (amount === '0' && key === '.') return setAmount('0.')
@@ -45,7 +45,7 @@ function InputAmount({ label, onChange }: InputAmountProps) {
   }
 
   return (
-    <fieldset className='text-left text-gray-800 mt-10 mx-auto'>
+    <fieldset className='text-left text-gray-800 my-10 mx-auto'>
       {label ? <Label text={label} /> : null}
       <div className='flex items-center h-12 rounded-l-md bg-gray-100 mb-2'>
         {isMobile ? (

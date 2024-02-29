@@ -8,6 +8,7 @@ import Subtitle from '../../../components/Subtitle'
 import Content from '../../../components/Content'
 import InputAmount from '../../../components/InputAmount'
 import { BoltzContext } from '../../../providers/boltz'
+import Container from '../../../components/Container'
 
 enum ButtonLabel {
   Low = 'Amount too low',
@@ -37,7 +38,7 @@ function ReceiveAmount() {
   const disabled = amount < limits.minimal || amount > limits.maximal
 
   return (
-    <div className='flex flex-col h-full justify-between'>
+    <Container>
       <Content>
         <Title text='Receive' />
         <Subtitle text={`Max: ${limits.maximal} Min: ${limits.minimal} sats`} />
@@ -46,7 +47,7 @@ function ReceiveAmount() {
       <ButtonsOnBottom>
         <Button onClick={handleProceed} label={label} disabled={disabled} />
       </ButtonsOnBottom>
-    </div>
+    </Container>
   )
 }
 
