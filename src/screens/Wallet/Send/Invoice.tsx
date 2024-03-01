@@ -71,8 +71,8 @@ function SendInvoice() {
         )}
       </Content>
       <ButtonsOnBottom>
-        <Button onClick={handleCancel} label='Cancel' secondary />
         {!firefox && <Button onClick={handlePaste} label={buttonLabel} />}
+        <Button onClick={handleCancel} label='Cancel' secondary />
       </ButtonsOnBottom>
     </Container>
   )

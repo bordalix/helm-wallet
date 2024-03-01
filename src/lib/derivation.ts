@@ -3,7 +3,6 @@ import { mnemonicToSeed } from 'bip39'
 import BIP32Factory from 'bip32'
 import { XPubs } from './types'
 import { NetworkName } from './network'
-import { Wallet } from '../providers/wallet'
 
 const bip32 = BIP32Factory(ecc)
 
@@ -16,7 +15,7 @@ const derivationPath = {
 const getXpub = (seed: Buffer, network: NetworkName) =>
   bip32.fromSeed(seed).derivePath(derivationPath[network]).neutered().toBase58()
 
-export const getXPubs = async ({ mnemonic }: Wallet): Promise<XPubs> => {
+export const getXPubs = async (mnemonic: string): Promise<XPubs> => {
   const seed = await mnemonicToSeed(mnemonic)
   if (!seed) throw new Error('Could not get seed from mnemonic')
   return {

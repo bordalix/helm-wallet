@@ -33,4 +33,6 @@ export const balance = (wallet: Wallet): Satoshis => {
   return wallet.utxos.reduce((prev, curr) => prev + curr.value, 0)
 }
 
-export const selectUtxos = (mnemonic: Mnemonic, amount: Satoshis) => {}
+export const selectUtxos = (mnemonic: Mnemonic, amount: Satoshis) => {
+  console.log(mnemonic, amount) // TODO
+}

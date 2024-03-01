@@ -46,3 +46,13 @@ export const readWallet = async (password = 'password'): Promise<Wallet | undefi
   } catch (_) {}
   return wallet
 }
+
+export const saveMnemonic = async (mnemonic: string, password: string): Promise<void> => {
+  const encrypted = await encrypt(mnemonic, password)
+  secureLocalStorage.setItem('mnemonic', encrypted)
+}
+
+export const readMnemonic = async (password: string): Promise<string> => {
+  const encrypted = secureLocalStorage.getItem('mnemonic') as Encrypted
+  return await decrypt(encrypted, password)
+}

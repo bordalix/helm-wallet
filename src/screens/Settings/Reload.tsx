@@ -7,16 +7,17 @@ import { ConfigContext } from '../../providers/config'
 import { WalletContext } from '../../providers/wallet'
 import Select from '../../components/Select'
 import Content from '../../components/Content'
+import LoadingIcon from '../../icons/Loading'
 
 function Reload() {
   const { config, toggleShowConfig } = useContext(ConfigContext)
-  const { reloadUtxos, wallet } = useContext(WalletContext)
+  const { reloading, reloadUtxos, wallet } = useContext(WalletContext)
 
   const [gap, setGap] = useState(20)
 
   const handleChange = (e: any) => setGap(e.target.value)
 
-  const handleRestore = () => {
+  const handleReload = () => {
     reloadUtxos(wallet, gap)
   }
 
@@ -26,14 +27,20 @@ function Reload() {
         <Title text='Reload' />
         <Subtitle text='Reload your UTXOs' />
         <Select label='Gap limit' onChange={handleChange} value={config.explorer}>
-          {[20, 40, 80].map((e, i) => (
+          {[20, 40, 80].map((e) => (
             <option key={e}>{e}</option>
           ))}
         </Select>
+        {reloading ? (
+          <center className='my-10'>
+            <LoadingIcon />
+            <p className='mt-10'>You can go back to wallet, reloading will keep working on the background</p>
+          </center>
+        ) : null}
       </Content>
       <ButtonsOnBottom>
+        <Button onClick={handleReload} label='Reload' disabled={reloading} />
         <Button onClick={toggleShowConfig} label='Back to wallet' secondary />
-        <Button onClick={handleRestore} label='Reload' />
       </ButtonsOnBottom>
     </div>
   )

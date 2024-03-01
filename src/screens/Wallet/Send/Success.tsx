@@ -17,11 +17,9 @@ function SendSuccess() {
       <Content>
         <Title text='Success' />
         <Subtitle text='Payment sent' />
-        <div className='flex h-60'>
-          <div className='m-auto'>
-            <SuccessIcon />
-          </div>
-        </div>
+        <center>
+          <SuccessIcon />
+        </center>
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handleBackToWallet} label='Back to wallet' />

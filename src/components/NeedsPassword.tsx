@@ -1,15 +1,21 @@
 import { useEffect, useState } from 'react'
 import Input from './Input'
 import Button from './Button'
-import { readWallet } from '../lib/storage'
+import { readMnemonic } from '../lib/storage'
+import Modal from './Modal'
+import LoadingIcon from '../icons/Loading'
+import Error from './Error'
 
 interface NeedsPasswordProps {
-  setPassword: (arg0: string) => void
+  onClose: () => void
+  onMnemonic: (arg0: string) => void
 }
 
-function NeedsPassword({ setPassword }: NeedsPasswordProps) {
+function NeedsPassword({ onClose, onMnemonic }: NeedsPasswordProps) {
   const [disabled, setDisabled] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [open, setOpen] = useState(true)
   const [pass, setPass] = useState('')
 
   const handleChange = (e: any) => {
@@ -17,11 +23,21 @@ function NeedsPassword({ setPassword }: NeedsPasswordProps) {
     setError('')
   }
 
+  const handleClose = () => {
+    setLoading(false)
+    setOpen(false)
+    onClose()
+  }
+
   const handleProceed = async () => {
+    setLoading(true)
     setDisabled(true)
-    readWallet(pass).then((w) => {
-      if (w) setPassword(pass)
-      else setError('Invalid password')
+    readMnemonic(pass).then((m) => {
+      if (m) {
+        onMnemonic(m)
+        setOpen(false)
+      } else setError('Invalid password')
+      setLoading(false)
     })
   }
 
@@ -30,11 +46,17 @@ function NeedsPassword({ setPassword }: NeedsPasswordProps) {
   }, [error])
 
   return (
-    <>
-      <Input label='Insert password' onChange={handleChange} />
-      {error ? <p className='bg-red-500 font-semibold mt-2 p-1 rounded-md text-sm text-white'>{error}</p> : null}
-      <Button label='Continue' onClick={handleProceed} disabled={disabled} />
-    </>
+    <Modal open={open} onClose={handleClose}>
+      {loading ? (
+        <LoadingIcon small />
+      ) : (
+        <>
+          <Input label='Insert password' onChange={handleChange} />
+          {error ? <Error error={error} /> : null}
+          <Button label='Unlock' onClick={handleProceed} disabled={disabled} />
+        </>
+      )}
+    </Modal>
   )
 }
 

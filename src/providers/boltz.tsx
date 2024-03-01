@@ -28,7 +28,7 @@ export const BoltzProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState('')
   const [limits, setLimits] = useState(defaultBoltzLimits)
 
-  const apiURL = `https://${config.network === 'testnet' ? 'testnet.' : ''}boltz.exchange/api`
+  const apiURL = config.network === 'testnet' ? 'https://testnet.boltz.exchange/api' : 'https://api.boltz.exchange'
 
   useEffect(() => {
     try {

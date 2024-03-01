@@ -7,8 +7,8 @@ import ButtonsOnBottom from '../../components/ButtonsOnBottom'
 import Columns from '../../components/Columns'
 import Word from '../../components/Word'
 import { NavigationContext, Pages } from '../../providers/navigation'
-import { WalletContext } from '../../providers/wallet'
 import Content from '../../components/Content'
+import { FlowContext } from '../../providers/flow'
 
 enum ButtonLabel {
   Incomplete = 'Incomplete mnemonic',
@@ -18,7 +18,7 @@ enum ButtonLabel {
 
 function InitOld() {
   const { navigate } = useContext(NavigationContext)
-  const { wallet, reloadUtxos } = useContext(WalletContext)
+  const { setInitInfo } = useContext(FlowContext)
 
   const [label, setLabel] = useState(ButtonLabel.Incomplete)
   const [passphrase, setPassphrase] = useState(['', '', '', '', '', '', '', '', '', '', '', ''])
@@ -46,7 +46,7 @@ function InitOld() {
 
   const handleProceed = () => {
     const mnemonic = passphrase.join(' ')
-    reloadUtxos({ ...wallet, mnemonic })
+    setInitInfo({ mnemonic })
     navigate(Pages.InitPassword)
   }
 
@@ -67,8 +67,8 @@ function InitOld() {
         </div>
       </Content>
       <ButtonsOnBottom>
-        <Button onClick={handleCancel} label='Cancel' secondary />
         <Button onClick={handleProceed} label={label} disabled={disabled} />
+        <Button onClick={handleCancel} label='Cancel' secondary />
       </ButtonsOnBottom>
     </div>
   )

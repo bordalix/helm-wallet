@@ -1,4 +1,4 @@
-import { ReactNode, useContext } from 'react'
+import { useContext } from 'react'
 import { formatInvoice } from '../lib/format'
 import { FlowContext } from '../providers/flow'
 

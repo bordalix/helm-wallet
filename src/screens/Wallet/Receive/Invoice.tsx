@@ -1,16 +1,12 @@
-import { useContext, useState } from 'react'
+import { useState } from 'react'
 import Button from '../../../components/Button'
-import { NavigationContext, Pages } from '../../../providers/navigation'
 import Content from '../../../components/Content'
-import Subtitle from '../../../components/Subtitle'
 import Title from '../../../components/Title'
 import QrCode from '../../../components/QrCode'
 import Container from '../../../components/Container'
 import ButtonsOnBottom from '../../../components/ButtonsOnBottom'
 
 function ReceiveInvoice() {
-  const { navigate } = useContext(NavigationContext)
-
   const defaultLabel = 'Copy to clipboard'
   const [buttonLabel, setButtonLabel] = useState(defaultLabel)
 
@@ -25,10 +21,6 @@ function ReceiveInvoice() {
     })
   }
 
-  const handleSuccess = () => {
-    navigate(Pages.ReceiveSuccess)
-  }
-
   return (
     <Container>
       <Content>
@@ -37,7 +29,6 @@ function ReceiveInvoice() {
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handleCopy} label={buttonLabel} />
-        <Button onClick={handleSuccess} label='Success' secondary />
       </ButtonsOnBottom>
     </Container>
   )

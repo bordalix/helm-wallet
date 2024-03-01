@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import Button from '../../components/Button'
 import ButtonsOnBottom from '../../components/ButtonsOnBottom'
 import Subtitle from '../../components/Subtitle'
@@ -7,11 +7,18 @@ import { ConfigContext } from '../../providers/config'
 import { getNetworkNames } from '../../lib/network'
 import Select from '../../components/Select'
 import Content from '../../components/Content'
+import Toast from '../../components/Toast'
 
 function Network() {
   const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)
 
-  const handleChange = (e: any) => updateConfig({ ...config, network: e.target.value })
+  const [showToast, setShowToast] = useState(false)
+
+  const handleChange = (e: any) => {
+    updateConfig({ ...config, network: e.target.value })
+    setShowToast(true)
+    setTimeout(() => setShowToast(false), 2_000)
+  }
 
   return (
     <div className='flex flex-col h-full justify-between'>
@@ -25,6 +32,7 @@ function Network() {
             </option>
           ))}
         </Select>
+        {showToast ? <Toast text='Saved' /> : null}
       </Content>
       <ButtonsOnBottom>
         <Button onClick={toggleShowConfig} label='Back to wallet' secondary />
