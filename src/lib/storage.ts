@@ -13,24 +13,6 @@ export interface SettingsData {
   password: string
 }
 
-export const saveSettings = async (settings: SettingsData, password = 'password') => {
-  const encrypted = await encrypt(JSON.stringify(settings), password)
-  secureLocalStorage.setItem('settings', encrypted)
-}
-
-export const getSettings = async (password = 'password'): Promise<{ empty: boolean; settings: SettingsData }> => {
-  const encrypted = secureLocalStorage.getItem('settings') as Encrypted
-  const decrypted = await decrypt(encrypted, password)
-  let settings
-  try {
-    settings = JSON.parse(decrypted)
-  } catch (_) {}
-  return {
-    empty: !encrypted,
-    settings,
-  }
-}
-
 export const clearStorage = () => {
   return secureLocalStorage.clear()
 }

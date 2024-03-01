@@ -6,6 +6,8 @@ import { Mnemonic, XPubs } from '../lib/types'
 import { ConfigContext } from './config'
 import { getUtxos } from '../lib/utxo'
 import { getXPubs } from '../lib/derivation'
+import Modal from '../components/Modal'
+import NeedsPassword from '../components/NeedsPassword'
 
 export interface Wallet {
   network: NetworkName
@@ -20,6 +22,7 @@ interface WalletContextProps {
   reloading: boolean
   reloadUtxos: (arg0: Wallet, gap?: number) => void
   resetWallet: () => void
+  setShowModal: (arg0: boolean) => void
   updateWallet: (arg0: Wallet) => void
   wallet: Wallet
 }
@@ -41,6 +44,7 @@ export const WalletContext = createContext<WalletContextProps>({
   reloading: false,
   reloadUtxos: () => {},
   resetWallet: () => {},
+  setShowModal: () => {},
   updateWallet: () => {},
   wallet: defaultWallet,
 })
@@ -49,9 +53,11 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const { config } = useContext(ConfigContext)
   const { navigate } = useContext(NavigationContext)
 
-  const [wallet, setWallet] = useState<Wallet>(defaultWallet)
+  const [showModal, setShowModal] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [password, setPassword] = useState('')
   const [reloading, setReloading] = useState(false)
+  const [wallet, setWallet] = useState<Wallet>(defaultWallet)
 
   const updateWallet = (data: Wallet) => {
     setWallet(data)
@@ -72,6 +78,13 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     setReloading(false)
   }
 
+  const closeDialog = () => setShowModal(false)
+
+  const handlePassword = (pass: string) => {
+    setPassword(pass)
+    closeDialog()
+  }
+
   useEffect(() => {
     if (!loading) return
     readWallet().then((wallet: Wallet | undefined) => {
@@ -84,8 +97,15 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   }, [loading])
 
   return (
-    <WalletContext.Provider value={{ loading, reloading, reloadUtxos, resetWallet, updateWallet, wallet }}>
-      {children}
+    <WalletContext.Provider
+      value={{ loading, reloading, reloadUtxos, resetWallet, setShowModal, updateWallet, wallet }}
+    >
+      <>
+        <Modal open={showModal} onClose={closeDialog}>
+          <NeedsPassword setPassword={handlePassword} />
+        </Modal>
+        {children}
+      </>
     </WalletContext.Provider>
   )
 }

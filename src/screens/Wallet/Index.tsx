@@ -12,11 +12,12 @@ import Content from '../../components/Content'
 function Wallet() {
   const { config } = useContext(ConfigContext)
   const { navigate } = useContext(NavigationContext)
-  const { wallet } = useContext(WalletContext)
+  const { setShowModal, wallet } = useContext(WalletContext)
 
   const debug = () => {
     console.log('config', config)
     console.log('wallet', wallet)
+    setShowModal(true)
   }
 
   return (
@@ -27,6 +28,7 @@ function Wallet() {
       <ButtonsOnBottom>
         <Button onClick={() => navigate(Pages.SendInvoice)} label='Send' />
         <Button onClick={() => navigate(Pages.ReceiveAmount)} label='Receive' />
+        <Button onClick={debug} label='Debug' />
       </ButtonsOnBottom>
     </Container>
   )

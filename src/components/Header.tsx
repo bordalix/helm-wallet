@@ -11,19 +11,17 @@ function Header() {
   const { reloading } = useContext(WalletContext)
 
   return (
-    <header className='mb-8'>
-      <div className='flex justify-between w-full'>
-        <button
-          onClick={() => navigate(Pages.Wallet)}
-          aria-label='Back to homepage'
-          className={(reloading ? 'animate-pulse ' : '') + 'p-2 rounded-full bg-gray-100'}
-        >
-          <LogoIcon />
-        </button>
-        <button onClick={toggleShowConfig} className='p-2 rounded-full bg-gray-100'>
-          <SettingsIcon />
-        </button>
-      </div>
+    <header className='flex justify-between w-full mb-8'>
+      <button
+        onClick={() => navigate(Pages.Wallet)}
+        aria-label='Back to homepage'
+        className={(reloading ? 'animate-pulse ' : '') + 'p-2 rounded-full bg-gray-100'}
+      >
+        <LogoIcon />
+      </button>
+      <button onClick={toggleShowConfig} className='p-2 rounded-full bg-gray-100'>
+        <SettingsIcon />
+      </button>
     </header>
   )
 }

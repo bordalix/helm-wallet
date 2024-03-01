@@ -26,7 +26,7 @@ const App = () => {
   if (showConfig) return <Settings />
 
   return (
-    <div className='container h-full mx-auto py-4 flex flex-col'>
+    <div className='container h-full py-4 flex flex-col'>
       <Header />
       <div className='grow'>
         {screen === Pages.Init && <Init />}
