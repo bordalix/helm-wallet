@@ -7,6 +7,8 @@ import { WalletContext } from '../../providers/wallet'
 import { balance } from '../../lib/utxo'
 import Container from '../../components/Container'
 import Content from '../../components/Content'
+import QRCodeIcon from '../../icons/QRCode'
+import ScanIcon from '../../icons/Scan'
 
 function Wallet() {
   const { navigate } = useContext(NavigationContext)
@@ -18,8 +20,8 @@ function Wallet() {
         <Balance value={balance(wallet)} />
       </Content>
       <ButtonsOnBottom>
-        <Button onClick={() => navigate(Pages.SendInvoice)} label='Send' />
-        <Button onClick={() => navigate(Pages.ReceiveAmount)} label='Receive' />
+        <Button icon={<ScanIcon />} label='Send' onClick={() => navigate(Pages.SendInvoice)} />
+        <Button icon={<QRCodeIcon />} label='Receive' onClick={() => navigate(Pages.ReceiveAmount)} />
       </ButtonsOnBottom>
     </Container>
   )

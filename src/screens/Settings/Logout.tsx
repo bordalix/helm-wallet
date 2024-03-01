@@ -23,8 +23,8 @@ function Logout() {
         <Subtitle text='This operation cannot be undone' />
       </Content>
       <ButtonsOnBottom>
-        <Button onClick={toggleShowConfig} label='Cancel' secondary />
         <Button onClick={handleProceed} label='Proceed' />
+        <Button onClick={toggleShowConfig} label='Cancel' secondary />
       </ButtonsOnBottom>
     </div>
   )

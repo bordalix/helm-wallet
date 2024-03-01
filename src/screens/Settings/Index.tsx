@@ -73,7 +73,7 @@ function Settings() {
   ]
 
   const validOptions = (): Option[] => {
-    if (wallet.mnemonic) return options
+    if (wallet.initialized) return options
     return options.filter((o) => o.option !== 'logout')
   }
 
