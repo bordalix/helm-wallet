@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from 'react'
 import { validateMnemonic } from 'bip39'
 import Button from '../../components/Button'
-import Subtitle from '../../components/Subtitle'
 import Title from '../../components/Title'
 import ButtonsOnBottom from '../../components/ButtonsOnBottom'
 import Columns from '../../components/Columns'
@@ -9,6 +8,7 @@ import Word from '../../components/Word'
 import { NavigationContext, Pages } from '../../providers/navigation'
 import Content from '../../components/Content'
 import { FlowContext } from '../../providers/flow'
+import Container from '../../components/Container'
 
 enum ButtonLabel {
   Incomplete = 'Incomplete mnemonic',
@@ -53,10 +53,9 @@ function InitOld() {
   const disabled = label !== ButtonLabel.Ok
 
   return (
-    <div className='flex flex-col h-full justify-between'>
+    <Container>
       <Content>
-        <Title text='Restore wallet' />
-        <Subtitle text='Insert your secret words' />
+        <Title text='Restore wallet' subtext='Insert your secret words' />
         <div className='grow'>
           <Columns>
             {[...passphrase].map((word, i) => (
@@ -70,7 +69,7 @@ function InitOld() {
         <Button onClick={handleProceed} label={label} disabled={disabled} />
         <Button onClick={handleCancel} label='Cancel' secondary />
       </ButtonsOnBottom>
-    </div>
+    </Container>
   )
 }
 

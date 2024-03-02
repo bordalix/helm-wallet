@@ -1,14 +1,24 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import Button from '../../../components/Button'
 import Content from '../../../components/Content'
 import Title from '../../../components/Title'
 import QrCode from '../../../components/QrCode'
 import Container from '../../../components/Container'
 import ButtonsOnBottom from '../../../components/ButtonsOnBottom'
+import { FlowContext, emptyRecvInfo } from '../../../providers/flow'
+import { NavigationContext, Pages } from '../../../providers/navigation'
 
 function ReceiveInvoice() {
-  const defaultLabel = 'Copy to clipboard'
-  const [buttonLabel, setButtonLabel] = useState(defaultLabel)
+  const { navigate } = useContext(NavigationContext)
+  const { setRecvInfo } = useContext(FlowContext)
+
+  const label = 'Copy to clipboard'
+  const [buttonLabel, setButtonLabel] = useState(label)
+
+  const handleCancel = () => {
+    setRecvInfo(emptyRecvInfo)
+    navigate(Pages.Wallet)
+  }
 
   // TODO remove this
   const invoice =
@@ -17,18 +27,19 @@ function ReceiveInvoice() {
   const handleCopy = () => {
     navigator.clipboard.writeText(invoice).then(() => {
       setButtonLabel('Copied')
-      setTimeout(() => setButtonLabel(defaultLabel), 2000)
+      setTimeout(() => setButtonLabel(label), 2000)
     })
   }
 
   return (
     <Container>
       <Content>
-        <Title text='Invoice' />
+        <Title text='Invoice' subtext='Scan or copy to clipboard' />
         <QrCode invoice={invoice} />
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handleCopy} label={buttonLabel} />
+        <Button onClick={handleCancel} label='Cancel' secondary />
       </ButtonsOnBottom>
     </Container>
   )

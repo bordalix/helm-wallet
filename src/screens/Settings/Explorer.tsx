@@ -1,7 +1,6 @@
 import { useContext, useState } from 'react'
 import Button from '../../components/Button'
 import ButtonsOnBottom from '../../components/ButtonsOnBottom'
-import Subtitle from '../../components/Subtitle'
 import Title from '../../components/Title'
 import { ConfigContext } from '../../providers/config'
 import { getExplorerNames } from '../../lib/explorers'
@@ -24,8 +23,7 @@ function Explorer() {
   return (
     <Container>
       <Content>
-        <Title text='Explorer' />
-        <Subtitle text='Change your explorer' />
+        <Title text='Explorer' subtext='Change your explorer' />
         <Select onChange={handleChange} value={config.explorer}>
           {getExplorerNames(config).map((e) => (
             <option key={e}>{e}</option>

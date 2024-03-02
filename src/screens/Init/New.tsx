@@ -2,7 +2,6 @@ import { useContext } from 'react'
 import Button from '../../components/Button'
 import ButtonsOnBottom from '../../components/ButtonsOnBottom'
 import Columns from '../../components/Columns'
-import Subtitle from '../../components/Subtitle'
 import Title from '../../components/Title'
 import Word from '../../components/Word'
 import { generateMnemonic } from 'bip39'
@@ -10,6 +9,7 @@ import { NavigationContext, Pages } from '../../providers/navigation'
 import { Mnemonic } from '../../lib/types'
 import Content from '../../components/Content'
 import { FlowContext } from '../../providers/flow'
+import Container from '../../components/Container'
 
 function InitNew() {
   const { navigate } = useContext(NavigationContext)
@@ -25,10 +25,9 @@ function InitNew() {
   }
 
   return (
-    <div className='flex flex-col h-full justify-between'>
+    <Container>
       <Content>
-        <Title text='Your new wallet' />
-        <Subtitle text='Write down the following words' />
+        <Title text='Your new wallet' subtext='Write down the following words' />
         <div className='grow'>
           <Columns>
             {mnemonic.split(' ').map((word, i) => (
@@ -41,7 +40,7 @@ function InitNew() {
         <Button onClick={handleProceed} label='Continue' />
         <Button onClick={handleCancel} label='Cancel' secondary />
       </ButtonsOnBottom>
-    </div>
+    </Container>
   )
 }
 

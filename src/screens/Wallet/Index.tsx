@@ -17,7 +17,9 @@ function Wallet() {
   return (
     <Container>
       <Content>
-        <Balance value={balance(wallet)} />
+        <div className='mt-24'>
+          <Balance value={balance(wallet)} />
+        </div>
       </Content>
       <ButtonsOnBottom>
         <Button icon={<ScanIcon />} label='Send' onClick={() => navigate(Pages.SendInvoice)} />

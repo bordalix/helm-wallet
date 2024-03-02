@@ -1,18 +1,17 @@
-import { useContext, useState } from 'react'
+import { useContext } from 'react'
 import Button from '../../components/Button'
 import ButtonsOnBottom from '../../components/ButtonsOnBottom'
-import Subtitle from '../../components/Subtitle'
 import Title from '../../components/Title'
 import { ConfigContext } from '../../providers/config'
 import Content from '../../components/Content'
 import Textarea from '../../components/Textarea'
 import Container from '../../components/Container'
 import NeedsPassword from '../../components/NeedsPassword'
+import { WalletContext } from '../../providers/wallet'
 
 function Backup() {
   const { toggleShowConfig } = useContext(ConfigContext)
-
-  const [mnemonic, setMnemonic] = useState('')
+  const { setMnemonic, wallet } = useContext(WalletContext)
 
   const handleClose = () => {
     toggleShowConfig()
@@ -21,15 +20,14 @@ function Backup() {
   return (
     <Container>
       <Content>
-        <Title text='Backup' />
-        <Subtitle text='Save your data' />
-        <Textarea label='Mnemonic' value={mnemonic} />
+        <Title text='Backup' subtext='Save your data' />
+        <Textarea label='Mnemonic' value={wallet.mnemonic} />
       </Content>
       <ButtonsOnBottom>
         <Button onClick={toggleShowConfig} label='Save backup file' />
         <Button onClick={toggleShowConfig} label='Back to wallet' secondary />
       </ButtonsOnBottom>
-      <NeedsPassword onClose={handleClose} onMnemonic={setMnemonic} />
+      {wallet.mnemonic ? null : <NeedsPassword onClose={handleClose} onMnemonic={setMnemonic} />}
     </Container>
   )
 }

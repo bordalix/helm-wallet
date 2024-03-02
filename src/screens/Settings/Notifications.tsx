@@ -1,7 +1,6 @@
 import { useContext, useState } from 'react'
 import Button from '../../components/Button'
 import ButtonsOnBottom from '../../components/ButtonsOnBottom'
-import Subtitle from '../../components/Subtitle'
 import Title from '../../components/Title'
 import { ConfigContext } from '../../providers/config'
 import Select from '../../components/Select'
@@ -29,8 +28,7 @@ function Notifications() {
   return (
     <div className='flex flex-col h-full justify-between'>
       <Content>
-        <Title text='Notifications' />
-        <Subtitle text='Allow to receive notifications' />
+        <Title text='Notifications' subtext='Allow to receive notifications' />
         <Select onChange={handleChange} value={value}>
           <option value='0'>Not allowed</option>
           <option value='1'>Allowed</option>

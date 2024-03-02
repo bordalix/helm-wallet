@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import Columns from './Columns'
 import Label from './Label'
-import { fromSatoshis, toSatoshis } from '../lib/format'
+import { fromSatoshis, prettyNumber, toSatoshis } from '../lib/format'
 
 enum UnitLabel {
   BTC = 'BTC',
@@ -40,12 +40,14 @@ function InputAmount({ label, onChange }: InputAmountProps) {
   }
 
   const alternativeAmount = () => {
-    if (!amount) return sats ? '0 BTC' : '0 sats'
-    return sats ? fromSatoshis(parseInt(amount)) + ' BTC' : toSatoshis(parseFloat(amount)) + ' sats'
+    if (!amount || isNaN(Number(amount))) return sats ? '0 BTC' : '0 sats'
+    return sats
+      ? prettyNumber(fromSatoshis(parseInt(amount))) + ' BTC'
+      : prettyNumber(toSatoshis(parseFloat(amount))) + ' sats'
   }
 
   return (
-    <fieldset className='text-left text-gray-800 my-10 mx-auto'>
+    <fieldset className='text-left text-gray-800 mx-auto'>
       {label ? <Label text={label} /> : null}
       <div className='flex items-center h-12 rounded-l-md bg-gray-100 mb-2'>
         {isMobile ? (

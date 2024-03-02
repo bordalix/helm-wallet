@@ -8,11 +8,11 @@ import Container from '../../../components/Container'
 import ButtonsOnBottom from '../../../components/ButtonsOnBottom'
 import InvoiceDetails from '../../../components/InvoiceDetails'
 
-function SendConfirm() {
+function SendDetails() {
   const { navigate } = useContext(NavigationContext)
   const { setSendInfo } = useContext(FlowContext)
 
-  const handlePay = () => navigate(Pages.SendPayment)
+  const handleContinue = () => navigate(Pages.SendFees)
 
   const handleCancel = () => {
     setSendInfo(emptySendInfo)
@@ -22,15 +22,15 @@ function SendConfirm() {
   return (
     <Container>
       <Content>
-        <Title text='Payment details' />
+        <Title text='Invoice details' />
         <InvoiceDetails />
       </Content>
       <ButtonsOnBottom>
-        <Button onClick={handlePay} label='Pay' />
+        <Button onClick={handleContinue} label='Continue' />
         <Button onClick={handleCancel} label='Cancel' secondary />
       </ButtonsOnBottom>
     </Container>
   )
 }
 
-export default SendConfirm
+export default SendDetails

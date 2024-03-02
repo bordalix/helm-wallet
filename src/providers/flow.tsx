@@ -9,9 +9,12 @@ export interface RecvInfo {
 }
 
 export interface SendInfo {
-  satoshis: number
-  note: string
+  boltzFees: number
   invoice: string
+  note: string
+  satoshis: number
+  total: number
+  txFees: number
 }
 
 interface FlowContextProps {
@@ -32,9 +35,12 @@ export const emptyRecvInfo: RecvInfo = {
 }
 
 export const emptySendInfo: SendInfo = {
-  satoshis: 0,
-  note: '',
+  boltzFees: 0,
   invoice: '',
+  note: '',
+  satoshis: 0,
+  total: 0,
+  txFees: 0,
 }
 
 export const FlowContext = createContext<FlowContextProps>({

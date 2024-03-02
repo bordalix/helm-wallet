@@ -8,13 +8,21 @@ const calcStrength = (pass: string, max = 100): number => {
   return strength < max ? strength : max
 }
 
-function NewPassword({ onNewPassword }: any) {
+interface NewPasswordProps {
+  setLabel: (label: string) => void
+  onNewPassword: (password: string) => void
+}
+
+function NewPassword({ onNewPassword, setLabel }: NewPasswordProps) {
   const [confirm, setConfirm] = useState('')
   const [password, setPassword] = useState('')
   const [strength, setStrength] = useState(0)
 
   useEffect(() => {
     onNewPassword(password === confirm ? password : '')
+    if (!password) return setLabel("Can't be empty")
+    if (password !== confirm) return setLabel('Must match')
+    setLabel('Save password')
   }, [password, confirm])
 
   const handleChangeInsert = (e: any) => {

@@ -6,7 +6,7 @@ export const formatInvoice = (invoice: string, showChars = 14): string => {
 }
 
 export const prettyNumber = (num: number): string => {
-  return new Intl.NumberFormat('en', { style: 'decimal' }).format(num)
+  return new Intl.NumberFormat('en', { style: 'decimal', maximumFractionDigits: 8 }).format(num)
 }
 
 export const fromSatoshis = (num: Satoshis): number => {

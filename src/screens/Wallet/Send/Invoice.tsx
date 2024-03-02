@@ -8,13 +8,14 @@ import { NavigationContext, Pages } from '../../../providers/navigation'
 import { FlowContext, emptySendInfo } from '../../../providers/flow'
 import Input from '../../../components/Input'
 import Content from '../../../components/Content'
-import Subtitle from '../../../components/Subtitle'
 import Title from '../../../components/Title'
 import Container from '../../../components/Container'
+import { BoltzContext } from '../../../providers/boltz'
 
 function SendInvoice() {
   const { navigate } = useContext(NavigationContext)
   const { setSendInfo } = useContext(FlowContext)
+  const { calcFees } = useContext(BoltzContext)
 
   const defaultLabel = 'Paste invoice'
   const [buttonLabel, setButtonLabel] = useState(defaultLabel)
@@ -31,8 +32,12 @@ function SendInvoice() {
     }
     setError('')
     try {
-      setSendInfo(decodeInvoice(data))
-      navigate(Pages.SendConfirm)
+      const decoded = decodeInvoice(data)
+      const boltzFees = calcFees(decoded.satoshis, 'send')
+      const txFees = 200
+      const total = decoded.satoshis + boltzFees + txFees
+      setSendInfo({ ...decoded, boltzFees, total, txFees })
+      navigate(Pages.SendDetails)
     } catch (e) {
       setError('Invalid invoice')
     }
@@ -57,15 +62,12 @@ function SendInvoice() {
   return (
     <Container>
       <Content>
-        <Title text='Send' />
-        <Subtitle text='Scan or paste invoice' />
+        <Title text='Send' subtext='Scan or paste invoice' />
         {error ? (
-          <div className='mt-8'>
-            <Error error={error} />
-          </div>
+          <Error error={error} />
         ) : (
           <div className='flex flex-col h-full justify-between'>
-            <BarcodeScanner setData={setData} setError={setError} />
+            {/* <BarcodeScanner setData={setData} setError={setError} /> */}
             {firefox ? <Input label='Paste your invoice here' left='&#9889;' onChange={handleChange} /> : null}
           </div>
         )}

@@ -7,12 +7,12 @@ const findTag = (decoded: any, tag: string) => {
   return decoded.sections.find((a: any) => a.name === tag)?.value
 }
 
-export const decodeInvoice = (invoice: string): SendInfo => {
+export const decodeInvoice = (invoice: string): Omit<SendInfo, 'boltzFees' | 'txFees' | 'total'> => {
   const decoded = decode(invoice)
   const milisatoshis = findTag(decoded, 'amount')
   return {
-    satoshis: Math.floor(milisatoshis / 1000),
-    note: findTag(decoded, 'description'),
     invoice,
+    note: findTag(decoded, 'description'),
+    satoshis: Math.floor(milisatoshis / 1000),
   }
 }

@@ -6,13 +6,13 @@ import Footer from './components/Footer'
 import Settings from './screens/Settings/Index'
 import Loading from './components/Loading'
 import SendInvoice from './screens/Wallet/Send/Invoice'
-import SendConfirm from './screens/Wallet/Send/Confirm'
-import SendPay from './screens/Wallet/Send/Pay'
+import SendDetails from './screens/Wallet/Send/Details'
+import SendPayment from './screens/Wallet/Send/Pay'
 import ReceiveAmount from './screens/Wallet/Receive/Amount'
 import ReceiveInvoice from './screens/Wallet/Receive/Invoice'
 import InitNew from './screens/Init/New'
 import InitOld from './screens/Init/Restore'
-import SendSuccess from './screens/Wallet/Send/Success'
+import SendFees from './screens/Wallet/Send/Fees'
 import ReceiveSuccess from './screens/Wallet/Receive/Success'
 import { ConfigContext } from './providers/config'
 import { NavigationContext, Pages } from './providers/navigation'
@@ -35,9 +35,9 @@ const App = () => {
         {screen === Pages.InitPassword && <InitPassword />}
         {screen === Pages.Wallet && <Wallet />}
         {screen === Pages.SendInvoice && <SendInvoice />}
-        {screen === Pages.SendConfirm && <SendConfirm />}
-        {screen === Pages.SendPayment && <SendPay />}
-        {screen === Pages.SendSuccess && <SendSuccess />}
+        {screen === Pages.SendDetails && <SendDetails />}
+        {screen === Pages.SendPayment && <SendPayment />}
+        {screen === Pages.SendFees && <SendFees />}
         {screen === Pages.ReceiveAmount && <ReceiveAmount />}
         {screen === Pages.ReceiveInvoice && <ReceiveInvoice />}
         {screen === Pages.ReceiveSuccess && <ReceiveSuccess />}

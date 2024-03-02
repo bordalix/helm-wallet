@@ -10,6 +10,7 @@ import NewPassword from '../../components/NewPassword'
 import { saveMnemonic } from '../../lib/storage'
 import { FlowContext } from '../../providers/flow'
 import { ConfigContext } from '../../providers/config'
+import Container from '../../components/Container'
 
 function InitPassword() {
   const { navigate } = useContext(NavigationContext)
@@ -17,6 +18,7 @@ function InitPassword() {
   const { wallet, updateWallet } = useContext(WalletContext)
   const { initInfo } = useContext(FlowContext)
 
+  const [label, setLabel] = useState('')
   const [password, setPassword] = useState('')
 
   const handleCancel = () => navigate(Pages.Init)
@@ -32,18 +34,18 @@ function InitPassword() {
   }
 
   return (
-    <div className='flex flex-col h-full justify-between'>
+    <Container>
       <Content>
-        <Title text='Password' />
+        <Title text='Password' subtext='Define your password' />
         <div className='mt-10'>
-          <NewPassword onNewPassword={setPassword} />
+          <NewPassword onNewPassword={setPassword} setLabel={setLabel} />
         </div>
       </Content>
       <ButtonsOnBottom>
-        <Button onClick={handleProceed} label='Continue' disabled={!password} />
+        <Button onClick={handleProceed} label={label} disabled={!password} />
         <Button onClick={handleCancel} label='Cancel' secondary />
       </ButtonsOnBottom>
-    </div>
+    </Container>
   )
 }
 

@@ -2,10 +2,10 @@ import { useContext } from 'react'
 import Button from '../../../components/Button'
 import SuccessIcon from '../../../icons/Success'
 import Title from '../../../components/Title'
-import Subtitle from '../../../components/Subtitle'
 import ButtonsOnBottom from '../../../components/ButtonsOnBottom'
 import { NavigationContext, Pages } from '../../../providers/navigation'
 import Content from '../../../components/Content'
+import Container from '../../../components/Container'
 
 function ReceiveSuccess() {
   const { navigate } = useContext(NavigationContext)
@@ -13,10 +13,9 @@ function ReceiveSuccess() {
   const handleBackToWallet = () => navigate(Pages.Wallet)
 
   return (
-    <div className='flex flex-col h-full justify-between'>
+    <Container>
       <Content>
-        <Title text='Success' />
-        <Subtitle text='Payment received' />
+        <Title text='Success' subtext='Payment received' />
         <div className='flex h-60'>
           <div className='m-auto'>
             <SuccessIcon />
@@ -26,7 +25,7 @@ function ReceiveSuccess() {
       <ButtonsOnBottom>
         <Button onClick={handleBackToWallet} label='Back to wallet' />
       </ButtonsOnBottom>
-    </div>
+    </Container>
   )
 }
 
