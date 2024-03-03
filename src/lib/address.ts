@@ -7,7 +7,7 @@ import BIP32Factory from 'bip32'
 
 const bip32 = BIP32Factory(ecc)
 
-export const genAddress = (wallet: Wallet, index: number, chain = 1): Payment => {
+export const genAddress = (wallet: Wallet, index?: number, chain = 1): Payment => {
   const xpub = wallet.xpubs[wallet.network]
   const network = getNetwork(wallet.network)
   const nextIndex = index ?? wallet.nextIndex

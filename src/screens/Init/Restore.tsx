@@ -56,14 +56,12 @@ function InitOld() {
     <Container>
       <Content>
         <Title text='Restore wallet' subtext='Insert your secret words' />
-        <div className='grow'>
-          <Columns>
-            {[...passphrase].map((word, i) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <Word key={i} left={i + 1} onChange={(e: any) => handleChange(e, i)} text={word} />
-            ))}
-          </Columns>
-        </div>
+        <Columns>
+          {[...passphrase].map((word, i) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <Word key={i} left={i + 1} onChange={(e: any) => handleChange(e, i)} text={word} />
+          ))}
+        </Columns>
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handleProceed} label={label} disabled={disabled} />

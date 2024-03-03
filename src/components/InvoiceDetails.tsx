@@ -1,8 +1,7 @@
-import { useContext } from 'react'
 import { formatInvoice, prettyNumber } from '../lib/format'
-import { FlowContext } from '../providers/flow'
+import { decodeInvoice } from '../lib/lightning'
 
-const Item = ({ title, body }: any) => {
+export const Item = ({ title, body }: any) => {
   return (
     <div className='mb-8'>
       <p className='font-bold'>{title}</p>
@@ -11,14 +10,14 @@ const Item = ({ title, body }: any) => {
   )
 }
 
-function InvoiceDetails() {
-  const { sendInfo } = useContext(FlowContext)
+function InvoiceDetails({ invoice }: { invoice: string }) {
+  const { note, satoshis } = decodeInvoice(invoice)
 
   return (
     <div className='mb-10'>
-      <Item title='Amount' body={`${prettyNumber(sendInfo.satoshis)} sats`} />
-      <Item title='Note' body={sendInfo.note} />
-      <Item title='Invoice' body={formatInvoice(sendInfo.invoice)} />
+      <Item title='Amount' body={`${prettyNumber(satoshis)} sats`} />
+      <Item title='Note' body={note} />
+      <Item title='Invoice' body={formatInvoice(invoice)} />
     </div>
   )
 }

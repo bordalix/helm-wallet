@@ -10,45 +10,39 @@ import Input from '../../../components/Input'
 import Content from '../../../components/Content'
 import Title from '../../../components/Title'
 import Container from '../../../components/Container'
-import { BoltzContext } from '../../../providers/boltz'
 
 function SendInvoice() {
   const { navigate } = useContext(NavigationContext)
   const { setSendInfo } = useContext(FlowContext)
-  const { calcFees } = useContext(BoltzContext)
 
   const defaultLabel = 'Paste invoice'
   const [buttonLabel, setButtonLabel] = useState(defaultLabel)
   const [error, setError] = useState('')
-  const [data, setData] = useState('')
+  const [invoice, setInvoice] = useState('')
 
   // Firefox doesn't support navigator.clipboard.readText()
   const firefox = !('readText' in navigator.clipboard)
 
   useEffect(() => {
-    if (!data) return
-    if (data.match(/^LNURL/)) {
+    if (!invoice) return
+    if (invoice.match(/^LNURL/)) {
       return setError('LNURL not supported, please add amount to invoice')
     }
     setError('')
     try {
-      const decoded = decodeInvoice(data)
-      const boltzFees = calcFees(decoded.satoshis, 'send')
-      const txFees = 200
-      const total = decoded.satoshis + boltzFees + txFees
-      setSendInfo({ ...decoded, boltzFees, total, txFees })
+      setSendInfo(decodeInvoice(invoice))
       navigate(Pages.SendDetails)
     } catch (e) {
       setError('Invalid invoice')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data])
+  }, [invoice])
 
   const handlePaste = () => {
-    navigator.clipboard.readText().then((data): void => {
+    navigator.clipboard.readText().then((invoice: string): void => {
       setButtonLabel('Pasted')
       setTimeout(() => setButtonLabel(defaultLabel), 2000)
-      setData(data)
+      setInvoice(invoice)
     })
   }
 
@@ -57,7 +51,7 @@ function SendInvoice() {
     navigate(Pages.Wallet)
   }
 
-  const handleChange = (e: any) => setData(e.target.value)
+  const handleChange = (e: any) => setInvoice(e.target.value)
 
   return (
     <Container>

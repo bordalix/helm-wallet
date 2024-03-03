@@ -17,6 +17,7 @@ import ReceiveSuccess from './screens/Wallet/Receive/Success'
 import { ConfigContext } from './providers/config'
 import { NavigationContext, Pages } from './providers/navigation'
 import InitPassword from './screens/Init/Password'
+import OuterContainer from './components/OuterContainer'
 
 const App = () => {
   const { loading, showConfig } = useContext(ConfigContext)
@@ -26,7 +27,7 @@ const App = () => {
   if (showConfig) return <Settings />
 
   return (
-    <div className='container h-full py-4 flex flex-col'>
+    <OuterContainer>
       <Header />
       <div className='grow'>
         {screen === Pages.Init && <Init />}
@@ -43,7 +44,7 @@ const App = () => {
         {screen === Pages.ReceiveSuccess && <ReceiveSuccess />}
       </div>
       <Footer />
-    </div>
+    </OuterContainer>
   )
 }
 

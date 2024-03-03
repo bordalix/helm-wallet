@@ -3,6 +3,7 @@ import { ConfigContext } from './config'
 import { fetchURL } from '../lib/fetch'
 import { Satoshis } from '../lib/types'
 import Decimal from 'decimal.js'
+import { getBoltzApiUrl } from '../lib/boltz'
 
 export interface BoltzFees {
   minerFees: number
@@ -44,7 +45,7 @@ export const BoltzProvider = ({ children }: { children: ReactNode }) => {
   const [recvFees, setRecvFees] = useState(defaultBoltzFees)
   const [sendFees, setSendFees] = useState(defaultBoltzFees)
 
-  const apiURL = config.network === 'testnet' ? 'https://testnet.boltz.exchange/api' : 'https://api.boltz.exchange'
+  const apiURL = getBoltzApiUrl(config)
 
   useEffect(() => {
     try {

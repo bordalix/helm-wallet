@@ -10,7 +10,7 @@ import InvoiceDetails from '../../../components/InvoiceDetails'
 
 function SendDetails() {
   const { navigate } = useContext(NavigationContext)
-  const { setSendInfo } = useContext(FlowContext)
+  const { sendInfo, setSendInfo } = useContext(FlowContext)
 
   const handleContinue = () => navigate(Pages.SendFees)
 
@@ -23,7 +23,7 @@ function SendDetails() {
     <Container>
       <Content>
         <Title text='Invoice details' />
-        <InvoiceDetails />
+        <InvoiceDetails invoice={sendInfo.invoice} />
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handleContinue} label='Continue' />

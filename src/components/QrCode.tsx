@@ -8,7 +8,7 @@ interface QrCodeProps {
 function QrCode({ invoice }: QrCodeProps) {
   return (
     <div className='mx-auto'>
-      <QRCode size={320} value={invoice} />
+      <QRCode size={320} value={invoice} fgColor={invoice ? '#000000' : '#ffffff'} />
       <p className='mt-4'>{formatInvoice(invoice)}</p>
     </div>
   )

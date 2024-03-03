@@ -28,13 +28,11 @@ function InitNew() {
     <Container>
       <Content>
         <Title text='Your new wallet' subtext='Write down the following words' />
-        <div className='grow'>
-          <Columns>
-            {mnemonic.split(' ').map((word, i) => (
-              <Word key={word} left={i + 1} text={word} />
-            ))}
-          </Columns>
-        </div>
+        <Columns>
+          {mnemonic.split(' ').map((word, i) => (
+            <Word key={word} left={i + 1} text={word} />
+          ))}
+        </Columns>
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handleProceed} label='Continue' />

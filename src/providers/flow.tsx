@@ -1,4 +1,6 @@
 import { ReactNode, createContext, useState } from 'react'
+import { Invoice } from '../lib/lightning'
+import { SubmarineSwapResponse } from '../lib/boltz'
 
 export interface InitInfo {
   mnemonic: string
@@ -8,13 +10,9 @@ export interface RecvInfo {
   amount: number
 }
 
-export interface SendInfo {
-  boltzFees: number
-  invoice: string
-  note: string
-  satoshis: number
-  total: number
-  txFees: number
+export type SendInfo = Invoice & {
+  swapResponse?: SubmarineSwapResponse
+  total?: number
 }
 
 interface FlowContextProps {
@@ -35,12 +33,10 @@ export const emptyRecvInfo: RecvInfo = {
 }
 
 export const emptySendInfo: SendInfo = {
-  boltzFees: 0,
   invoice: '',
   note: '',
+  paymentHash: '',
   satoshis: 0,
-  total: 0,
-  txFees: 0,
 }
 
 export const FlowContext = createContext<FlowContextProps>({

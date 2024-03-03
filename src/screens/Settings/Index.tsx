@@ -17,6 +17,7 @@ import EncryptIcon from '../../icons/Encrypt'
 import Backup from './Backup'
 import BackupIcon from '../../icons/Backup'
 import Password from './Password'
+import OuterContainer from '../../components/OuterContainer'
 
 enum Options {
   Menu = 'menu',
@@ -78,7 +79,7 @@ function Settings() {
   }
 
   return (
-    <div className='container h-full mx-auto py-4 flex flex-col'>
+    <OuterContainer>
       <Header hideBack={hideBack} setOption={setOption} />
       <div className='grow'>
         {option === Options.Menu && (
@@ -109,7 +110,7 @@ function Settings() {
         {option === Options.Logout && <Logout />}
       </div>
       <Footer />
-    </div>
+    </OuterContainer>
   )
 }
 

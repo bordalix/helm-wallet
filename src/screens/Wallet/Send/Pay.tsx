@@ -29,6 +29,8 @@ function SendPayment() {
 
   const [step, setStep] = useState(1)
 
+  const { total } = sendInfo
+
   const handleBackToWallet = () => {
     setSendInfo(emptySendInfo)
     navigate(Pages.Wallet)
@@ -36,8 +38,9 @@ function SendPayment() {
 
   const handleExplorer = () => window.open(getExplorerURL(config), '_blank', 'noreferrer')
 
+  // TODO const handleMessage = (message: string) => console.log(message)
+
   const handleMnemonic = (mnemonic: string) => {
-    console.log(mnemonic)
     setStep(2)
     setTimeout(() => setStep(3), 3_000)
     setTimeout(() => setStep(4), 6_000)
@@ -50,12 +53,11 @@ function SendPayment() {
 
   const showLoadingIcon = step > 1 && step < 4
   const showSuccessIcon = step === 4
-  const { total } = sendInfo
 
   return (
     <Container>
       <Content>
-        <Title text='Pay' subtext={`Paying ${prettyNumber(total)} sats`} />
+        <Title text='Pay' subtext={`Paying ${prettyNumber(total ?? 0)} sats`} />
         <Columns cols={3}>
           <Step num={1} step={step} text='Authorise' />
           <Step num={2} step={step} text='Broadcast' />

@@ -2,6 +2,7 @@ import { Satoshis } from './types'
 import { Decimal } from 'decimal.js'
 
 export const formatInvoice = (invoice: string, showChars = 14): string => {
+  if (!invoice) return ''
   return `${invoice.substring(0, showChars)}...${invoice.substring(invoice.length - showChars, invoice.length)}`
 }
 
