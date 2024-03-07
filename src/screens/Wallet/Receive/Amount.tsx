@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useState } from 'react'
 import Button from '../../../components/Button'
 import ButtonsOnBottom from '../../../components/ButtonsOnBottom'
 import { NavigationContext, Pages } from '../../../providers/navigation'
@@ -13,7 +13,7 @@ import { prettyNumber } from '../../../lib/format'
 enum ButtonLabel {
   Low = 'Amount too low',
   High = 'Amount too high',
-  Ok = 'Generate invoice',
+  Ok = 'Continue',
 }
 
 function ReceiveAmount() {
@@ -22,13 +22,6 @@ function ReceiveAmount() {
   const { limits } = useContext(BoltzContext)
 
   const [amount, setAmount] = useState(0)
-  const [label, setLabel] = useState(ButtonLabel.Low)
-
-  useEffect(() => {
-    if (amount < limits.minimal) return setLabel(ButtonLabel.Low)
-    if (amount > limits.maximal) return setLabel(ButtonLabel.High)
-    setLabel(ButtonLabel.Ok)
-  }, [amount])
 
   const handleCancel = () => {
     setRecvInfo(emptyRecvInfo)
@@ -37,11 +30,12 @@ function ReceiveAmount() {
 
   const handleProceed = () => {
     setRecvInfo({ amount })
-    navigate(Pages.ReceiveInvoice)
+    navigate(Pages.ReceiveFees)
   }
 
   const { minimal, maximal } = limits
   const disabled = amount < minimal || amount > maximal
+  const label = amount < limits.minimal ? ButtonLabel.Low : amount > limits.maximal ? ButtonLabel.High : ButtonLabel.Ok
 
   return (
     <Container>

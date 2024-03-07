@@ -1,23 +1,20 @@
-import ws from 'ws'
 import axios from 'axios'
 import zkpInit from '@vulpemventures/secp256k1-zkp'
-import { Transaction } from 'bitcoinjs-lib'
-import { address, crypto, networks } from 'liquidjs-lib'
+import { Transaction, address, confidential, crypto, networks } from 'liquidjs-lib'
 import { genAddress } from './address'
 import { Config } from '../providers/config'
 import { Wallet } from '../providers/wallet'
-import {
-  Musig,
-  OutputType,
-  SwapTreeSerializer,
-  TaprootUtils,
-  constructClaimTransaction,
-  detectSwap,
-  targetFee,
-} from 'boltz-core'
 import { randomBytes } from 'crypto'
-import { getKeys } from './derivation'
+import { getMnemonicKeys } from './derivation'
 import { decodeInvoice } from './lightning'
+import { ECPairInterface } from 'ecpair'
+import { p2shOutput, p2shP2wshOutput, p2wshOutput, p2trOutput } from './boltz/swap/Scripts'
+import { constructClaimTransaction } from './boltz/swap/Claim'
+import * as TaprootUtils from './boltz/swap/TaprootUtils'
+import * as SwapTreeSerializer from './boltz/swap/SwapTreeSerializer'
+import { OutputType } from './boltz/consts/Enums'
+import Musig from './boltz/musig/Musig'
+import { targetFee } from './boltz/Utils'
 
 export const getBoltzApiUrl = ({ network }: Config) =>
   network === 'testnet' ? 'https://testnet.boltz.exchange/api' : 'https://api.boltz.exchange'
@@ -83,11 +80,12 @@ export const finalizeSubmarineSwap = async (
   const endpoint = getBoltzWsUrl(config)
 
   // get key pair from mnemonic
-  const keys = await getKeys(config, wallet)
+  const keys = await getMnemonicKeys(config, wallet)
 
   // create a WebSocket and subscribe to updates for the created swap
-  const webSocket = new ws(endpoint)
-  webSocket.on('open', () => {
+  const webSocket = new WebSocket(endpoint)
+
+  webSocket.onopen = () => {
     webSocket.send(
       JSON.stringify({
         op: 'subscribe',
@@ -95,17 +93,13 @@ export const finalizeSubmarineSwap = async (
         args: [swapResponse.id],
       }),
     )
-  })
+  }
 
-  webSocket.on('message', async (rawMsg: any) => {
-    const msg = JSON.parse(rawMsg.toString('utf-8'))
+  webSocket.onmessage = async (rawMsg: any) => {
+    const msg = JSON.parse(rawMsg.data.toString('utf-8'))
     if (msg.event !== 'update') {
       return
     }
-
-    console.log('Got WebSocket update')
-    console.log(msg)
-    console.log()
 
     switch (msg.args[0].status) {
       // "invoice.set" means Boltz is waiting for an onchain transaction to be sent
@@ -155,7 +149,7 @@ export const finalizeSubmarineSwap = async (
         webSocket.close()
         break
     }
-  })
+  }
 }
 
 export interface ReverseSwapResponse {
@@ -178,50 +172,51 @@ export interface ReverseSwapResponse {
   timeoutBlockHeight: number
 }
 
-export const reverseSwap = async (amount: number, preimage: Buffer, config: Config, wallet: Wallet) => {
-  // get ecpair from mnemonic
-  const keys = await getKeys(config, wallet)
-
+export const reverseSwap = async (
+  amount: number,
+  preimageHash: string,
+  claimPublicKey: string,
+  config: Config,
+): Promise<ReverseSwapResponse> => {
   // get endpoint
   const endpoint = getBoltzApiUrl(config)
 
-  // Create a Submarine Swap
+  const xon = confidential.satoshiToConfidentialValue(1234)
+  console.log('xonprefix', xon[0])
+  console.log('xon', xon)
+  console.log('xonhex', xon.toString('hex'))
+  console.log('back', confidential.confidentialValueToSatoshi(xon))
+
+  // create a Submarine Swap
   const swapResponse = (
     await axios.post(`${endpoint}/v2/swap/reverse`, {
       invoiceAmount: Number(amount),
       to: 'L-BTC',
       from: 'BTC',
-      claimPublicKey: keys.publicKey.toString('hex'),
-      preimageHash: crypto.sha256(preimage).toString('hex'),
+      claimPublicKey,
+      preimageHash,
     })
   ).data
 
-  console.log('Created swap')
-  console.log(swapResponse)
-  return { ...swapResponse, preimage }
+  return swapResponse
 }
 
 export const finalizeReverseSwap = async (
   preimage: Buffer,
-  swapResponse: any,
+  destinationAddress: string,
+  swapResponse: ReverseSwapResponse,
+  keys: ECPairInterface,
   config: Config,
-  wallet: Wallet,
   onMessage: any,
 ) => {
-  // get next address and respective pubkey
-  const destinationAddress = genAddress(wallet).address
-  if (!destinationAddress) throw new Error('Unable to generate new address')
+  const network = networks[config.network]
 
-  // get endpoint
-  const endpoint = getBoltzWsUrl(config)
+  const confidentialLiquid = new confidential.Confidential((await zkpInit()) as any)
 
-  // get key pair from mnemonic
-  const keys = await getKeys(config, wallet)
+  // create a WebSocket and subscribe to updates for the created swap
+  const webSocket = new WebSocket(getBoltzWsUrl(config))
 
-  // Create a WebSocket and subscribe to updates for the created swap
-  const webSocket = new ws(endpoint)
-
-  webSocket.on('open', () => {
+  webSocket.onopen = () => {
     webSocket.send(
       JSON.stringify({
         op: 'subscribe',
@@ -229,22 +224,16 @@ export const finalizeReverseSwap = async (
         args: [swapResponse.id],
       }),
     )
-  })
+  }
 
-  webSocket.on('message', async (rawMsg) => {
-    const msg = JSON.parse(rawMsg.toString('utf-8'))
-    if (msg.event !== 'update') {
-      return
-    }
+  webSocket.onmessage = async (rawMsg: any) => {
+    const msg = JSON.parse(rawMsg.data.toString('utf-8'))
 
-    console.log('Got WebSocket update')
-    console.log(msg)
-    console.log()
+    if (msg.event !== 'update') return
 
     switch (msg.args[0].status) {
-      // "swap.created" means Boltz is waiting for the invoice to be paid
       case 'swap.created': {
-        onMessage('Waiting invoice to be paid')
+        onMessage('Waiting for invoice to be paid')
         break
       }
 
@@ -254,7 +243,7 @@ export const finalizeReverseSwap = async (
 
         const boltzPublicKey = Buffer.from(swapResponse.refundPublicKey, 'hex')
 
-        // Create a musig signing session and tweak it with the Taptree of the swap scripts
+        // Create a musig signing session and tweak it with the Taptree of the swap script
         const musig = new Musig(await zkpInit(), keys, randomBytes(32), [boltzPublicKey, keys.publicKey])
         const tweakedKey = TaprootUtils.tweakMusig(
           musig,
@@ -269,27 +258,42 @@ export const finalizeReverseSwap = async (
           return
         }
 
+        const { asset, value } = confidentialLiquid.unblindOutputWithKey(
+          swapOutput,
+          Buffer.from(swapResponse.blindingKey, 'hex'),
+        )
+
+        console.log('value, asset', value, asset)
+        const unblindedSwapOutput = {
+          ...swapOutput,
+          asset,
+          rangeProof: undefined,
+          surjectionProof: undefined,
+          value: confidential.satoshiToConfidentialValue(Number(value)),
+        }
+
         // Create a claim transaction to be signed cooperatively via a key path spend
-        const claimTx = targetFee(2, (fee) =>
+        const claimTx = targetFee(2, (fee: any) =>
           constructClaimTransaction(
             [
               {
-                ...swapOutput,
+                ...unblindedSwapOutput,
                 keys,
                 preimage,
                 cooperative: true,
                 type: OutputType.Taproot,
                 txHash: lockupTx.getHash(),
+                blindingPrivateKey: Buffer.from(swapResponse.blindingKey, 'hex'),
               },
             ],
-            address.toOutputScript(destinationAddress, networks[config.network]),
+            address.toOutputScript(destinationAddress, network),
             fee,
           ),
         )
 
         // Get the partial signature from Boltz
         const boltzSig = (
-          await axios.post(`${endpoint}/v2/swap/reverse/${swapResponse.id}/claim`, {
+          await axios.post(`${getBoltzApiUrl(config)}/v2/swap/reverse/${swapResponse.id}/claim`, {
             index: 0,
             transaction: claimTx.toHex(),
             preimage: preimage.toString('hex'),
@@ -302,7 +306,13 @@ export const finalizeReverseSwap = async (
 
         // Initialize the session to sign the claim transaction
         musig.initializeSession(
-          claimTx.hashForWitnessV1(0, [swapOutput.script], [swapOutput.value], Transaction.SIGHASH_DEFAULT),
+          claimTx.hashForWitnessV1(
+            0,
+            [swapOutput.script],
+            [{ value: swapOutput.value, asset: swapOutput.asset }],
+            Transaction.SIGHASH_DEFAULT,
+            network.genesisBlockHash,
+          ),
         )
 
         // Add the partial signature from Boltz
@@ -315,7 +325,8 @@ export const finalizeReverseSwap = async (
         claimTx.ins[0].witness = [musig.aggregatePartials()]
 
         // Broadcast the finalized transaction
-        await axios.post(`${endpoint}/v2/chain/BTC/transaction`, {
+        console.log('tx', claimTx.toHex())
+        await axios.post(`${getBoltzApiUrl(config)}/v2/chain/L-BTC/transaction`, {
           hex: claimTx.toHex(),
         })
 
@@ -327,5 +338,32 @@ export const finalizeReverseSwap = async (
         webSocket.close()
         break
     }
-  })
+  }
+}
+
+export const detectSwap = (redeemScriptOrTweakedKey: Buffer, transaction: Transaction) => {
+  const scripts: [OutputType, Buffer][] = [
+    [OutputType.Legacy, p2shOutput(redeemScriptOrTweakedKey)],
+    [OutputType.Compatibility, p2shP2wshOutput(redeemScriptOrTweakedKey)],
+    [OutputType.Bech32, p2wshOutput(redeemScriptOrTweakedKey)],
+    [OutputType.Taproot, p2trOutput(redeemScriptOrTweakedKey)],
+  ]
+  console.log('redeemScriptOrTweakedKey', redeemScriptOrTweakedKey.toString('hex'))
+  scripts.map(([t, s]) => console.log('xx', t, s.toString('hex')))
+
+  for (const [vout, output] of transaction.outs.entries()) {
+    console.log('received', output.script.toString('hex'))
+    const scriptMatch = scripts.find(([, script]) => {
+      return script.equals(output.script)
+    })
+
+    if (scriptMatch) {
+      return {
+        vout,
+        type: scriptMatch[0],
+        ...output,
+      }
+    }
+  }
+  return
 }

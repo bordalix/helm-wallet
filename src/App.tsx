@@ -18,6 +18,7 @@ import { ConfigContext } from './providers/config'
 import { NavigationContext, Pages } from './providers/navigation'
 import InitPassword from './screens/Init/Password'
 import OuterContainer from './components/OuterContainer'
+import ReceiveFees from './screens/Wallet/Receive/Fees'
 
 const App = () => {
   const { loading, showConfig } = useContext(ConfigContext)
@@ -37,9 +38,10 @@ const App = () => {
         {screen === Pages.Wallet && <Wallet />}
         {screen === Pages.SendInvoice && <SendInvoice />}
         {screen === Pages.SendDetails && <SendDetails />}
-        {screen === Pages.SendPayment && <SendPayment />}
         {screen === Pages.SendFees && <SendFees />}
+        {screen === Pages.SendPayment && <SendPayment />}
         {screen === Pages.ReceiveAmount && <ReceiveAmount />}
+        {screen === Pages.ReceiveFees && <ReceiveFees />}
         {screen === Pages.ReceiveInvoice && <ReceiveInvoice />}
         {screen === Pages.ReceiveSuccess && <ReceiveSuccess />}
       </div>

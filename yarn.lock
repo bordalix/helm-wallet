@@ -1765,11 +1765,6 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@openzeppelin/contracts@^5.0.1":
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-5.0.2.tgz#b1d03075e49290d06570b2fd42154d76c2a5d210"
-  integrity sha512-ytPc6eLGcHHnapAZ9S+5qsdomhjo6QBHTDRRBFfTxXIpsicMhVPouPgmUPebZZZGX7vt9USA+Z+0M0dSVtSUEA==
-
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
@@ -2586,7 +2581,7 @@
   resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.2.0.tgz#756641adb587851b5ccb3e095daf27ae581c8406"
   integrity sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==
 
-"@vulpemventures/secp256k1-zkp@3.2.1", "@vulpemventures/secp256k1-zkp@^3.2.1":
+"@vulpemventures/secp256k1-zkp@3.2.1":
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/@vulpemventures/secp256k1-zkp/-/secp256k1-zkp-3.2.1.tgz#8b0f79d9b9aaa8a91d3b6a1d665883f7922d94de"
   integrity sha512-2U4nuNbXuUgMmxhuoILbRMoD2DE7KND3udk5cYilIS1MHvMtje9ywUm/zsI0g7d7x8g2A57xri+wvqCC/fCnJg==
@@ -3356,7 +3351,7 @@ bip66@^1.1.0, bip66@^1.1.5:
   dependencies:
     safe-buffer "^5.0.1"
 
-bitcoinjs-lib@^6.0.2, bitcoinjs-lib@^6.1.5:
+bitcoinjs-lib@^6.0.2:
   version "6.1.5"
   resolved "https://registry.yarnpkg.com/bitcoinjs-lib/-/bitcoinjs-lib-6.1.5.tgz#3b03509ae7ddd80a440f10fc38c4a97f0a028d8c"
   integrity sha512-yuf6xs9QX/E8LWE2aMJPNd0IxGofwfuVOiYdNUESkc+2bHHVKjhJd8qewqapeoolh9fihzHGoDCB5Vkr57RZCQ==
@@ -3412,22 +3407,6 @@ body-parser@1.20.1:
     raw-body "2.5.1"
     type-is "~1.6.18"
     unpipe "1.0.0"
-
-boltz-core@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/boltz-core/-/boltz-core-2.1.1.tgz#dea073a0f7533272f4af682fa45c70ba916e0978"
-  integrity sha512-nbbMQbWcpJKoPvf1KNKZOlcOoflIrcretVhdt4rQ+QXVRULj+lCbl8t3FCfYLNKurWxl7OC3j/f+ILFCU7tkIw==
-  dependencies:
-    "@boltz/bitcoin-ops" "^2.0.0"
-    "@openzeppelin/contracts" "^5.0.1"
-    "@vulpemventures/secp256k1-zkp" "^3.2.1"
-    bip32 "^4.0.0"
-    bip65 "^1.0.3"
-    bip66 "^1.1.5"
-    bitcoinjs-lib "^6.1.5"
-    bn.js "^5.2.1"
-    ecpair "^2.1.0"
-    varuint-bitcoin "^1.1.2"
 
 bonjour-service@^1.0.11:
   version "1.2.1"

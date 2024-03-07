@@ -3,10 +3,22 @@ import { ConfigContext } from './config'
 import { fetchURL } from '../lib/fetch'
 import { Satoshis } from '../lib/types'
 import Decimal from 'decimal.js'
-import { getBoltzApiUrl } from '../lib/boltz'
+import { getBoltzApiUrl } from '../lib/swaps'
+import { init } from '../lib/boltz/init'
+import zkpInit from '@vulpemventures/secp256k1-zkp'
+
+export interface ExpectedFees {
+  boltzFees: Satoshis
+  minerFees: Satoshis
+}
+
+const defaultExpectedFees = {
+  boltzFees: 0,
+  minerFees: 0,
+}
 
 export interface BoltzFees {
-  minerFees: number
+  minerFees: Satoshis
   percentage: number
 }
 
@@ -28,13 +40,13 @@ const defaultBoltzLimits: BoltzLimits = {
 interface BoltzContextProps {
   error: string
   limits: BoltzLimits
-  calcFees: (sats: Satoshis, flow: string) => Satoshis
+  expectedFees: (sats: Satoshis, flow: string) => ExpectedFees
 }
 
 export const BoltzContext = createContext<BoltzContextProps>({
   error: '',
   limits: defaultBoltzLimits,
-  calcFees: () => 0,
+  expectedFees: () => defaultExpectedFees,
 })
 
 export const BoltzProvider = ({ children }: { children: ReactNode }) => {
@@ -45,11 +57,11 @@ export const BoltzProvider = ({ children }: { children: ReactNode }) => {
   const [recvFees, setRecvFees] = useState(defaultBoltzFees)
   const [sendFees, setSendFees] = useState(defaultBoltzFees)
 
-  const apiURL = getBoltzApiUrl(config)
+  zkpInit().then((zkp) => init(zkp))
 
   useEffect(() => {
     try {
-      fetchURL(`${apiURL}/getpairs`).then((data) => {
+      fetchURL(`${getBoltzApiUrl(config)}/getpairs`).then((data) => {
         const pair = data.pairs['L-BTC/BTC']
         const limits: BoltzLimits = pair.limits
         setRecvFees({ minerFees: pair.fees.minerFees.quoteAsset.normal, percentage: pair.fees.percentage })
@@ -61,10 +73,13 @@ export const BoltzProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [config.network])
 
-  const calcFees = (satoshis: Satoshis, flow = 'send'): Satoshis => {
+  const expectedFees = (satoshis: Satoshis, flow = 'send'): { boltzFees: Satoshis; minerFees: Satoshis } => {
     const fees = flow === 'send' ? sendFees : recvFees
-    return Decimal.mul(satoshis, fees.percentage).div(100).add(fees.minerFees).toNumber()
+    return {
+      boltzFees: Decimal.ceil(Decimal.mul(satoshis, fees.percentage).div(100)).toNumber(),
+      minerFees: fees.minerFees,
+    }
   }
 
-  return <BoltzContext.Provider value={{ calcFees, error, limits }}>{children}</BoltzContext.Provider>
+  return <BoltzContext.Provider value={{ expectedFees, error, limits }}>{children}</BoltzContext.Provider>
 }

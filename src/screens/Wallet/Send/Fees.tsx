@@ -9,16 +9,10 @@ import { FlowContext, emptySendInfo } from '../../../providers/flow'
 import { prettyNumber } from '../../../lib/format'
 import { ConfigContext } from '../../../providers/config'
 import { WalletContext } from '../../../providers/wallet'
-import { SubmarineSwapResponse, submarineSwap } from '../../../lib/boltz'
+import { SubmarineSwapResponse, submarineSwap } from '../../../lib/swaps'
 import Error from '../../../components/Error'
 import { extractError } from '../../../lib/error'
-
-const Row = ({ txt, val, last }: any) => (
-  <tr className={last ? 'border-t-2' : ''}>
-    <td className='p-2 text-left font-semibold'>{txt}</td>
-    <td className='p-2 text-right'>{val}</td>
-  </tr>
-)
+import Table from '../../../components/Table'
 
 function SendFees() {
   const { config } = useContext(ConfigContext)
@@ -29,7 +23,7 @@ function SendFees() {
   const [boltzFees, setBoltzFees] = useState(0)
   const [error, setError] = useState('')
 
-  const txFees = 200
+  const txFees = 200 // TODO
   const { invoice, satoshis, total } = sendInfo
 
   useEffect(() => {
@@ -55,18 +49,18 @@ function SendFees() {
 
   const label = error ? 'Something went wrong' : 'Pay'
 
+  const data = [
+    ['Invoice', prettyNumber(satoshis)],
+    ['Boltz fees', prettyNumber(boltzFees)],
+    ['Transaction fees', prettyNumber(txFees)],
+    ['Total', prettyNumber(total ?? 0)],
+  ]
+
   return (
     <Container>
       <Content>
         <Title text='Payment details' subtext='Values in sats' />
-        <table className='w-full table-fixed mb-10'>
-          <tbody>
-            <Row txt='Invoice' val={prettyNumber(satoshis)} />
-            <Row txt='Boltz fees' val={prettyNumber(boltzFees)} />
-            <Row txt='Transaction fees' val={prettyNumber(txFees)} />
-            <Row txt='Total' val={prettyNumber(total ?? 0)} last />
-          </tbody>
-        </table>
+        <Table data={data} />
         {error ? <Error error={error} /> : null}
       </Content>
       <ButtonsOnBottom>

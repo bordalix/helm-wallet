@@ -21,7 +21,7 @@ function InputAmount({ label, onChange }: InputAmountProps) {
 
   useEffect(() => {
     setSats(!/\./.test(amount))
-    onChange(sats ? amount : toSatoshis(parseFloat(amount)))
+    onChange(!/\./.test(amount) ? amount : toSatoshis(parseFloat(amount)))
   }, [amount])
 
   const unit = sats ? UnitLabel.Sats : UnitLabel.BTC

@@ -1,6 +1,6 @@
 import { ReactNode, createContext, useState } from 'react'
 import { Invoice } from '../lib/lightning'
-import { SubmarineSwapResponse } from '../lib/boltz'
+import { ReverseSwapResponse, SubmarineSwapResponse } from '../lib/swaps'
 
 export interface InitInfo {
   mnemonic: string
@@ -8,6 +8,7 @@ export interface InitInfo {
 
 export interface RecvInfo {
   amount: number
+  swapResponse?: ReverseSwapResponse
 }
 
 export type SendInfo = Invoice & {

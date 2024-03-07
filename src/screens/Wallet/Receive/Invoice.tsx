@@ -8,12 +8,14 @@ import ButtonsOnBottom from '../../../components/ButtonsOnBottom'
 import Error from '../../../components/Error'
 import { FlowContext, emptyRecvInfo } from '../../../providers/flow'
 import { NavigationContext, Pages } from '../../../providers/navigation'
-import { ReverseSwapResponse, reverseSwap } from '../../../lib/boltz'
+import { ReverseSwapResponse, finalizeReverseSwap, reverseSwap } from '../../../lib/swaps'
 import { ConfigContext } from '../../../providers/config'
-import { WalletContext } from '../../../providers/wallet'
 import { extractError } from '../../../lib/error'
 import { randomBytes } from 'crypto'
-import InvoiceDetails from '../../../components/InvoiceDetails'
+import { crypto } from 'liquidjs-lib'
+import { generateRandomKeys } from '../../../lib/derivation'
+import { genAddress } from '../../../lib/address'
+import { WalletContext } from '../../../providers/wallet'
 
 function ReceiveInvoice() {
   const { config } = useContext(ConfigContext)
@@ -26,14 +28,12 @@ function ReceiveInvoice() {
   const [error, setError] = useState('')
   const [invoice, setInvoice] = useState('')
 
+  const handleMessage = console.log
+
   const handleCancel = () => {
     setRecvInfo(emptyRecvInfo)
     navigate(Pages.Wallet)
   }
-
-  // TODO remove this
-  // const invoice =
-  //  'lnbc100u1pj6xzwhsp52zxjtjhf78et4cm32vn8wffwjhkgy3xfg832dujvzg0jz7la0sxspp5huztuslwlenr039vvuyy8897625xz83he5q60szn3076gedqtwasdpz2djkuepqw3hjqnpdgf2yxgrpv3j8yetnwvxqyp2xqcqz959qxpqysgq3jlzcq7u8k9ym86pa6tuxvsn4mk0fye8vpmawgv25a3mkn0dh3yhamrrrk8nm32wx6akgww2dulj4crpug6qn38th6u5pck029txlaspge89je'
 
   const handleCopy = () => {
     navigator.clipboard.writeText(invoice).then(() => {
@@ -44,12 +44,25 @@ function ReceiveInvoice() {
 
   useEffect(() => {
     if (!invoice) {
-      // Create a random preimage for the swap; has to have a length of 32 bytes
+      // create a random preimage for the swap; has to have a length of 32 bytes
       const preimage = randomBytes(32)
-      reverseSwap(recvInfo.amount, preimage, config, wallet)
+      const preimageHash = crypto.sha256(preimage).toString('hex')
+
+      // generate random keys and respective claim public key
+      const keys = generateRandomKeys(config)
+      const claimPublicKey = keys.publicKey.toString('hex')
+
+      // get next address and respective pubkey
+      const destinationAddress = genAddress(wallet).address
+      if (!destinationAddress) throw Error({ error: 'Unable to generate new address' })
+      console.log('destinationAddress', destinationAddress)
+
+      // do the swap
+      reverseSwap(recvInfo.amount, preimageHash, claimPublicKey, config)
         .then((swapResponse: ReverseSwapResponse) => {
-          console.log('resp', swapResponse)
+          console.log('swapResponse', swapResponse)
           setInvoice(swapResponse.invoice)
+          finalizeReverseSwap(preimage, destinationAddress, swapResponse, keys, config, handleMessage)
         })
         .catch((error: any) => {
           setError(extractError(error))
@@ -61,8 +74,8 @@ function ReceiveInvoice() {
     <Container>
       <Content>
         <Title text='Invoice' subtext='Scan or copy to clipboard' />
-        <QrCode invoice={invoice} />
         {error ? <Error error={error} /> : null}
+        <QrCode invoice={invoice} />
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handleCopy} label={buttonLabel} />

@@ -14,6 +14,7 @@ import { prettyNumber } from '../../../lib/format'
 import { WalletContext } from '../../../providers/wallet'
 import { ConfigContext } from '../../../providers/config'
 import { getExplorerURL } from '../../../lib/explorers'
+import { finalizeSubmarineSwap } from '../../../lib/swaps'
 
 const Step = ({ num, step, text }: any) => {
   const specialClass = step > num ? 'bg-black text-white' : step === num ? 'animate-pulse bg-gray-300' : 'bg-white'
@@ -29,26 +30,24 @@ function SendPayment() {
 
   const [step, setStep] = useState(1)
 
-  const { total } = sendInfo
+  const { invoice, swapResponse, total } = sendInfo
 
-  const handleBackToWallet = () => {
+  const goBackToWallet = () => {
     setSendInfo(emptySendInfo)
     navigate(Pages.Wallet)
   }
 
   const handleExplorer = () => window.open(getExplorerURL(config), '_blank', 'noreferrer')
 
-  // TODO const handleMessage = (message: string) => console.log(message)
-
-  const handleMnemonic = (mnemonic: string) => {
-    setStep(2)
-    setTimeout(() => setStep(3), 3_000)
-    setTimeout(() => setStep(4), 6_000)
-    setMnemonic(mnemonic)
-  }
+  const handleMessage = (message: string) => console.log(message)
 
   useEffect(() => {
-    if (wallet.mnemonic) handleMnemonic(wallet.mnemonic)
+    if (wallet.mnemonic) {
+      setStep(2)
+      setTimeout(() => setStep(3), 3_000)
+      setTimeout(() => setStep(4), 6_000)
+      finalizeSubmarineSwap(invoice, swapResponse, config, wallet, handleMessage)
+    }
   }, [wallet.mnemonic])
 
   const showLoadingIcon = step > 1 && step < 4
@@ -70,9 +69,9 @@ function SendPayment() {
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handleExplorer} label='View on explorer' />
-        <Button onClick={handleBackToWallet} label='Back to wallet' secondary />
+        <Button onClick={goBackToWallet} label='Back to wallet' secondary />
       </ButtonsOnBottom>
-      {wallet.mnemonic ? '' : <NeedsPassword onClose={handleBackToWallet} onMnemonic={handleMnemonic} />}
+      {wallet.mnemonic ? '' : <NeedsPassword onClose={goBackToWallet} onMnemonic={setMnemonic} />}
     </Container>
   )
 }

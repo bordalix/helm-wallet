@@ -11,7 +11,7 @@ function Header() {
   const { reloading } = useContext(WalletContext)
 
   return (
-    <header className='flex justify-between w-full mb-8'>
+    <header className='flex justify-between w-full mb-4'>
       <button
         onClick={() => navigate(Pages.Wallet)}
         aria-label='Back to homepage'
