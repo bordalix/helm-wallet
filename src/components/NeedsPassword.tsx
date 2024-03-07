@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import Input from './Input'
 import Button from './Button'
-import { readMnemonic } from '../lib/storage'
+import { readMnemonicFromStorage } from '../lib/storage'
 import Modal from './Modal'
 import LoadingIcon from '../icons/Loading'
 import Error from './Error'
 
 interface NeedsPasswordProps {
-  onClose: () => void
+  onClose?: () => void
   onMnemonic: (arg0: string) => void
 }
 
@@ -26,13 +26,13 @@ function NeedsPassword({ onClose, onMnemonic }: NeedsPasswordProps) {
   const handleClose = () => {
     setLoading(false)
     setOpen(false)
-    onClose()
+    if (onClose) onClose()
   }
 
   const handleProceed = async () => {
     setLoading(true)
     setDisabled(true)
-    readMnemonic(pass).then((m) => {
+    readMnemonicFromStorage(pass).then((m) => {
       if (m) {
         onMnemonic(m)
         setOpen(false)

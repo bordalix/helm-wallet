@@ -12,7 +12,7 @@ function Reload() {
   const { config, toggleShowConfig } = useContext(ConfigContext)
   const { reloading, reloadUtxos, wallet } = useContext(WalletContext)
 
-  const [gap, setGap] = useState(20)
+  const [gap, setGap] = useState(5)
 
   const handleChange = (e: any) => setGap(e.target.value)
 
@@ -25,7 +25,7 @@ function Reload() {
       <Content>
         <Title text='Reload' subtext='Reload your UTXOs' />
         <Select label='Gap limit' onChange={handleChange} value={config.explorer}>
-          {[20, 40, 80].map((e) => (
+          {[5, 20, 40, 80].map((e) => (
             <option key={e}>{e}</option>
           ))}
         </Select>

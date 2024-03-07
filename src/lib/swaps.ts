@@ -1,11 +1,10 @@
 import axios from 'axios'
 import zkpInit from '@vulpemventures/secp256k1-zkp'
 import { Transaction, address, confidential, crypto, networks } from 'liquidjs-lib'
-import { genAddress } from './address'
 import { Config } from '../providers/config'
 import { Wallet } from '../providers/wallet'
 import { randomBytes } from 'crypto'
-import { getMnemonicKeys } from './derivation'
+import { generateAddress, getMnemonicKeys } from './wallet'
 import { decodeInvoice } from './lightning'
 import { ECPairInterface } from 'ecpair'
 import { p2shOutput, p2shP2wshOutput, p2wshOutput, p2trOutput } from './boltz/swap/Scripts'
@@ -48,7 +47,7 @@ export const submarineSwap = async (
   wallet: Wallet,
 ): Promise<SubmarineSwapResponse> => {
   // get next address and respective pubkey
-  const { pubkey } = genAddress(wallet)
+  const { pubkey } = await generateAddress(wallet)
   if (!pubkey) throw new Error('Unable to generate new address')
 
   // get endpoint

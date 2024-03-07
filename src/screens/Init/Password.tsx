@@ -3,11 +3,11 @@ import Button from '../../components/Button'
 import ButtonsOnBottom from '../../components/ButtonsOnBottom'
 import Title from '../../components/Title'
 import { NavigationContext, Pages } from '../../providers/navigation'
-import { getXPubs } from '../../lib/derivation'
+import { getXPubs } from '../../lib/wallet'
 import { WalletContext } from '../../providers/wallet'
 import Content from '../../components/Content'
 import NewPassword from '../../components/NewPassword'
-import { saveMnemonic } from '../../lib/storage'
+import { saveMnemonicToStorage } from '../../lib/storage'
 import { FlowContext } from '../../providers/flow'
 import { ConfigContext } from '../../providers/config'
 import Container from '../../components/Container'
@@ -25,10 +25,10 @@ function InitPassword() {
 
   const handleProceed = () => {
     const { mnemonic } = initInfo
-    saveMnemonic(mnemonic, password)
-    getXPubs(mnemonic).then((xpubs) => {
+    saveMnemonicToStorage(mnemonic, password)
+    getXPubs(mnemonic).then(({ masterBlindingKey, xpubs }) => {
       updateConfig(config)
-      updateWallet({ ...wallet, initialized: true, xpubs })
+      updateWallet({ ...wallet, initialized: true, masterBlindingKey, xpubs })
       navigate(Pages.Wallet)
     })
   }

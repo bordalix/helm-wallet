@@ -15,5 +15,10 @@ export type Unspent = {
   utxos: Utxo[]
 }
 
+export type BlindingKeyPair = {
+  publicKey: Buffer
+  privateKey: Buffer
+}
+
 export type XPub = string
 export type XPubs = Record<NetworkName, XPub>

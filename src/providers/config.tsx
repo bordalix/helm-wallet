@@ -1,5 +1,5 @@
 import { ReactNode, createContext, useEffect, useState } from 'react'
-import { clearStorage, readConfig, saveConfig } from '../lib/storage'
+import { clearStorage, readConfigFromStorage, saveConfigToStorage } from '../lib/storage'
 import { ExplorerName } from '../lib/explorers'
 import { NetworkName } from '../lib/network'
 
@@ -49,7 +49,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
       data.explorer = ExplorerName.Mempool
     }
     setConfig(data)
-    saveConfig(data)
+    saveConfigToStorage(data)
   }
 
   const resetConfig = () => {
@@ -59,7 +59,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!loading) return
-    readConfig().then((data) => {
+    readConfigFromStorage().then((data) => {
       setLoading(false)
       if (data) setConfig(data)
     })

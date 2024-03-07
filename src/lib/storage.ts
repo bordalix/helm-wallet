@@ -17,12 +17,12 @@ export const clearStorage = () => {
   return secureLocalStorage.clear()
 }
 
-export const saveConfig = async (config: Config, password = 'password'): Promise<void> => {
+export const saveConfigToStorage = async (config: Config, password = 'password'): Promise<void> => {
   const encrypted = await encrypt(JSON.stringify(config), password)
   secureLocalStorage.setItem('config', encrypted)
 }
 
-export const readConfig = async (password = 'password'): Promise<Config | undefined> => {
+export const readConfigFromStorage = async (password = 'password'): Promise<Config | undefined> => {
   const encrypted = secureLocalStorage.getItem('config') as Encrypted
   const decrypted = await decrypt(encrypted, password)
   let settings
@@ -32,12 +32,12 @@ export const readConfig = async (password = 'password'): Promise<Config | undefi
   return settings
 }
 
-export const saveWallet = async (wallet: Wallet, password = 'password'): Promise<void> => {
+export const saveWalletToStorage = async (wallet: Wallet, password = 'password'): Promise<void> => {
   const encrypted = await encrypt(JSON.stringify(wallet), password)
   secureLocalStorage.setItem('wallet', encrypted)
 }
 
-export const readWallet = async (password = 'password'): Promise<Wallet | undefined> => {
+export const readWalletFromStorage = async (password = 'password'): Promise<Wallet | undefined> => {
   const encrypted = secureLocalStorage.getItem('wallet') as Encrypted
   const decrypted = await decrypt(encrypted, password)
   let wallet
@@ -47,12 +47,12 @@ export const readWallet = async (password = 'password'): Promise<Wallet | undefi
   return wallet
 }
 
-export const saveMnemonic = async (mnemonic: string, password: string): Promise<void> => {
+export const saveMnemonicToStorage = async (mnemonic: string, password: string): Promise<void> => {
   const encrypted = await encrypt(mnemonic, password)
   secureLocalStorage.setItem('mnemonic', encrypted)
 }
 
-export const readMnemonic = async (password: string): Promise<string> => {
+export const readMnemonicFromStorage = async (password: string): Promise<string> => {
   const encrypted = secureLocalStorage.getItem('mnemonic') as Encrypted
   return await decrypt(encrypted, password)
 }

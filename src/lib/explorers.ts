@@ -96,9 +96,13 @@ export interface UtxoInfo {
 }
 
 export const fetchUtxos = async (config: Config, address: string): Promise<UtxoInfo[]> => {
-  const data = await fetchAddress(config, address)
-  if (!data?.chain_stats?.tx_count) return []
-  const explorerURL = getExplorerURL(config)
-  const response = await fetch(`${explorerURL}/api/address/${address}/utxo`)
+  const url = `${getExplorerURL(config)}/api/address/${address}/utxo`
+  const response = await fetch(url)
   return await response.json()
+}
+
+export const fetchTxHex = async (config: Config, txid: string): Promise<string> => {
+  const url = `${getExplorerURL(config)}/api/tx/${txid}/hex`
+  const response = await fetch(url)
+  return await response.text()
 }

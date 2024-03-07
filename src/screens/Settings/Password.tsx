@@ -7,7 +7,7 @@ import Content from '../../components/Content'
 import NewPassword from '../../components/NewPassword'
 import NeedsPassword from '../../components/NeedsPassword'
 import Container from '../../components/Container'
-import { saveMnemonic } from '../../lib/storage'
+import { saveMnemonicToStorage } from '../../lib/storage'
 
 function Password() {
   const { toggleShowConfig } = useContext(ConfigContext)
@@ -17,7 +17,7 @@ function Password() {
   const [password, setPassword] = useState('')
 
   const handleProceed = () => {
-    saveMnemonic(mnemonic, password)
+    saveMnemonicToStorage(mnemonic, password)
     toggleShowConfig()
   }
 

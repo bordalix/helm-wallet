@@ -1,13 +1,14 @@
 import { ReactNode, createContext, useContext, useEffect, useRef, useState } from 'react'
-import { readWallet, saveWallet } from '../lib/storage'
+import { readWalletFromStorage, saveWalletToStorage } from '../lib/storage'
 import { NavigationContext, Pages } from './navigation'
 import { NetworkName } from '../lib/network'
 import { Mnemonic, XPubs } from '../lib/types'
 import { ConfigContext } from './config'
-import { getUtxos } from '../lib/utxo'
+import { getUtxos } from '../lib/wallet'
 
 export interface Wallet {
   initialized: boolean
+  masterBlindingKey?: string
   mnemonic: Mnemonic
   network: NetworkName
   nextIndex: number
@@ -58,7 +59,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
 
   const mnemonic = useRef('')
 
-  const setMnemonic = (m: Mnemonic) => {
+  const setMnemonic = async (m: Mnemonic) => {
     mnemonic.current = m
     setWallet({ ...wallet, mnemonic: m })
   }
@@ -67,6 +68,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     if (reloading) return
     setReloading(true)
     const utxos = await getUtxos(config, wallet, gap)
+    console.log('utxos', utxos)
     updateWallet({ ...wallet, utxos })
     setReloading(false)
   }
@@ -78,12 +80,12 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
 
   const updateWallet = (data: Wallet) => {
     setWallet({ ...data, mnemonic: mnemonic.current })
-    saveWallet(data)
+    saveWalletToStorage(data)
   }
 
   useEffect(() => {
     if (!loading) return
-    readWallet().then((wallet: Wallet | undefined) => {
+    readWalletFromStorage().then((wallet: Wallet | undefined) => {
       setLoading(false)
       if (!wallet) return navigate(Pages.Init)
       setWallet(wallet)
