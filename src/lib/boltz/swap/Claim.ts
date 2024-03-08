@@ -87,6 +87,7 @@ export const constructClaimTransaction = (
   timeoutBlockHeight?: number,
   isRefund = false,
 ): Transaction => {
+  console.log('constructClaimTransaction')
   validateLiquidInputs(utxos, isRefund)
 
   if (utxos.some((utxo) => (utxo.blindingPrivateKey === undefined) !== (utxos[0].blindingPrivateKey === undefined))) {
@@ -103,12 +104,14 @@ export const constructClaimTransaction = (
   let utxoValueSum = BigInt(0)
 
   for (const [i, utxo] of utxos.entries()) {
+    console.log('uuutxo', utxo)
     utxoValueSum += BigInt(getOutputValue(utxo))
 
     const txHash = Buffer.alloc(utxo.txHash.length)
     utxo.txHash.copy(txHash)
     const txid = getHexString(reverseBuffer(txHash))
 
+    console.log('addInput', [txid, utxo.vout, isRbf ? 0xfffffffd : 0xffffffff, i == 0 ? timeoutBlockHeight : undefined])
     pset.addInput(
       new CreatorInput(
         txid,
@@ -138,6 +141,15 @@ export const constructClaimTransaction = (
     }
   }
 
+  console.log('addOutputs', [
+    {
+      script: destinationScript,
+      blindingPublicKey: blindingKey,
+      asset: network.assetHash,
+      amount: Number(utxoValueSum - BigInt(fee)),
+      blinderIndex: blindingKey !== undefined ? 0 : undefined,
+    },
+  ])
   updater.addOutputs([
     {
       script: destinationScript,
@@ -161,6 +173,7 @@ export const constructClaimTransaction = (
     // We have to have at least one blinded output if we are spending blinded coins,
     // so we add a small OP_RETURN
     if (blindingKey === undefined) {
+      console.log('add op_return blinded')
       pset.addOutput(
         new CreatorOutput(
           network.assetHash,
@@ -173,8 +186,10 @@ export const constructClaimTransaction = (
       )
     }
 
+    console.log('addFeeOutput')
     addFeeOutput(blindingKey === undefined)
 
+    console.log('blindPset')
     blindPset(pset, utxos)
   } else {
     addFeeOutput()

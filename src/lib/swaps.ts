@@ -1,6 +1,6 @@
 import axios from 'axios'
 import zkpInit from '@vulpemventures/secp256k1-zkp'
-import { Transaction, address, confidential, crypto, networks } from 'liquidjs-lib'
+import * as liquid from 'liquidjs-lib'
 import { Config } from '../providers/config'
 import { Wallet } from '../providers/wallet'
 import { randomBytes } from 'crypto'
@@ -117,7 +117,7 @@ export const finalizeSubmarineSwap = async (
         // Verify that Boltz actually paid the invoice by comparing the preimage hash
         // of the invoice to the SHA256 hash of the preimage from the response
         const invoicePreimageHash = Buffer.from(decodeInvoice(invoice).paymentHash, 'hex')
-        if (!crypto.sha256(Buffer.from(claimTxDetails.preimage, 'hex')).equals(invoicePreimageHash)) {
+        if (!liquid.crypto.sha256(Buffer.from(claimTxDetails.preimage, 'hex')).equals(invoicePreimageHash)) {
           onMessage('Boltz provided invalid preimage')
           return
         }
@@ -180,12 +180,6 @@ export const reverseSwap = async (
   // get endpoint
   const endpoint = getBoltzApiUrl(config)
 
-  const xon = confidential.satoshiToConfidentialValue(1234)
-  console.log('xonprefix', xon[0])
-  console.log('xon', xon)
-  console.log('xonhex', xon.toString('hex'))
-  console.log('back', confidential.confidentialValueToSatoshi(xon))
-
   // create a Submarine Swap
   const swapResponse = (
     await axios.post(`${endpoint}/v2/swap/reverse`, {
@@ -202,15 +196,17 @@ export const reverseSwap = async (
 
 export const finalizeReverseSwap = async (
   preimage: Buffer,
-  destinationAddress: string,
   swapResponse: ReverseSwapResponse,
   keys: ECPairInterface,
   config: Config,
-  onMessage: any,
+  wallet: Wallet,
+  onMessage: (msg: string) => void,
 ) => {
-  const network = networks[config.network]
+  const network = liquid.networks[config.network]
 
-  const confidentialLiquid = new confidential.Confidential((await zkpInit()) as any)
+  const nextAddress = await generateAddress(wallet)
+  const destinationScript = nextAddress.script
+  if (!destinationScript) throw Error('Unable to generate new address')
 
   // create a WebSocket and subscribe to updates for the created swap
   const webSocket = new WebSocket(getBoltzWsUrl(config))
@@ -250,25 +246,12 @@ export const finalizeReverseSwap = async (
         )
 
         // Parse the lockup transaction and find the output relevant for the swap
-        const lockupTx = Transaction.fromHex(msg.args[0].transaction.hex)
+        const lockupTx = liquid.Transaction.fromHex(msg.args[0].transaction.hex)
         const swapOutput = detectSwap(tweakedKey, lockupTx)
+        console.log('swapOutput', swapOutput)
         if (swapOutput === undefined) {
           console.error('No swap output found in lockup transaction')
           return
-        }
-
-        const { asset, value } = confidentialLiquid.unblindOutputWithKey(
-          swapOutput,
-          Buffer.from(swapResponse.blindingKey, 'hex'),
-        )
-
-        console.log('value, asset', value, asset)
-        const unblindedSwapOutput = {
-          ...swapOutput,
-          asset,
-          rangeProof: undefined,
-          surjectionProof: undefined,
-          value: confidential.satoshiToConfidentialValue(Number(value)),
         }
 
         // Create a claim transaction to be signed cooperatively via a key path spend
@@ -276,7 +259,7 @@ export const finalizeReverseSwap = async (
           constructClaimTransaction(
             [
               {
-                ...unblindedSwapOutput,
+                ...swapOutput,
                 keys,
                 preimage,
                 cooperative: true,
@@ -285,8 +268,11 @@ export const finalizeReverseSwap = async (
                 blindingPrivateKey: Buffer.from(swapResponse.blindingKey, 'hex'),
               },
             ],
-            address.toOutputScript(destinationAddress, network),
+            destinationScript,
             fee,
+            true,
+            network,
+            nextAddress.blindingKeys.publicKey,
           ),
         )
 
@@ -309,7 +295,7 @@ export const finalizeReverseSwap = async (
             0,
             [swapOutput.script],
             [{ value: swapOutput.value, asset: swapOutput.asset }],
-            Transaction.SIGHASH_DEFAULT,
+            liquid.Transaction.SIGHASH_DEFAULT,
             network.genesisBlockHash,
           ),
         )
@@ -340,7 +326,7 @@ export const finalizeReverseSwap = async (
   }
 }
 
-export const detectSwap = (redeemScriptOrTweakedKey: Buffer, transaction: Transaction) => {
+export const detectSwap = (redeemScriptOrTweakedKey: Buffer, transaction: liquid.Transaction) => {
   const scripts: [OutputType, Buffer][] = [
     [OutputType.Legacy, p2shOutput(redeemScriptOrTweakedKey)],
     [OutputType.Compatibility, p2shP2wshOutput(redeemScriptOrTweakedKey)],

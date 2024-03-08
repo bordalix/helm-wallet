@@ -61,12 +61,15 @@ export const BoltzProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     try {
-      fetchURL(`${getBoltzApiUrl(config)}/getpairs`).then((data) => {
-        const pair = data.pairs['L-BTC/BTC']
-        const limits: BoltzLimits = pair.limits
-        setRecvFees({ minerFees: pair.fees.minerFees.quoteAsset.normal, percentage: pair.fees.percentage })
-        setSendFees({ minerFees: pair.fees.minerFees.baseAsset.normal, percentage: pair.fees.percentageSwapIn })
+      fetchURL(`${getBoltzApiUrl(config)}/v2/swap/submarine`).then((data) => {
+        const { limits, fees } = data['L-BTC'].BTC
+        const { minerFees, percentage } = fees
+        setSendFees({ minerFees, percentage })
         setLimits(limits)
+      })
+      fetchURL(`${getBoltzApiUrl(config)}/v2/swap/reverse`).then((data) => {
+        const { minerFees, percentage } = data.BTC['L-BTC'].fees
+        setRecvFees({ minerFees: minerFees.claim + minerFees.lockup, percentage })
       })
     } catch (error) {
       setError(error as string)

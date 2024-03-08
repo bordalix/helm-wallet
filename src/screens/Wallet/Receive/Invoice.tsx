@@ -13,7 +13,7 @@ import { ConfigContext } from '../../../providers/config'
 import { extractError } from '../../../lib/error'
 import { randomBytes } from 'crypto'
 import { crypto } from 'liquidjs-lib'
-import { generateAddress, generateRandomKeys } from '../../../lib/wallet'
+import { generateRandomKeys } from '../../../lib/wallet'
 import { WalletContext } from '../../../providers/wallet'
 
 function ReceiveInvoice() {
@@ -51,24 +51,16 @@ function ReceiveInvoice() {
       const keys = generateRandomKeys(config)
       const claimPublicKey = keys.publicKey.toString('hex')
 
-      // get next address and respective pubkey
-      generateAddress(wallet).then((nextAddress) => {
-        const destinationAddress = nextAddress.address
-        if (!destinationAddress) throw Error({ error: 'Unable to generate new address' })
-        console.log('destinationAddress', destinationAddress)
-        console.log('confidentialAddress', nextAddress.confidentialAddress)
-
-        // do the swap
-        reverseSwap(recvInfo.amount, preimageHash, claimPublicKey, config)
-          .then((swapResponse: ReverseSwapResponse) => {
-            console.log('swapResponse', swapResponse)
-            setInvoice(swapResponse.invoice)
-            finalizeReverseSwap(preimage, destinationAddress, swapResponse, keys, config, handleMessage)
-          })
-          .catch((error: any) => {
-            setError(extractError(error))
-          })
-      })
+      // do the swap
+      reverseSwap(recvInfo.amount, preimageHash, claimPublicKey, config)
+        .then((swapResponse: ReverseSwapResponse) => {
+          console.log('swapResponse', swapResponse)
+          setInvoice(swapResponse.invoice)
+          finalizeReverseSwap(preimage, swapResponse, keys, config, wallet, handleMessage)
+        })
+        .catch((error: any) => {
+          setError(extractError(error))
+        })
     }
   }, [invoice])
 
