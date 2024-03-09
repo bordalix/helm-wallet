@@ -1,7 +1,7 @@
 import { Config } from '../providers/config'
 import { Wallet } from '../providers/wallet'
 import { generateAddress } from './address'
-import { unblindUtxo } from './blinder'
+import { unblindOutput } from './blinder'
 import { fetchAddress, fetchUtxos } from './explorers'
 import { Utxo } from './types'
 import * as liquid from 'liquidjs-lib'
@@ -19,7 +19,7 @@ export const getUtxos = async (config: Config, wallet: Wallet, defaultGap = 5): 
       if (data?.chain_stats?.tx_count > 0) {
         gap = defaultGap // resets gap
         for (const utxo of await fetchUtxos(address, config)) {
-          const unblinded = await unblindUtxo(utxo, blindingKeys, config)
+          const unblinded = await unblindOutput(utxo.txid, utxo.vout, blindingKeys, config)
           utxos.push({ ...utxo, ...unblinded, address })
         }
       }
