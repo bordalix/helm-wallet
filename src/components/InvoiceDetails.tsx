@@ -10,7 +10,11 @@ export const Item = ({ title, body }: any) => {
   )
 }
 
-function InvoiceDetails({ invoice }: { invoice: string }) {
+interface InvoiceDetailsProps {
+  invoice: string
+}
+
+function InvoiceDetails({ invoice }: InvoiceDetailsProps) {
   const { note, satoshis } = decodeInvoice(invoice)
 
   return (

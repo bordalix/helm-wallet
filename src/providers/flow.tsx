@@ -9,11 +9,13 @@ export interface InitInfo {
 export interface RecvInfo {
   amount: number
   swapResponse?: ReverseSwapResponse
+  txid?: string
 }
 
 export type SendInfo = Invoice & {
   swapResponse?: SubmarineSwapResponse
   total?: number
+  txid?: string
 }
 
 interface FlowContextProps {

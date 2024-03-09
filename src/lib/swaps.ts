@@ -4,7 +4,7 @@ import * as liquid from 'liquidjs-lib'
 import { Config } from '../providers/config'
 import { Wallet } from '../providers/wallet'
 import { randomBytes } from 'crypto'
-import { generateAddress, getMnemonicKeys } from './wallet'
+import { getMnemonicKeys } from './wallet'
 import { decodeInvoice } from './lightning'
 import { ECPairInterface } from 'ecpair'
 import { p2shOutput, p2shP2wshOutput, p2wshOutput, p2trOutput } from './boltz/swap/Scripts'
@@ -14,6 +14,7 @@ import * as SwapTreeSerializer from './boltz/swap/SwapTreeSerializer'
 import { OutputType } from './boltz/consts/Enums'
 import Musig from './boltz/musig/Musig'
 import { targetFee } from './boltz/Utils'
+import { generateAddress } from './address'
 
 export const getBoltzApiUrl = ({ network }: Config) =>
   network === 'testnet' ? 'https://testnet.boltz.exchange/api' : 'https://api.boltz.exchange'
@@ -200,8 +201,9 @@ export const finalizeReverseSwap = async (
   keys: ECPairInterface,
   config: Config,
   wallet: Wallet,
-  onMessage: (msg: string) => void,
-) => {
+  onFinish: (msg: string) => void,
+): Promise<void> => {
+  let claimTx: liquid.Transaction
   const network = liquid.networks[config.network]
 
   const nextAddress = await generateAddress(wallet)
@@ -228,13 +230,13 @@ export const finalizeReverseSwap = async (
 
     switch (msg.args[0].status) {
       case 'swap.created': {
-        onMessage('Waiting for invoice to be paid')
+        console.log('Waiting for invoice to be paid')
         break
       }
 
       // "transaction.mempool" means that Boltz send an onchain transaction
       case 'transaction.mempool': {
-        onMessage('Creating claim transaction')
+        console.log('Creating claim transaction')
 
         const boltzPublicKey = Buffer.from(swapResponse.refundPublicKey, 'hex')
 
@@ -255,7 +257,7 @@ export const finalizeReverseSwap = async (
         }
 
         // Create a claim transaction to be signed cooperatively via a key path spend
-        const claimTx = targetFee(2, (fee: any) =>
+        claimTx = targetFee(2, (fee: any) =>
           constructClaimTransaction(
             [
               {
@@ -321,6 +323,8 @@ export const finalizeReverseSwap = async (
       case 'invoice.settled':
         console.log('Swap successful')
         webSocket.close()
+        onFinish(claimTx.getId())
+
         break
     }
   }

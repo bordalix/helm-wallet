@@ -36,7 +36,7 @@ function ReceiveFees() {
   return (
     <Container>
       <Content>
-        <Title text='Expected fees' subtext='Values in sats' />
+        <Title text='Expected fees' subtext={`You receive ${prettyNumber(total)} sats`} />
         <Table data={data} />
       </Content>
       <ButtonsOnBottom>

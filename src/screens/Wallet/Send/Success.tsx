@@ -10,14 +10,14 @@ import { getTxIdURL } from '../../../lib/explorers'
 import { ConfigContext } from '../../../providers/config'
 import { FlowContext } from '../../../providers/flow'
 
-function ReceiveSuccess() {
+function SendSuccess() {
   const { config } = useContext(ConfigContext)
-  const { recvInfo } = useContext(FlowContext)
+  const { sendInfo } = useContext(FlowContext)
   const { navigate } = useContext(NavigationContext)
 
   const handleExplorer = () => {
-    if (!recvInfo.txid) return
-    window.open(getTxIdURL(recvInfo.txid, config), '_blank', 'noreferrer')
+    if (!sendInfo.txid) return
+    window.open(getTxIdURL(sendInfo.txid, config), '_blank', 'noreferrer')
   }
 
   const goBackToWallet = () => navigate(Pages.Wallet)
@@ -25,7 +25,7 @@ function ReceiveSuccess() {
   return (
     <Container>
       <Content>
-        <Title text='Success' subtext='Payment received' />
+        <Title text='Success' subtext='Payment sent' />
         <div className='flex h-60'>
           <div className='m-auto'>
             <SuccessIcon />
@@ -40,4 +40,4 @@ function ReceiveSuccess() {
   )
 }
 
-export default ReceiveSuccess
+export default SendSuccess

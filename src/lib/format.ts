@@ -17,3 +17,22 @@ export const fromSatoshis = (num: Satoshis): number => {
 export const toSatoshis = (num: number): Satoshis => {
   return Decimal.mul(num, 100_000_000).toNumber()
 }
+
+export const prettyAgo = (timestamp: number): string => {
+  const now = Math.floor(Date.now() / 1000)
+  const delta = Math.floor(now - timestamp)
+  if (delta > 86_400) {
+    const days = Math.floor(delta / 86_400)
+    return `${days}d`
+  }
+  if (delta > 3_600) {
+    const hours = Math.floor(delta / 3_600)
+    return `${hours}h`
+  }
+  if (delta > 60) {
+    const minutes = Math.floor(delta / 60)
+    return `${minutes}m`
+  }
+  const seconds = delta
+  return `${seconds}s`
+}

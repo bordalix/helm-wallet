@@ -40,7 +40,7 @@ function ReceiveAmount() {
   return (
     <Container>
       <Content>
-        <Title text='Receive' subtext={`Max: ${prettyNumber(maximal)} Min: ${prettyNumber(minimal)} sats`} />
+        <Title text='Receive' subtext={`Min: ${prettyNumber(minimal)} · Max: ${prettyNumber(maximal)} sats`} />
         <InputAmount label='Amount' onChange={setAmount} />
       </Content>
       <ButtonsOnBottom>

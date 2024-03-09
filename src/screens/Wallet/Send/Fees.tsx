@@ -9,14 +9,15 @@ import { FlowContext, emptySendInfo } from '../../../providers/flow'
 import { prettyNumber } from '../../../lib/format'
 import { ConfigContext } from '../../../providers/config'
 import { WalletContext } from '../../../providers/wallet'
-import { SubmarineSwapResponse, submarineSwap } from '../../../lib/swaps'
+import { submarineSwap } from '../../../lib/swaps'
 import Error from '../../../components/Error'
 import { extractError } from '../../../lib/error'
 import Table from '../../../components/Table'
+import NeedsPassword from '../../../components/NeedsPassword'
 
 function SendFees() {
   const { config } = useContext(ConfigContext)
-  const { wallet } = useContext(WalletContext)
+  const { setMnemonic, wallet } = useContext(WalletContext)
   const { navigate } = useContext(NavigationContext)
   const { sendInfo, setSendInfo } = useContext(FlowContext)
 
@@ -27,18 +28,19 @@ function SendFees() {
   const { invoice, satoshis, total } = sendInfo
 
   useEffect(() => {
-    if (invoice) {
+    if (invoice && wallet.mnemonic) {
       submarineSwap(invoice, config, wallet)
-        .then((swapResponse: SubmarineSwapResponse) => {
+        .then((swapResponse) => {
           const { expectedAmount } = swapResponse
           setBoltzFees(expectedAmount - satoshis)
           setSendInfo({ ...sendInfo, swapResponse, total: expectedAmount + txFees })
         })
         .catch((error: any) => {
+          console.log('error', error)
           setError(extractError(error))
         })
     }
-  }, [invoice])
+  }, [invoice, wallet.mnemonic])
 
   const handleCancel = () => {
     setSendInfo(emptySendInfo)
@@ -56,12 +58,13 @@ function SendFees() {
     ['Total', prettyNumber(total ?? 0)],
   ]
 
+  if (!wallet.mnemonic) return <NeedsPassword onMnemonic={setMnemonic} />
+
   return (
     <Container>
       <Content>
         <Title text='Payment details' subtext='Values in sats' />
-        <Table data={data} />
-        {error ? <Error error={error} /> : null}
+        {error ? <Error error={error} /> : <Table data={data} />}
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handlePay} label={label} disabled={Boolean(error)} />

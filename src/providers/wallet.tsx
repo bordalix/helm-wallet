@@ -2,9 +2,10 @@ import { ReactNode, createContext, useContext, useEffect, useRef, useState } fro
 import { readWalletFromStorage, saveWalletToStorage } from '../lib/storage'
 import { NavigationContext, Pages } from './navigation'
 import { NetworkName } from '../lib/network'
-import { Mnemonic, XPubs } from '../lib/types'
+import { Mnemonic, Transaction, XPubs } from '../lib/types'
 import { ConfigContext } from './config'
-import { getUtxos } from '../lib/wallet'
+import { getUtxos } from '../lib/utxo'
+import { getTransactions } from '../lib/transactions'
 
 export interface Wallet {
   initialized: boolean
@@ -12,6 +13,7 @@ export interface Wallet {
   mnemonic: Mnemonic
   network: NetworkName
   nextIndex: number
+  transactions: Transaction[]
   utxos: any[]
   xpubs: XPubs
 }
@@ -19,7 +21,7 @@ export interface Wallet {
 interface WalletContextProps {
   loading: boolean
   reloading: boolean
-  reloadUtxos: (w: Wallet, n?: number) => void
+  reload: (w: Wallet, n?: number) => void
   resetWallet: () => void
   setMnemonic: (m: Mnemonic) => void
   updateWallet: (w: Wallet) => void
@@ -31,6 +33,7 @@ const defaultWallet: Wallet = {
   mnemonic: '',
   network: NetworkName.Testnet,
   nextIndex: 1,
+  transactions: [],
   utxos: [],
   xpubs: {
     [NetworkName.Liquid]: '',
@@ -42,7 +45,7 @@ const defaultWallet: Wallet = {
 export const WalletContext = createContext<WalletContextProps>({
   loading: true,
   reloading: false,
-  reloadUtxos: () => {},
+  reload: () => {},
   resetWallet: () => {},
   setMnemonic: () => {},
   updateWallet: () => {},
@@ -64,12 +67,14 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     setWallet({ ...wallet, mnemonic: m })
   }
 
-  const reloadUtxos = async (wallet: Wallet, gap = 20) => {
+  const reload = async (wallet: Wallet, gap = 5) => {
     if (reloading) return
     setReloading(true)
     const utxos = await getUtxos(config, wallet, gap)
+    const transactions = await getTransactions(config, wallet, gap)
     console.log('utxos', utxos)
-    updateWallet({ ...wallet, utxos })
+    console.log('transactions', transactions)
+    updateWallet({ ...wallet, transactions, utxos })
     setReloading(false)
   }
 
@@ -95,7 +100,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   }, [loading])
 
   return (
-    <WalletContext.Provider value={{ loading, reloading, reloadUtxos, resetWallet, setMnemonic, updateWallet, wallet }}>
+    <WalletContext.Provider value={{ loading, reloading, reload, resetWallet, setMnemonic, updateWallet, wallet }}>
       {children}
     </WalletContext.Provider>
   )

@@ -4,12 +4,14 @@ import Button from '../../components/Button'
 import ButtonsOnBottom from '../../components/ButtonsOnBottom'
 import { NavigationContext, Pages } from '../../providers/navigation'
 import { WalletContext } from '../../providers/wallet'
-import { balance, generateAddress } from '../../lib/wallet'
+import { balance } from '../../lib/wallet'
 import Container from '../../components/Container'
 import Content from '../../components/Content'
 import QRCodeIcon from '../../icons/QRCode'
 import ScanIcon from '../../icons/Scan'
 import { readWalletFromStorage } from '../../lib/storage'
+import { generateAddress } from '../../lib/address'
+import LastTransactions from '../../components/LastTransactions'
 
 function Wallet() {
   const { navigate } = useContext(NavigationContext)
@@ -29,6 +31,7 @@ function Wallet() {
     <Container>
       <Content>
         <Balance value={balance(wallet)} />
+        <LastTransactions />
       </Content>
       <ButtonsOnBottom>
         <Button icon={<ScanIcon />} label='Send' onClick={() => navigate(Pages.SendInvoice)} />

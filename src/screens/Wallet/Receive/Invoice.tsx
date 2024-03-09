@@ -8,7 +8,7 @@ import ButtonsOnBottom from '../../../components/ButtonsOnBottom'
 import Error from '../../../components/Error'
 import { FlowContext, emptyRecvInfo } from '../../../providers/flow'
 import { NavigationContext, Pages } from '../../../providers/navigation'
-import { ReverseSwapResponse, finalizeReverseSwap, reverseSwap } from '../../../lib/swaps'
+import { finalizeReverseSwap, reverseSwap } from '../../../lib/swaps'
 import { ConfigContext } from '../../../providers/config'
 import { extractError } from '../../../lib/error'
 import { randomBytes } from 'crypto'
@@ -27,7 +27,10 @@ function ReceiveInvoice() {
   const [error, setError] = useState('')
   const [invoice, setInvoice] = useState('')
 
-  const handleMessage = console.log
+  const onFinish = (txid: string) => {
+    setRecvInfo({ ...recvInfo, txid })
+    navigate(Pages.ReceiveSuccess)
+  }
 
   const handleCancel = () => {
     setRecvInfo(emptyRecvInfo)
@@ -53,10 +56,10 @@ function ReceiveInvoice() {
 
       // do the swap
       reverseSwap(recvInfo.amount, preimageHash, claimPublicKey, config)
-        .then((swapResponse: ReverseSwapResponse) => {
+        .then((swapResponse) => {
           console.log('swapResponse', swapResponse)
           setInvoice(swapResponse.invoice)
-          finalizeReverseSwap(preimage, swapResponse, keys, config, wallet, handleMessage)
+          finalizeReverseSwap(preimage, swapResponse, keys, config, wallet, onFinish)
         })
         .catch((error: any) => {
           setError(extractError(error))

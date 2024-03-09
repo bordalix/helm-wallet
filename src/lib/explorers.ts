@@ -58,6 +58,10 @@ export const getExplorerURL = ({ network, explorer }: Config) => {
   if (exp && exp[network]) return exp[network]?.webExplorerURL
 }
 
+export const getTxIdURL = (txid: string, config: Config) => {
+  return `${getExplorerURL(config)}/api/tx/${txid}`
+}
+
 export interface AddressInfo {
   address: string
   chain_stats: {
@@ -72,9 +76,33 @@ export interface AddressInfo {
   }
 }
 
-export const fetchAddress = async (config: Config, address: string): Promise<AddressInfo> => {
+export const fetchAddress = async (address: string, config: Config): Promise<AddressInfo> => {
   const explorerURL = getExplorerURL(config)
   const url = `${explorerURL}/api/address/${address}`
+  const response = await fetch(url)
+  return await response.json()
+}
+
+export interface AddressTxInfo {
+  txid: string
+  version: number
+  locktime: number
+  vin: [any]
+  vout: [any]
+  size: number
+  weight: number
+  fee: number
+  status: {
+    confirmed: boolean
+    block_height: number
+    block_hash: string
+    block_time: number
+  }
+}
+
+export const fetchAddressTxs = async (address: string, config: Config): Promise<AddressTxInfo[]> => {
+  const explorerURL = getExplorerURL(config)
+  const url = `${explorerURL}/api/address/${address}/txs`
   const response = await fetch(url)
   return await response.json()
 }
@@ -95,13 +123,13 @@ export interface UtxoInfo {
   noncecommitment: string
 }
 
-export const fetchUtxos = async (config: Config, address: string): Promise<UtxoInfo[]> => {
+export const fetchUtxos = async (address: string, config: Config): Promise<UtxoInfo[]> => {
   const url = `${getExplorerURL(config)}/api/address/${address}/utxo`
   const response = await fetch(url)
   return await response.json()
 }
 
-export const fetchTxHex = async (config: Config, txid: string): Promise<string> => {
+export const fetchTxHex = async (txid: string, config: Config): Promise<string> => {
   const url = `${getExplorerURL(config)}/api/tx/${txid}/hex`
   const response = await fetch(url)
   return await response.text()

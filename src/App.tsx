@@ -19,6 +19,7 @@ import { NavigationContext, Pages } from './providers/navigation'
 import InitPassword from './screens/Init/Password'
 import OuterContainer from './components/OuterContainer'
 import ReceiveFees from './screens/Wallet/Receive/Fees'
+import SendSuccess from './screens/Wallet/Send/Success'
 
 const App = () => {
   const { loading, showConfig } = useContext(ConfigContext)
@@ -40,6 +41,7 @@ const App = () => {
         {screen === Pages.SendDetails && <SendDetails />}
         {screen === Pages.SendFees && <SendFees />}
         {screen === Pages.SendPayment && <SendPayment />}
+        {screen === Pages.SendSuccess && <SendSuccess />}
         {screen === Pages.ReceiveAmount && <ReceiveAmount />}
         {screen === Pages.ReceiveFees && <ReceiveFees />}
         {screen === Pages.ReceiveInvoice && <ReceiveInvoice />}

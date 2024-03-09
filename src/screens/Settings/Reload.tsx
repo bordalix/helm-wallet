@@ -10,14 +10,14 @@ import LoadingIcon from '../../icons/Loading'
 
 function Reload() {
   const { config, toggleShowConfig } = useContext(ConfigContext)
-  const { reloading, reloadUtxos, wallet } = useContext(WalletContext)
+  const { reloading, reload, wallet } = useContext(WalletContext)
 
   const [gap, setGap] = useState(5)
 
   const handleChange = (e: any) => setGap(e.target.value)
 
   const handleReload = () => {
-    reloadUtxos(wallet, gap)
+    reload(wallet, gap)
   }
 
   return (
