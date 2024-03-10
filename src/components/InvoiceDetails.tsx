@@ -18,7 +18,7 @@ function InvoiceDetails({ invoice }: InvoiceDetailsProps) {
   const { note, satoshis } = decodeInvoice(invoice)
 
   return (
-    <div className='mb-10'>
+    <div>
       <Item title='Amount' body={`${prettyNumber(satoshis)} sats`} />
       <Item title='Note' body={note} />
       <Item title='Invoice' body={formatInvoice(invoice)} />

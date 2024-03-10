@@ -18,16 +18,6 @@ export interface Wallet {
   xpubs: XPubs
 }
 
-interface WalletContextProps {
-  loading: boolean
-  reloading: boolean
-  reload: (w: Wallet, n?: number) => void
-  resetWallet: () => void
-  setMnemonic: (m: Mnemonic) => void
-  updateWallet: (w: Wallet) => void
-  wallet: Wallet
-}
-
 const defaultWallet: Wallet = {
   initialized: false,
   mnemonic: '',
@@ -42,10 +32,24 @@ const defaultWallet: Wallet = {
   },
 }
 
+interface WalletContextProps {
+  loading: boolean
+  reloading: boolean
+  increaseIndex: () => void
+  logout: () => void
+  reloadWallet: (gap?: number) => void
+  resetWallet: () => void
+  setMnemonic: (m: Mnemonic) => void
+  updateWallet: (w: Wallet) => void
+  wallet: Wallet
+}
+
 export const WalletContext = createContext<WalletContextProps>({
   loading: true,
   reloading: false,
-  reload: () => {},
+  increaseIndex: () => {},
+  logout: () => {},
+  reloadWallet: () => {},
   resetWallet: () => {},
   setMnemonic: () => {},
   updateWallet: () => {},
@@ -62,19 +66,23 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
 
   const mnemonic = useRef('')
 
-  const setMnemonic = async (m: Mnemonic) => {
+  const setMnemonic = (m: Mnemonic) => {
     mnemonic.current = m
     setWallet({ ...wallet, mnemonic: m })
   }
 
-  const reload = async (wallet: Wallet, gap = 5) => {
+  const increaseIndex = () => updateWallet({ ...wallet, nextIndex: wallet.nextIndex + 1 })
+
+  const logout = () => setMnemonic('')
+
+  const reloadWallet = async (gap = 5) => {
     if (reloading) return
     setReloading(true)
     const utxos = await getUtxos(config, wallet, gap)
     const transactions = await getTransactions(config, wallet, gap)
     console.log('utxos', utxos)
     console.log('transactions', transactions)
-    updateWallet({ ...wallet, transactions, utxos })
+    updateWallet({ ...wallet, transactions, utxos, nextIndex: 2 })
     setReloading(false)
   }
 
@@ -100,7 +108,19 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   }, [loading])
 
   return (
-    <WalletContext.Provider value={{ loading, reloading, reload, resetWallet, setMnemonic, updateWallet, wallet }}>
+    <WalletContext.Provider
+      value={{
+        loading,
+        reloading,
+        increaseIndex,
+        logout,
+        reloadWallet,
+        resetWallet,
+        setMnemonic,
+        updateWallet,
+        wallet,
+      }}
+    >
       {children}
     </WalletContext.Provider>
   )

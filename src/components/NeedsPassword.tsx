@@ -50,11 +50,11 @@ function NeedsPassword({ onClose, onMnemonic }: NeedsPasswordProps) {
       {loading ? (
         <LoadingIcon small />
       ) : (
-        <>
+        <div className='flex flex-col gap-4'>
           <Input label='Insert password' onChange={handleChange} />
           {error ? <Error error={error} /> : null}
           <Button label='Unlock' onClick={handleProceed} disabled={disabled} />
-        </>
+        </div>
       )}
     </Modal>
   )

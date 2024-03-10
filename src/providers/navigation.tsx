@@ -5,16 +5,17 @@ export enum Pages {
   InitNew,
   InitOld,
   InitPassword,
-  Wallet,
+  ReceiveAmount,
+  ReceiveFees,
+  ReceiveInvoice,
+  ReceiveSuccess,
   SendInvoice,
   SendDetails,
   SendFees,
   SendPayment,
   SendSuccess,
-  ReceiveAmount,
-  ReceiveFees,
-  ReceiveInvoice,
-  ReceiveSuccess,
+  Transactions,
+  Wallet,
 }
 
 interface NavigationContextProps {

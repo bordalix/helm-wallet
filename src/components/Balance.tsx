@@ -7,11 +7,7 @@ interface BalanceProps {
 }
 
 function Balance({ value }: BalanceProps) {
-  return (
-    <div className='mt-24'>
-      <Title text={prettyNumber(fromSatoshis(value)) + ' BTC'} subtext={prettyNumber(value) + ' sats'} />
-    </div>
-  )
+  return <Title text={prettyNumber(fromSatoshis(value)) + ' BTC'} subtext={prettyNumber(value) + ' sats'} />
 }
 
 export default Balance

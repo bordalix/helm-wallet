@@ -20,7 +20,7 @@ export const getUtxos = async (config: Config, wallet: Wallet, defaultGap = 5): 
         gap = defaultGap // resets gap
         for (const utxo of await fetchUtxos(address, config)) {
           const unblinded = await unblindOutput(utxo.txid, utxo.vout, blindingKeys, config)
-          utxos.push({ ...utxo, ...unblinded, address })
+          utxos.push({ ...utxo, ...unblinded, address, value: Number(unblinded.value) })
         }
       }
       index += 1

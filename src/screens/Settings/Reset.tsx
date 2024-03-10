@@ -6,27 +6,32 @@ import { ConfigContext } from '../../providers/config'
 import { WalletContext } from '../../providers/wallet'
 import Content from '../../components/Content'
 
-function Logout() {
+export default function Reset({ backup }: { backup: () => void }) {
   const { toggleShowConfig } = useContext(ConfigContext)
-  const { logout } = useContext(WalletContext)
+  const { resetWallet } = useContext(WalletContext)
 
-  const handleLogout = () => {
-    logout()
+  const handleReset = () => {
+    resetWallet()
     toggleShowConfig()
   }
 
   return (
     <div className='flex flex-col h-full justify-between'>
       <Content>
-        <Title text='Logout' />
-        <p className='mt-10 mb-4 max-w-64 mx-auto'>After logout you'll need to re-enter your password to send funds.</p>
+        <Title text='Reset wallet' />
+        <p className='mt-10 mb-4'>
+          Did you{' '}
+          <span className='underline cursor-pointer' onClick={backup}>
+            backup your wallet
+          </span>
+          ?
+        </p>
+        <p>This operation cannot be undone.</p>
       </Content>
       <ButtonsOnBottom>
-        <Button onClick={handleLogout} label='Logout' />
+        <Button onClick={handleReset} label='Reset wallet' />
         <Button onClick={toggleShowConfig} label='Cancel' secondary />
       </ButtonsOnBottom>
     </div>
   )
 }
-
-export default Logout

@@ -10,7 +10,7 @@ interface ButtonProps {
 
 function Button({ disabled, icon, label, onClick, secondary }: ButtonProps) {
   const className =
-    'px-8 py-3 font-semibold mt-4 rounded-full w-full disabled:opacity-50 ' +
+    'px-8 py-3 font-semibold rounded-full w-full disabled:opacity-50 ' +
     (secondary ? 'bg-gray-100 text-gray-800' : 'bg-gray-800 text-gray-100')
 
   return (

@@ -15,7 +15,7 @@ import Container from '../../components/Container'
 function InitPassword() {
   const { navigate } = useContext(NavigationContext)
   const { config, updateConfig } = useContext(ConfigContext)
-  const { wallet, updateWallet } = useContext(WalletContext)
+  const { wallet, updateWallet, reloadWallet } = useContext(WalletContext)
   const { initInfo } = useContext(FlowContext)
 
   const [label, setLabel] = useState('')
@@ -29,6 +29,7 @@ function InitPassword() {
     getXPubs(mnemonic).then(({ masterBlindingKey, xpubs }) => {
       updateConfig(config)
       updateWallet({ ...wallet, initialized: true, masterBlindingKey, xpubs })
+      reloadWallet()
       navigate(Pages.Wallet)
     })
   }

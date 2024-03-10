@@ -19,6 +19,8 @@ const derivationPath = {
   [NetworkName.Testnet]: "m/84'/1'/0'",
 }
 
+export const gapLimits = [5, 20, 40, 80]
+
 export const getMnemonicKeys = async ({ network }: Config, { mnemonic }: Wallet): Promise<ECPairInterface> => {
   const seed = await mnemonicToSeed(mnemonic)
   if (!seed) throw new Error('Could not get seed from mnemonic')

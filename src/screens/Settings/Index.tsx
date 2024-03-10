@@ -18,6 +18,8 @@ import Backup from './Backup'
 import BackupIcon from '../../icons/Backup'
 import Password from './Password'
 import OuterContainer from '../../components/OuterContainer'
+import ResetIcon from '../../icons/Reset'
+import Reset from './Reset'
 
 enum Options {
   Menu = 'menu',
@@ -28,6 +30,7 @@ enum Options {
   Notifications = 'notifications',
   Password = 'password',
   Reload = 'reload',
+  Reset = 'reset',
 }
 
 interface Option {
@@ -52,6 +55,10 @@ function Settings() {
       option: Options.Explorer,
     },
     {
+      icon: <LogoutIcon />,
+      option: Options.Logout,
+    },
+    {
       icon: <NetworkIcon />,
       option: Options.Network,
     },
@@ -68,8 +75,8 @@ function Settings() {
       option: Options.Reload,
     },
     {
-      icon: <LogoutIcon />,
-      option: Options.Logout,
+      icon: <ResetIcon />,
+      option: Options.Reset,
     },
   ]
 
@@ -103,11 +110,12 @@ function Settings() {
         )}
         {option === Options.Backup && <Backup />}
         {option === Options.Explorer && <Explorer />}
+        {option === Options.Logout && <Logout />}
         {option === Options.Network && <Network />}
         {option === Options.Notifications && <Notifications />}
         {option === Options.Password && <Password />}
         {option === Options.Reload && <Reload />}
-        {option === Options.Logout && <Logout />}
+        {option === Options.Reset && <Reset backup={() => setOption(Options.Backup)} />}
       </div>
       <Footer />
     </OuterContainer>

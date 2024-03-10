@@ -10,6 +10,8 @@ export type Transaction = {
   txid: string
 }
 
+export type UnblindedOutput = any
+
 export type Utxo = any
 
 export type XPub = string

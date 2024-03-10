@@ -12,7 +12,7 @@ const getTransactionAmount = async (
   config: Config,
   wallet: Wallet,
 ): Promise<number> => {
-  const utxo = wallet.utxos.find((u) => u.address === address)
+  const utxo = wallet.utxos.find((u) => u.address === address && u.txid === txInfo.txid)
   if (utxo) return utxo.value
   for (const vin of txInfo.vin) {
     if (vin.prevout.scriptpubkey_address === address) {

@@ -20,6 +20,7 @@ import InitPassword from './screens/Init/Password'
 import OuterContainer from './components/OuterContainer'
 import ReceiveFees from './screens/Wallet/Receive/Fees'
 import SendSuccess from './screens/Wallet/Send/Success'
+import Transactions from './screens/Wallet/Transactions'
 
 const App = () => {
   const { loading, showConfig } = useContext(ConfigContext)
@@ -36,16 +37,17 @@ const App = () => {
         {screen === Pages.InitNew && <InitNew />}
         {screen === Pages.InitOld && <InitOld />}
         {screen === Pages.InitPassword && <InitPassword />}
-        {screen === Pages.Wallet && <Wallet />}
+        {screen === Pages.ReceiveAmount && <ReceiveAmount />}
+        {screen === Pages.ReceiveFees && <ReceiveFees />}
+        {screen === Pages.ReceiveInvoice && <ReceiveInvoice />}
+        {screen === Pages.ReceiveSuccess && <ReceiveSuccess />}
         {screen === Pages.SendInvoice && <SendInvoice />}
         {screen === Pages.SendDetails && <SendDetails />}
         {screen === Pages.SendFees && <SendFees />}
         {screen === Pages.SendPayment && <SendPayment />}
         {screen === Pages.SendSuccess && <SendSuccess />}
-        {screen === Pages.ReceiveAmount && <ReceiveAmount />}
-        {screen === Pages.ReceiveFees && <ReceiveFees />}
-        {screen === Pages.ReceiveInvoice && <ReceiveInvoice />}
-        {screen === Pages.ReceiveSuccess && <ReceiveSuccess />}
+        {screen === Pages.Transactions && <Transactions />}
+        {screen === Pages.Wallet && <Wallet />}
       </div>
       <Footer />
     </OuterContainer>

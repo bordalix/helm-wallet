@@ -5,9 +5,18 @@ import { NetworkName } from '../lib/network'
 
 export interface Config {
   explorer: ExplorerName
+  gap: number
   network: NetworkName
   notifications: boolean
   password: string
+}
+
+const defaultConfig: Config = {
+  explorer: ExplorerName.Mempool,
+  gap: 5,
+  network: NetworkName.Testnet,
+  notifications: false,
+  password: '',
 }
 
 interface ConfigContextProps {
@@ -17,13 +26,6 @@ interface ConfigContextProps {
   showConfig: boolean
   toggleShowConfig: () => void
   updateConfig: (arg0: Config) => void
-}
-
-const defaultConfig: Config = {
-  explorer: ExplorerName.Mempool,
-  network: NetworkName.Testnet,
-  notifications: false,
-  password: '',
 }
 
 export const ConfigContext = createContext<ConfigContextProps>({
