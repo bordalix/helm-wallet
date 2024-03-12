@@ -1,5 +1,5 @@
 import axios from 'axios'
-import zkpInit from '@vulpemventures/secp256k1-zkp'
+import zkpInit, { Secp256k1ZKP } from '@vulpemventures/secp256k1-zkp'
 import * as liquid from 'liquidjs-lib'
 import { Config } from '../providers/config'
 import { Wallet } from '../providers/wallet'
@@ -7,19 +7,62 @@ import { randomBytes } from 'crypto'
 import { getMnemonicKeys } from './wallet'
 import { decodeInvoice } from './lightning'
 import { ECPairInterface } from 'ecpair'
-import { p2shOutput, p2shP2wshOutput, p2wshOutput, p2trOutput } from './boltz/swap/Scripts'
-import { constructClaimTransaction } from './boltz/swap/Claim'
-import * as TaprootUtils from './boltz/swap/TaprootUtils'
-import * as SwapTreeSerializer from './boltz/swap/SwapTreeSerializer'
-import { OutputType } from './boltz/consts/Enums'
-import Musig from './boltz/musig/Musig'
-import { targetFee } from './boltz/Utils'
 import { generateAddress } from './address'
+import { createMusig, hashForWitnessV1, tweakMusig } from './taproot/musig'
+import { TransactionInterface, getPartialReverseClaimSignature } from './boltzClient'
+import {
+  ClaimDetails,
+  Musig,
+  OutputType,
+  SwapTreeSerializer,
+  TaprootUtils,
+  TransactionOutput,
+  detectSwap,
+  targetFee,
+} from 'boltz-core'
+import { DecodedAddress, LiquidTransactionOutputWithKey } from './types'
+import { LiquidClaimDetails, constructClaimTransaction } from 'boltz-core/dist/lib/liquid'
+import { networks } from 'liquidjs-lib'
+import { p2shOutput, p2shP2wshOutput, p2trOutput, p2wshOutput } from 'boltz-core/dist/lib/swap/Scripts'
 
 export const getBoltzApiUrl = ({ network }: Config) =>
   network === 'testnet' ? 'https://testnet.boltz.exchange/api' : 'https://api.boltz.exchange'
 
 export const getBoltzWsUrl = (config: Config) => `${getBoltzApiUrl(config).replace('https://', 'ws://')}/v2/ws`
+
+export const parseBlindingKey = (swap: { blindingKey: string | undefined }) => {
+  return swap.blindingKey ? Buffer.from(swap.blindingKey, 'hex') : undefined
+}
+
+const getOutputAmount = (output: TransactionOutput | LiquidTransactionOutputWithKey, secp: Secp256k1ZKP): number => {
+  output = output as LiquidTransactionOutputWithKey
+  const confi = new liquid.confidential.Confidential(secp as liquid.Secp256k1Interface)
+  if (output.rangeProof?.length !== 0 && output.blindingPrivateKey) {
+    const unblinded = confi.unblindOutputWithKey(output, output.blindingPrivateKey)
+    return Number(unblinded.value)
+  } else {
+    return liquid.confidential.confidentialValueToSatoshi(output.value)
+  }
+}
+
+const getConstructClaimTransaction = (config: Config) => {
+  return (
+    utxos: ClaimDetails[] | LiquidClaimDetails[],
+    destinationScript: Buffer,
+    fee: number,
+    isRbf?: boolean,
+    blindingKey?: Buffer,
+  ) => {
+    return constructClaimTransaction(
+      utxos as LiquidClaimDetails[],
+      destinationScript,
+      fee,
+      isRbf,
+      networks[config.network],
+      blindingKey,
+    )
+  }
+}
 
 export interface SubmarineSwapResponse {
   id: string
@@ -330,7 +373,7 @@ export const finalizeReverseSwap = async (
   }
 }
 
-export const detectSwap = (redeemScriptOrTweakedKey: Buffer, transaction: liquid.Transaction) => {
+export const detectSwapold = (redeemScriptOrTweakedKey: Buffer, transaction: liquid.Transaction) => {
   const scripts: [OutputType, Buffer][] = [
     [OutputType.Legacy, p2shOutput(redeemScriptOrTweakedKey)],
     [OutputType.Compatibility, p2shP2wshOutput(redeemScriptOrTweakedKey)],
@@ -355,4 +398,85 @@ export const detectSwap = (redeemScriptOrTweakedKey: Buffer, transaction: liquid
     }
   }
   return
+}
+
+const createAdjustedClaim = <T extends (ClaimDetails & { blindingPrivateKey?: Buffer }) | LiquidClaimDetails>(
+  swap: any,
+  claimDetails: T[],
+  destination: Buffer,
+  secp: Secp256k1ZKP,
+  blindingKey?: Buffer,
+) => {
+  const inputSum = claimDetails.reduce((total: number, input: T) => total + getOutputAmount(input, secp), 0)
+  const feeBudget = Math.floor(inputSum - swap.receiveAmount)
+
+  const constructClaimTransaction = getConstructClaimTransaction(swap.asset)
+  return constructClaimTransaction(
+    claimDetails as ClaimDetails[] | LiquidClaimDetails[],
+    destination,
+    feeBudget,
+    true,
+    blindingKey,
+  )
+}
+
+const claimTaproot = async (
+  swap: any,
+  lockupTx: TransactionInterface,
+  privateKey: ECPairInterface,
+  preimage: Buffer,
+  decodedAddress: DecodedAddress,
+  cooperative = true,
+  config: Config,
+): Promise<any> => {
+  const secp = await zkpInit()
+  const boltzPublicKey = Buffer.from(swap.refundPublicKey, 'hex')
+  const musig = createMusig(privateKey, boltzPublicKey, secp)
+  const tree = SwapTreeSerializer.deserializeSwapTree(swap.swapTree)
+  const tweakedKey = tweakMusig(swap.asset, musig, tree.tree)
+
+  const swapOutput = detectSwap(tweakedKey, lockupTx)
+  if (!swapOutput) throw Error('xxx')
+
+  const details = [
+    {
+      ...swapOutput,
+      cooperative,
+      swapTree: tree,
+      keys: privateKey,
+      preimage: preimage,
+      type: OutputType.Taproot,
+      txHash: lockupTx.getHash(),
+      blindingPrivateKey: parseBlindingKey(swap),
+      internalKey: musig.getAggregatedPublicKey(),
+    },
+  ] as (ClaimDetails & { blindingPrivateKey: Buffer })[]
+  const claimTx = createAdjustedClaim(swap, details, decodedAddress.script, secp, decodedAddress.blindingKey)
+
+  if (!cooperative) {
+    return claimTx
+  }
+
+  try {
+    const boltzSig = await getPartialReverseClaimSignature(
+      swap.asset,
+      swap.id,
+      preimage,
+      Buffer.from(musig.getPublicNonce()),
+      claimTx,
+      0,
+    )
+
+    musig.aggregateNonces([[boltzPublicKey, boltzSig.pubNonce]])
+    musig.initializeSession(hashForWitnessV1(swap.asset, networks[config.network], details, claimTx, 0))
+    musig.signPartial()
+    musig.addPartial(boltzPublicKey, boltzSig.signature)
+
+    claimTx.ins[0].witness = [musig.aggregatePartials()]
+
+    return claimTx
+  } catch (e) {
+    console.log('Uncooperative Taproot claim because', e)
+    return claimTaproot(swap, lockupTx, privateKey, preimage, decodedAddress, false, config)
+  }
 }

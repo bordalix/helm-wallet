@@ -4,7 +4,7 @@ import { fetchURL } from '../lib/fetch'
 import { Satoshis } from '../lib/types'
 import Decimal from 'decimal.js'
 import { getBoltzApiUrl } from '../lib/swaps'
-import { init } from '../lib/boltz/init'
+import { init } from '../lib/boltz.old/init'
 import zkpInit from '@vulpemventures/secp256k1-zkp'
 
 export interface ExpectedFees {

@@ -1,8 +1,15 @@
+import { TxOutput } from 'liquidjs-lib'
 import { NetworkName } from './network'
 
 export type Mnemonic = string
 export type Password = string
 export type Satoshis = number
+
+export type DecodedAddress = { script: Buffer; blindingKey?: Buffer }
+
+export type LiquidTransactionOutputWithKey = TxOutput & {
+  blindingPrivateKey?: Buffer
+}
 
 export type Transaction = {
   amount: number
