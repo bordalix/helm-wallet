@@ -5,6 +5,7 @@ import Title from '../../components/Title'
 import { ConfigContext } from '../../providers/config'
 import { WalletContext } from '../../providers/wallet'
 import Content from '../../components/Content'
+import Container from '../../components/Container'
 
 export default function Reset({ backup }: { backup: () => void }) {
   const { toggleShowConfig } = useContext(ConfigContext)
@@ -16,7 +17,7 @@ export default function Reset({ backup }: { backup: () => void }) {
   }
 
   return (
-    <div className='flex flex-col h-full justify-between'>
+    <Container>
       <Content>
         <Title text='Reset wallet' />
         <p className='mt-10 mb-4'>
@@ -32,6 +33,6 @@ export default function Reset({ backup }: { backup: () => void }) {
         <Button onClick={handleReset} label='Reset wallet' />
         <Button onClick={toggleShowConfig} label='Cancel' secondary />
       </ButtonsOnBottom>
-    </div>
+    </Container>
   )
 }

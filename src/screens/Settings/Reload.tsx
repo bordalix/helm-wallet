@@ -11,14 +11,14 @@ import { gapLimits } from '../../lib/wallet'
 
 function Reload() {
   const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)
-  const { reloading, reloadWallet } = useContext(WalletContext)
+  const { reloading, reloadWallet, wallet } = useContext(WalletContext)
 
   const handleChange = (e: any) => {
     const gap = Number(e.target.value)
     if (gapLimits.includes(gap)) updateConfig({ ...config, gap })
   }
 
-  const handleReload = () => reloadWallet(config.gap)
+  const handleReload = () => reloadWallet(wallet, config.gap)
 
   return (
     <div className='flex flex-col h-full justify-between'>

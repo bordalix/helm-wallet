@@ -13,18 +13,20 @@ export interface SettingsData {
   password: string
 }
 
+const defaultPassword = 'password'
+
 export const clearStorage = () => {
   return secureLocalStorage.clear()
 }
 
-export const saveConfigToStorage = async (config: Config, password = 'password'): Promise<void> => {
-  const encrypted = await encrypt(JSON.stringify(config), password)
+export const saveConfigToStorage = async (config: Config): Promise<void> => {
+  const encrypted = await encrypt(JSON.stringify(config), defaultPassword)
   secureLocalStorage.setItem('config', encrypted)
 }
 
-export const readConfigFromStorage = async (password = 'password'): Promise<Config | undefined> => {
+export const readConfigFromStorage = async (): Promise<Config | undefined> => {
   const encrypted = secureLocalStorage.getItem('config') as Encrypted
-  const decrypted = await decrypt(encrypted, password)
+  const decrypted = await decrypt(encrypted, defaultPassword)
   let settings
   try {
     settings = JSON.parse(decrypted)
@@ -32,14 +34,15 @@ export const readConfigFromStorage = async (password = 'password'): Promise<Conf
   return settings
 }
 
-export const saveWalletToStorage = async (wallet: Wallet, password = 'password'): Promise<void> => {
-  const encrypted = await encrypt(JSON.stringify(wallet), password)
+export const saveWalletToStorage = async (wallet: Wallet): Promise<void> => {
+  const encrypted = await encrypt(JSON.stringify(wallet), defaultPassword)
   secureLocalStorage.setItem('wallet', encrypted)
 }
 
-export const readWalletFromStorage = async (password = 'password'): Promise<Wallet | undefined> => {
+export const readWalletFromStorage = async (): Promise<Wallet | undefined> => {
   const encrypted = secureLocalStorage.getItem('wallet') as Encrypted
-  const decrypted = await decrypt(encrypted, password)
+  console.log('encrypted', encrypted)
+  const decrypted = await decrypt(encrypted, defaultPassword)
   let wallet
   try {
     wallet = JSON.parse(decrypted)

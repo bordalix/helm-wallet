@@ -38,7 +38,7 @@ const getXpub = (seed: Buffer, network: NetworkName) => {
   return bip32.fromSeed(seed).derivePath(derivationPath[network]).neutered().toBase58()
 }
 
-export const getXPubs = async (mnemonic: Mnemonic): Promise<{ masterBlindingKey: string; xpubs: XPubs }> => {
+export const getMasterKeys = async (mnemonic: Mnemonic): Promise<{ masterBlindingKey: string; xpubs: XPubs }> => {
   const slip77 = SLIP77Factory(ecc)
   const seed = await mnemonicToSeed(mnemonic)
   if (!seed) throw new Error('Could not get seed from mnemonic')

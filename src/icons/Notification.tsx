@@ -1,4 +1,4 @@
-function NotificationIcon() {
+export default function NotificationIcon() {
   return (
     <svg className='w-8 h-8' viewBox='0 0 36 36' xmlns='http://www.w3.org/2000/svg'>
       <path
@@ -10,5 +10,3 @@ function NotificationIcon() {
     </svg>
   )
 }
-
-export default NotificationIcon

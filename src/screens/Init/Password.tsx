@@ -3,7 +3,7 @@ import Button from '../../components/Button'
 import ButtonsOnBottom from '../../components/ButtonsOnBottom'
 import Title from '../../components/Title'
 import { NavigationContext, Pages } from '../../providers/navigation'
-import { getXPubs } from '../../lib/wallet'
+import { getMasterKeys } from '../../lib/wallet'
 import { WalletContext } from '../../providers/wallet'
 import Content from '../../components/Content'
 import NewPassword from '../../components/NewPassword'
@@ -15,7 +15,7 @@ import Container from '../../components/Container'
 function InitPassword() {
   const { navigate } = useContext(NavigationContext)
   const { config, updateConfig } = useContext(ConfigContext)
-  const { wallet, updateWallet, reloadWallet } = useContext(WalletContext)
+  const { wallet, reloadWallet } = useContext(WalletContext)
   const { initInfo } = useContext(FlowContext)
 
   const [label, setLabel] = useState('')
@@ -26,10 +26,9 @@ function InitPassword() {
   const handleProceed = () => {
     const { mnemonic } = initInfo
     saveMnemonicToStorage(mnemonic, password)
-    getXPubs(mnemonic).then(({ masterBlindingKey, xpubs }) => {
+    getMasterKeys(mnemonic).then(({ masterBlindingKey, xpubs }) => {
       updateConfig(config)
-      updateWallet({ ...wallet, initialized: true, masterBlindingKey, xpubs })
-      reloadWallet()
+      reloadWallet({ ...wallet, initialized: true, masterBlindingKey, xpubs })
       navigate(Pages.Wallet)
     })
   }

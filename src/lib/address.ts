@@ -20,6 +20,7 @@ export const generateAddress = async (
   script: Buffer
 }> => {
   const xpub = wallet.xpubs[wallet.network]
+  console.log('xpub', xpub)
   const network = getNetwork(wallet.network)
   const nextIndex = index ?? wallet.nextIndex
   const pubkey = bip32.fromBase58(xpub).derive(chain).derive(nextIndex).publicKey

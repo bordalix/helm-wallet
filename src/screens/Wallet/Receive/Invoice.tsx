@@ -8,13 +8,10 @@ import ButtonsOnBottom from '../../../components/ButtonsOnBottom'
 import Error from '../../../components/Error'
 import { FlowContext, emptyRecvInfo } from '../../../providers/flow'
 import { NavigationContext, Pages } from '../../../providers/navigation'
-import { finalizeReverseSwap, reverseSwap } from '../../../lib/swaps'
 import { ConfigContext } from '../../../providers/config'
 import { extractError } from '../../../lib/error'
-import { randomBytes } from 'crypto'
-import { crypto } from 'liquidjs-lib'
-import { generateRandomKeys } from '../../../lib/wallet'
 import { WalletContext } from '../../../providers/wallet'
+import { reverseSwap } from '../../../lib/swap'
 
 function ReceiveInvoice() {
   const { config } = useContext(ConfigContext)
@@ -46,24 +43,11 @@ function ReceiveInvoice() {
 
   useEffect(() => {
     if (!invoice) {
-      // create a random preimage for the swap; has to have a length of 32 bytes
-      const preimage = randomBytes(32)
-      const preimageHash = crypto.sha256(preimage).toString('hex')
-
-      // generate random keys and respective claim public key
-      const keys = generateRandomKeys(config)
-      const claimPublicKey = keys.publicKey.toString('hex')
-
-      // do the swap
-      reverseSwap(recvInfo.amount, preimageHash, claimPublicKey, config)
-        .then((swapResponse) => {
-          console.log('swapResponse', swapResponse)
-          setInvoice(swapResponse.invoice)
-          finalizeReverseSwap(preimage, swapResponse, keys, config, wallet, onFinish)
-        })
-        .catch((error: any) => {
-          setError(extractError(error))
-        })
+      try {
+        reverseSwap(Number(recvInfo.amount), config, wallet, onFinish, setInvoice)
+      } catch (error) {
+        setError(extractError(error))
+      }
     }
   }, [invoice])
 

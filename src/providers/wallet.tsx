@@ -1,5 +1,5 @@
 import { ReactNode, createContext, useContext, useEffect, useRef, useState } from 'react'
-import { readWalletFromStorage, saveWalletToStorage } from '../lib/storage'
+import { readConfigFromStorage, readWalletFromStorage, saveWalletToStorage } from '../lib/storage'
 import { NavigationContext, Pages } from './navigation'
 import { NetworkName } from '../lib/network'
 import { Mnemonic, Transaction, XPubs } from '../lib/types'
@@ -37,8 +37,9 @@ interface WalletContextProps {
   reloading: boolean
   increaseIndex: () => void
   logout: () => void
-  reloadWallet: (gap?: number) => void
+  reloadWallet: (wallet: Wallet, gap?: number) => void
   resetWallet: () => void
+  sendSats: (sats: number, address: string) => string
   setMnemonic: (m: Mnemonic) => void
   updateWallet: (w: Wallet) => void
   wallet: Wallet
@@ -51,6 +52,7 @@ export const WalletContext = createContext<WalletContextProps>({
   logout: () => {},
   reloadWallet: () => {},
   resetWallet: () => {},
+  sendSats: () => '',
   setMnemonic: () => {},
   updateWallet: () => {},
   wallet: defaultWallet,
@@ -75,7 +77,8 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => setMnemonic('')
 
-  const reloadWallet = async (gap = 5) => {
+  const reloadWallet = async (wallet: Wallet, gap = 5) => {
+    console.log('reloadWallet gap reloading', gap, reloading)
     if (reloading) return
     setReloading(true)
     const utxos = await getUtxos(config, wallet, gap)
@@ -91,6 +94,11 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     navigate(Pages.Init)
   }
 
+  const sendSats = (sats: number, address: string) => {
+    console.log('sendSats', sats, address)
+    return 'b29d036678113b2671a308496f06b1665d23ab16b5af8cd126cc8a2273353774' // TODO
+  }
+
   const updateWallet = (data: Wallet) => {
     setWallet({ ...data, mnemonic: mnemonic.current })
     saveWalletToStorage(data)
@@ -99,6 +107,8 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (!loading) return
     readWalletFromStorage().then((wallet: Wallet | undefined) => {
+      console.log('readWalletFromStorage', wallet)
+      readConfigFromStorage().then(console.log)
       setLoading(false)
       if (!wallet) return navigate(Pages.Init)
       setWallet(wallet)
@@ -116,6 +126,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
         logout,
         reloadWallet,
         resetWallet,
+        sendSats,
         setMnemonic,
         updateWallet,
         wallet,

@@ -1,9 +1,6 @@
-function ExplorerIcon() {
+export default function ExplorerIcon() {
   return (
-    <svg
-      className='w-8 h-8'
-      viewBox='0 0 32 32'
-      xmlns='http://www.w3.org/2000/svg'>
+    <svg className='w-8 h-8' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'>
       <path
         fill='currentColor'
         d='M17 18.184v-4.368a3 3 0 1 0-2 0v4.369a3 3 0 1 0 2 0ZM16 10a1 1 0 1 1-1 1a1 1 0 0 1 1-1m0 12a1 1 0 1 1 1-1a1 1 0 0 1-1 1'
@@ -15,5 +12,3 @@ function ExplorerIcon() {
     </svg>
   )
 }
-
-export default ExplorerIcon

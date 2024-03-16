@@ -1,4 +1,4 @@
-function EyeClosedIcon() {
+export default function EyeClosedIcon() {
   return (
     <svg className='w-8 h-8' fill='none' stroke='currentColor' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>
       <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M15 12a3 3 0 11-6 0 3 3 0 016 0z' />
@@ -11,5 +11,3 @@ function EyeClosedIcon() {
     </svg>
   )
 }
-
-export default EyeClosedIcon

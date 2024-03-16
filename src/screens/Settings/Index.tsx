@@ -20,9 +20,12 @@ import Password from './Password'
 import OuterContainer from '../../components/OuterContainer'
 import ResetIcon from '../../icons/Reset'
 import Reset from './Reset'
+import InfoIcon from '../../icons/Info'
+import About from './About'
 
 enum Options {
   Menu = 'menu',
+  About = 'about',
   Backup = 'backup',
   Explorer = 'explorer',
   Logout = 'logout',
@@ -46,6 +49,10 @@ function Settings() {
   const hideBack = option === Options.Menu
 
   const options: Option[] = [
+    {
+      icon: <InfoIcon />,
+      option: Options.About,
+    },
     {
       icon: <BackupIcon />,
       option: Options.Backup,
@@ -108,6 +115,7 @@ function Settings() {
             ))}
           </div>
         )}
+        {option === Options.About && <About />}
         {option === Options.Backup && <Backup />}
         {option === Options.Explorer && <Explorer />}
         {option === Options.Logout && <Logout />}

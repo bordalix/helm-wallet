@@ -9,11 +9,13 @@ import { FlowContext, emptySendInfo } from '../../../providers/flow'
 import { prettyNumber } from '../../../lib/format'
 import { ConfigContext } from '../../../providers/config'
 import { WalletContext } from '../../../providers/wallet'
-import { submarineSwap } from '../../../lib/swaps'
+import { submarineSwap } from '../../../lib/swap'
 import Error from '../../../components/Error'
 import { extractError } from '../../../lib/error'
 import Table from '../../../components/Table'
 import NeedsPassword from '../../../components/NeedsPassword'
+import { ECPairFactory } from 'ecpair'
+import * as ecc from '@bitcoinerlab/secp256k1'
 
 function SendFees() {
   const { config } = useContext(ConfigContext)
@@ -26,14 +28,16 @@ function SendFees() {
 
   const txFees = 200 // TODO
   const { invoice, satoshis, total } = sendInfo
+  const keys = ECPairFactory(ecc).makeRandom()
+  const refundPublicKey = keys.publicKey.toString('hex')
 
   useEffect(() => {
     if (invoice && wallet.mnemonic) {
-      submarineSwap(invoice, config, wallet)
+      submarineSwap(invoice, refundPublicKey, config)
         .then((swapResponse) => {
           const { expectedAmount } = swapResponse
           setBoltzFees(expectedAmount - satoshis)
-          setSendInfo({ ...sendInfo, swapResponse, total: expectedAmount + txFees })
+          setSendInfo({ ...sendInfo, keys, swapResponse, total: expectedAmount + txFees })
         })
         .catch((error: any) => {
           console.log('error', error)

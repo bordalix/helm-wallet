@@ -1,9 +1,6 @@
-function SettingsIcon() {
+export default function SettingsIcon() {
   return (
-    <svg
-      viewBox='0 0 16 16'
-      className='w-8 h-8 text-gray-800'
-      xmlns='http://www.w3.org/2000/svg'>
+    <svg viewBox='0 0 16 16' className='w-8 h-8 text-gray-800' xmlns='http://www.w3.org/2000/svg'>
       <path
         fill='#000000'
         fillRule='evenodd'
@@ -13,5 +10,3 @@ function SettingsIcon() {
     </svg>
   )
 }
-
-export default SettingsIcon

@@ -1,4 +1,4 @@
-function ReloadIcon() {
+export default function ReloadIcon() {
   return (
     <svg className='w-8 h-8' viewBox='0 0 15 15' xmlns='http://www.w3.org/2000/svg'>
       <path
@@ -8,5 +8,3 @@ function ReloadIcon() {
     </svg>
   )
 }
-
-export default ReloadIcon

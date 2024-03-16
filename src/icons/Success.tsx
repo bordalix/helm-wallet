@@ -1,4 +1,4 @@
-function SuccessIcon() {
+export default function SuccessIcon() {
   return (
     <svg className='w-24 h-24' viewBox='0 0 14 14' xmlns='http://www.w3.org/2000/svg'>
       <g fill='none' stroke='currentColor' strokeLinecap='round' strokeLinejoin='round'>
@@ -8,5 +8,3 @@ function SuccessIcon() {
     </svg>
   )
 }
-
-export default SuccessIcon

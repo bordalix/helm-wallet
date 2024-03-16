@@ -1,6 +1,7 @@
 import { ReactNode, createContext, useState } from 'react'
 import { Invoice } from '../lib/lightning'
-import { ReverseSwapResponse, SubmarineSwapResponse } from '../lib/swaps'
+import { ECPairInterface } from 'ecpair'
+import { ReverseSwapResponse, SubmarineSwapResponse } from '../lib/swap'
 
 export interface InitInfo {
   mnemonic: string
@@ -13,6 +14,7 @@ export interface RecvInfo {
 }
 
 export type SendInfo = Invoice & {
+  keys?: ECPairInterface
   swapResponse?: SubmarineSwapResponse
   total?: number
   txid?: string
