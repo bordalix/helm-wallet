@@ -64,7 +64,7 @@ export const deriveBlindingKey = async (script: Buffer, wallet: Wallet): Promise
   return { publicKey, privateKey }
 }
 
-export const balance = (wallet: Wallet): Satoshis => {
+export const getBalance = (wallet: Wallet): Satoshis => {
   if (!wallet.utxos) return 0
   return wallet.utxos.reduce((prev, curr) => prev + curr.value, 0)
 }

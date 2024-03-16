@@ -13,6 +13,7 @@ import { TaprootUtils, constructClaimTransaction } from 'boltz-core/dist/lib/liq
 import bolt11 from 'bolt11'
 import { SendInfo } from '../providers/flow'
 import { getBoltzApiUrl, getBoltzWsUrl } from './boltz'
+import { sendSats } from './transactions'
 
 /**
  * Submarine swap flow:
@@ -66,7 +67,7 @@ export const submarineSwap = async (
 export const finalizeSubmarineSwap = (
   sendInfo: SendInfo,
   config: Config,
-  sendSats: (sats: number, address: string) => string,
+  wallet: Wallet,
   onTxid: (txid: string) => void,
 ) => {
   const { invoice, keys, swapResponse } = sendInfo
@@ -105,7 +106,7 @@ export const finalizeSubmarineSwap = (
       // "invoice.set" means Boltz is waiting for an onchain transaction to be sent
       case 'invoice.set': {
         console.log('Waiting for onchain transaction')
-        sendSats(swapResponse.expectedAmount, swapResponse.address)
+        sendSats(swapResponse.expectedAmount, swapResponse.address, config, wallet)
         break
       }
 
@@ -186,7 +187,7 @@ export interface ReverseSwapResponse {
   timeoutBlockHeight: number
 }
 
-export const reverseSwap = async (
+export const reverseSwap2 = async (
   invoiceAmount: number,
   config: Config,
   wallet: Wallet,

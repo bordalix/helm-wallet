@@ -7,5 +7,5 @@ interface BalanceProps {
 }
 
 export default function Balance({ value }: BalanceProps) {
-  return <Title text={prettyNumber(fromSatoshis(value)) + ' BTC'} subtext={prettyNumber(value) + ' sats'} />
+  return <Title text={prettyNumber(value) + ' sats'} subtext={prettyNumber(fromSatoshis(value)) + ' BTC'} />
 }

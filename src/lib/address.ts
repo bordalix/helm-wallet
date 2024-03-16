@@ -16,7 +16,7 @@ export interface NewAddress {
   script: Buffer
 }
 
-export const generateAddress = async (wallet: Wallet, index?: number, chain = 1): Promise<NewAddress> => {
+export const generateAddress = async (wallet: Wallet, chain = 0, index?: number): Promise<NewAddress> => {
   const xpub = wallet.xpubs[wallet.network]
   const network = getNetwork(wallet.network)
   const nextIndex = index ?? wallet.nextIndex

@@ -16,18 +16,19 @@ import Table from '../../../components/Table'
 import NeedsPassword from '../../../components/NeedsPassword'
 import { ECPairFactory } from 'ecpair'
 import * as ecc from '@bitcoinerlab/secp256k1'
+import { feesToSendSats } from '../../../lib/transactions'
+import { getBalance } from '../../../lib/wallet'
 
 export default function SendFees() {
   const { config } = useContext(ConfigContext)
-  const { feesToSendSats, setMnemonic, wallet } = useContext(WalletContext)
+  const { setMnemonic, wallet } = useContext(WalletContext)
   const { navigate } = useContext(NavigationContext)
   const { sendInfo, setSendInfo } = useContext(FlowContext)
 
   const [boltzFees, setBoltzFees] = useState(0)
   const [error, setError] = useState('')
 
-  const { invoice, satoshis, total } = sendInfo
-  const txFees = feesToSendSats(total ?? 0)
+  const { invoice, satoshis, total, txFees } = sendInfo
   const keys = ECPairFactory(ecc).makeRandom()
   const refundPublicKey = keys.publicKey.toString('hex')
 
@@ -36,8 +37,9 @@ export default function SendFees() {
       submarineSwap(invoice, refundPublicKey, config)
         .then((swapResponse) => {
           const { expectedAmount } = swapResponse
+          const txFees = feesToSendSats(expectedAmount, wallet)
           setBoltzFees(expectedAmount - satoshis)
-          setSendInfo({ ...sendInfo, keys, swapResponse, total: expectedAmount + txFees })
+          setSendInfo({ ...sendInfo, keys, swapResponse, txFees, total: expectedAmount + txFees })
         })
         .catch((error: any) => {
           console.log('error', error)
@@ -45,6 +47,12 @@ export default function SendFees() {
         })
     }
   }, [invoice, wallet.mnemonic])
+
+  useEffect(() => {
+    if (sendInfo.total) {
+      if (getBalance(wallet) < sendInfo.total) setError('Insufficient funds')
+    }
+  }, [sendInfo.total])
 
   const handleCancel = () => {
     setSendInfo(emptySendInfo)
@@ -58,7 +66,7 @@ export default function SendFees() {
   const data = [
     ['Invoice', prettyNumber(satoshis)],
     ['Boltz fees', prettyNumber(boltzFees)],
-    ['Transaction fees', prettyNumber(txFees)],
+    ['Transaction fees', prettyNumber(txFees ?? 0)],
     ['Total', prettyNumber(total ?? 0)],
   ]
 

@@ -17,13 +17,14 @@ export default function SendPayment() {
   const { config } = useContext(ConfigContext)
   const { navigate } = useContext(NavigationContext)
   const { sendInfo, setSendInfo } = useContext(FlowContext)
-  const { sendSats, setMnemonic, wallet } = useContext(WalletContext)
+  const { reloadWallet, setMnemonic, wallet } = useContext(WalletContext)
 
   const { keys, total } = sendInfo
   if (!keys) return <></>
 
   const onTxid = (txid: string) => {
     setSendInfo({ ...sendInfo, txid })
+    reloadWallet(wallet)
     navigate(Pages.SendSuccess)
   }
 
@@ -34,7 +35,7 @@ export default function SendPayment() {
 
   useEffect(() => {
     if (wallet.mnemonic) {
-      finalizeSubmarineSwap(sendInfo, config, sendSats, onTxid)
+      finalizeSubmarineSwap(sendInfo, config, wallet, onTxid)
     }
   }, [wallet.mnemonic])
 

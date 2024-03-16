@@ -11,13 +11,13 @@ import { NavigationContext, Pages } from '../../../providers/navigation'
 import { ConfigContext } from '../../../providers/config'
 import { extractError } from '../../../lib/error'
 import { WalletContext } from '../../../providers/wallet'
-import { reverseSwap } from '../../../lib/swaps'
+import { reverseSwap } from '../../../lib/reverse'
 
 export default function ReceiveInvoice() {
   const { config } = useContext(ConfigContext)
   const { recvInfo, setRecvInfo } = useContext(FlowContext)
   const { navigate } = useContext(NavigationContext)
-  const { wallet } = useContext(WalletContext)
+  const { increaseIndex, reloadWallet, wallet } = useContext(WalletContext)
 
   const label = 'Copy to clipboard'
   const [buttonLabel, setButtonLabel] = useState(label)
@@ -25,6 +25,8 @@ export default function ReceiveInvoice() {
   const [invoice, setInvoice] = useState('')
 
   const onFinish = (txid: string) => {
+    increaseIndex()
+    setTimeout(() => reloadWallet(wallet), 10_000)
     setRecvInfo({ ...recvInfo, txid })
     navigate(Pages.ReceiveSuccess)
   }

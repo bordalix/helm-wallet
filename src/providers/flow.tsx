@@ -17,6 +17,7 @@ export type SendInfo = Invoice & {
   keys?: ECPairInterface
   swapResponse?: SubmarineSwapResponse
   total?: number
+  txFees?: number
   txid?: string
 }
 

@@ -59,7 +59,7 @@ export const getExplorerURL = ({ network, explorer }: Config) => {
 }
 
 export const getTxIdURL = (txid: string, config: Config) => {
-  return `${getExplorerURL(config)}/api/tx/${txid}`
+  return `${getExplorerURL(config)}/tx/${txid}`
 }
 
 export interface AddressInfo {

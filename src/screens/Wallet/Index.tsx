@@ -4,30 +4,23 @@ import Button from '../../components/Button'
 import ButtonsOnBottom from '../../components/ButtonsOnBottom'
 import { NavigationContext, Pages } from '../../providers/navigation'
 import { WalletContext } from '../../providers/wallet'
-import { balance } from '../../lib/wallet'
+import { getBalance } from '../../lib/wallet'
 import Container from '../../components/Container'
 import Content from '../../components/Content'
 import QRCodeIcon from '../../icons/QRCode'
 import ScanIcon from '../../icons/Scan'
-import { generateAddress } from '../../lib/address'
 import Transactions from '../../components/Transactions'
 
 export default function Wallet() {
   const { navigate } = useContext(NavigationContext)
   const { wallet } = useContext(WalletContext)
 
-  // get next address and respective pubkey
-  if (wallet.masterBlindingKey) {
-    generateAddress(wallet).then((nextAddress) => {
-      console.log('destinationAddress', nextAddress.address)
-      console.log('confidentialAddress', nextAddress.confidentialAddress)
-    })
-  }
+  console.log('wallet nextIndex', wallet.nextIndex)
 
   return (
     <Container>
       <Content>
-        <Balance value={balance(wallet)} />
+        <Balance value={getBalance(wallet)} />
         <Transactions short />
       </Content>
       <ButtonsOnBottom>

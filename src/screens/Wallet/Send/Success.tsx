@@ -16,7 +16,6 @@ export default function SendSuccess() {
   const { navigate } = useContext(NavigationContext)
 
   const handleExplorer = () => {
-    console.log('click')
     if (!sendInfo.txid) return
     window.open(getTxIdURL(sendInfo.txid, config), '_blank', 'noreferrer')
   }

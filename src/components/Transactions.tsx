@@ -8,7 +8,7 @@ import { NavigationContext, Pages } from '../providers/navigation'
 
 const TransactionLine = ({ data }: { data: Transaction }) => {
   const amount = `${data.amount > 0 ? '+' : '-'} ${prettyNumber(data.amount)} sats`
-  const date = `${prettyAgo(data.date)} ago`
+  const date = data.date ? `${prettyAgo(data.date)} ago` : 'just now'
   return (
     <div className='border p-2 flex justify-between w-full rounded-md'>
       <p>{amount}</p>
@@ -38,7 +38,7 @@ export default function TransactionsList({ short }: { short?: boolean }) {
       {short && transactions.length > showMax ? (
         <div className='border bg-gray-100 p-2 flex justify-end w-full rounded-md'>
           <div className='flex' onClick={() => navigate(Pages.Transactions)}>
-            <p className='mr-2'>All transactions</p>
+            <p className='mr-2 cursor-pointer'>All transactions</p>
             <ArrowIcon tiny />
           </div>
         </div>
