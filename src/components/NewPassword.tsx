@@ -13,7 +13,7 @@ interface NewPasswordProps {
   onNewPassword: (password: string) => void
 }
 
-function NewPassword({ onNewPassword, setLabel }: NewPasswordProps) {
+export default function NewPassword({ onNewPassword, setLabel }: NewPasswordProps) {
   const [confirm, setConfirm] = useState('')
   const [password, setPassword] = useState('')
   const [strength, setStrength] = useState(0)
@@ -48,5 +48,3 @@ function NewPassword({ onNewPassword, setLabel }: NewPasswordProps) {
     </div>
   )
 }
-
-export default NewPassword

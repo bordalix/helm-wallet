@@ -7,7 +7,7 @@ import Content from '../../components/Content'
 import Container from '../../components/Container'
 import TransactionsList from '../../components/Transactions'
 
-function Transactions() {
+export default function Transactions() {
   const { navigate } = useContext(NavigationContext)
 
   const goBackToWallet = () => navigate(Pages.Wallet)
@@ -24,5 +24,3 @@ function Transactions() {
     </Container>
   )
 }
-
-export default Transactions

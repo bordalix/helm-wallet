@@ -9,7 +9,7 @@ import { FlowContext, emptySendInfo } from '../../../providers/flow'
 import { prettyNumber } from '../../../lib/format'
 import { ConfigContext } from '../../../providers/config'
 import { WalletContext } from '../../../providers/wallet'
-import { submarineSwap } from '../../../lib/swap'
+import { submarineSwap } from '../../../lib/swaps'
 import Error from '../../../components/Error'
 import { extractError } from '../../../lib/error'
 import Table from '../../../components/Table'
@@ -17,17 +17,17 @@ import NeedsPassword from '../../../components/NeedsPassword'
 import { ECPairFactory } from 'ecpair'
 import * as ecc from '@bitcoinerlab/secp256k1'
 
-function SendFees() {
+export default function SendFees() {
   const { config } = useContext(ConfigContext)
-  const { setMnemonic, wallet } = useContext(WalletContext)
+  const { feesToSendSats, setMnemonic, wallet } = useContext(WalletContext)
   const { navigate } = useContext(NavigationContext)
   const { sendInfo, setSendInfo } = useContext(FlowContext)
 
   const [boltzFees, setBoltzFees] = useState(0)
   const [error, setError] = useState('')
 
-  const txFees = 200 // TODO
   const { invoice, satoshis, total } = sendInfo
+  const txFees = feesToSendSats(total ?? 0)
   const keys = ECPairFactory(ecc).makeRandom()
   const refundPublicKey = keys.publicKey.toString('hex')
 
@@ -77,5 +77,3 @@ function SendFees() {
     </Container>
   )
 }
-
-export default SendFees

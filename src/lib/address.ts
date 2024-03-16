@@ -8,19 +8,16 @@ import { deriveBlindingKey } from './wallet'
 
 const bip32 = BIP32Factory(ecc)
 
-export const generateAddress = async (
-  wallet: Wallet,
-  index?: number,
-  chain = 1,
-): Promise<{
+export interface NewAddress {
   address: string
   blindingKeys: BlindingKeyPair
   confidentialAddress: string
   pubkey: Buffer
   script: Buffer
-}> => {
+}
+
+export const generateAddress = async (wallet: Wallet, index?: number, chain = 1): Promise<NewAddress> => {
   const xpub = wallet.xpubs[wallet.network]
-  console.log('xpub', xpub)
   const network = getNetwork(wallet.network)
   const nextIndex = index ?? wallet.nextIndex
   const pubkey = bip32.fromBase58(xpub).derive(chain).derive(nextIndex).publicKey

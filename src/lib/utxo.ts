@@ -30,7 +30,3 @@ export const getUtxos = async (config: Config, wallet: Wallet, defaultGap = 5): 
   const lbtc = liquid.networks[config.network].assetHash
   return utxos.filter((utxo) => utxo.asset.reverse().toString('hex') === lbtc)
 }
-
-export const selectUtxos = (amount: number, config: Config, wallet: Wallet) => {
-  console.log(wallet.mnemonic, amount, config.network) // TODO
-}

@@ -5,7 +5,7 @@ import ButtonsOnBottom from '../../components/ButtonsOnBottom'
 import { NavigationContext, Pages } from '../../providers/navigation'
 import Container from '../../components/Container'
 
-function Init() {
+export default function Init() {
   const { navigate } = useContext(NavigationContext)
 
   return (
@@ -20,5 +20,3 @@ function Init() {
     </Container>
   )
 }
-
-export default Init

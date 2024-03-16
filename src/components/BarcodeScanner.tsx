@@ -6,7 +6,7 @@ interface BarcodeScannerProps {
   setError: (arg0: string) => void
 }
 
-function BarcodeScanner({ setData, setError }: BarcodeScannerProps) {
+export default function BarcodeScanner({ setData, setError }: BarcodeScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const reader = useRef(new BrowserMultiFormatReader())
 
@@ -43,5 +43,3 @@ function BarcodeScanner({ setData, setError }: BarcodeScannerProps) {
 
   return <video className='mx-auto mb-2' ref={videoRef} />
 }
-
-export default BarcodeScanner

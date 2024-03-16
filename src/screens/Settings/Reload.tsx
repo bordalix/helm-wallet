@@ -9,7 +9,7 @@ import Content from '../../components/Content'
 import LoadingIcon from '../../icons/Loading'
 import { gapLimits } from '../../lib/wallet'
 
-function Reload() {
+export default function Reload() {
   const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)
   const { reloading, reloadWallet, wallet } = useContext(WalletContext)
 
@@ -34,7 +34,12 @@ function Reload() {
             <LoadingIcon />
             <p className='mt-10'>You can go back to wallet, reloading will keep working on the background</p>
           </center>
-        ) : null}
+        ) : (
+          <>
+            <p className='mt-10'>Increase value if you're missing some coins</p>
+            <p className='mt-4'>High values makes reloads take longer</p>
+          </>
+        )}
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handleReload} label='Reload' disabled={reloading} />
@@ -43,5 +48,3 @@ function Reload() {
     </div>
   )
 }
-
-export default Reload

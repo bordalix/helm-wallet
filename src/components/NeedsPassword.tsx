@@ -11,7 +11,7 @@ interface NeedsPasswordProps {
   onMnemonic: (arg0: string) => void
 }
 
-function NeedsPassword({ onClose, onMnemonic }: NeedsPasswordProps) {
+export default function NeedsPassword({ onClose, onMnemonic }: NeedsPasswordProps) {
   const [disabled, setDisabled] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -59,5 +59,3 @@ function NeedsPassword({ onClose, onMnemonic }: NeedsPasswordProps) {
     </Modal>
   )
 }
-
-export default NeedsPassword

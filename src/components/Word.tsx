@@ -5,7 +5,7 @@ interface WordProps {
   text?: string
 }
 
-function Word({ left, onChange, right, text }: WordProps) {
+export default function Word({ left, onChange, right, text }: WordProps) {
   const className = 'w-full p-3 text-sm text-left font-semibold rounded-md bg-gray-100 text-gray-800'
 
   return (
@@ -24,5 +24,3 @@ function Word({ left, onChange, right, text }: WordProps) {
     </fieldset>
   )
 }
-
-export default Word

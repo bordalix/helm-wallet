@@ -10,7 +10,7 @@ import { getTxIdURL } from '../../../lib/explorers'
 import { ConfigContext } from '../../../providers/config'
 import { FlowContext } from '../../../providers/flow'
 
-function ReceiveSuccess() {
+export default function ReceiveSuccess() {
   const { config } = useContext(ConfigContext)
   const { recvInfo } = useContext(FlowContext)
   const { navigate } = useContext(NavigationContext)
@@ -39,5 +39,3 @@ function ReceiveSuccess() {
     </Container>
   )
 }
-
-export default ReceiveSuccess

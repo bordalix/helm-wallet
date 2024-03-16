@@ -13,7 +13,7 @@ interface InputAmountProps {
   onChange: (arg0: any) => void
 }
 
-function InputAmount({ label, onChange }: InputAmountProps) {
+export default function InputAmount({ label, onChange }: InputAmountProps) {
   const [amount, setAmount] = useState('0')
   const [sats, setSats] = useState(true)
 
@@ -72,5 +72,3 @@ function InputAmount({ label, onChange }: InputAmountProps) {
     </fieldset>
   )
 }
-
-export default InputAmount

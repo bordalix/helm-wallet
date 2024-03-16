@@ -11,7 +11,7 @@ import Content from '../../../components/Content'
 import Title from '../../../components/Title'
 import Container from '../../../components/Container'
 
-function SendInvoice() {
+export default function SendInvoice() {
   const { navigate } = useContext(NavigationContext)
   const { setSendInfo } = useContext(FlowContext)
 
@@ -61,7 +61,7 @@ function SendInvoice() {
           <Error error={error} />
         ) : (
           <div className='flex flex-col h-full justify-between'>
-            {/* <BarcodeScanner setData={setData} setError={setError} /> */}
+            {/* TODO <BarcodeScanner setData={setData} setError={setError} /> */}
             {firefox ? <Input label='Paste your invoice here' left='&#9889;' onChange={handleChange} /> : null}
           </div>
         )}
@@ -73,5 +73,3 @@ function SendInvoice() {
     </Container>
   )
 }
-
-export default SendInvoice

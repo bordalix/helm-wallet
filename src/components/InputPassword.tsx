@@ -8,7 +8,7 @@ interface InputPasswordProps {
   onChange: (arg0: any) => void
 }
 
-function InputPassword({ label, onChange }: InputPasswordProps) {
+export default function InputPassword({ label, onChange }: InputPasswordProps) {
   const [type, setType] = useState('password')
 
   const toggleVisibility = () => setType(type === 'text' ? 'password' : 'text')
@@ -33,5 +33,3 @@ function InputPassword({ label, onChange }: InputPasswordProps) {
     </form>
   )
 }
-
-export default InputPassword

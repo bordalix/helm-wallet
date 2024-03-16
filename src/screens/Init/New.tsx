@@ -11,7 +11,7 @@ import Content from '../../components/Content'
 import { FlowContext } from '../../providers/flow'
 import Container from '../../components/Container'
 
-function InitNew() {
+export default function InitNew() {
   const { navigate } = useContext(NavigationContext)
   const { setInitInfo } = useContext(FlowContext)
 
@@ -41,5 +41,3 @@ function InitNew() {
     </Container>
   )
 }
-
-export default InitNew

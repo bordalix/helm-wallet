@@ -1,9 +1,9 @@
 import { Utxo } from './types'
 
-const utxoValue = (u: Utxo) => u.blindingData?.value || 0
+const utxoValue = (u: Utxo) => u.value || 0
 
 // coin selection strategy: accumulate utxos until value is achieved
-const accumulativeStrategy = (coins: Utxo[], target: number): Utxo[] => {
+const accumulativeStrategy = (target: number, coins: Utxo[]): Utxo[] => {
   let totalValue = 0
   const selectedCoins = []
 
@@ -19,7 +19,7 @@ const accumulativeStrategy = (coins: Utxo[], target: number): Utxo[] => {
 }
 
 // coin selection strategy: tries to get an exact value (no change)
-const branchAndBoundStrategy = (coins: Utxo[], target: number): Utxo[] | undefined => {
+const branchAndBoundStrategy = (target: number, coins: Utxo[]): Utxo[] | undefined => {
   const MAX_TRIES = 1_000
   const selected: number[] = []
 
@@ -94,13 +94,10 @@ const branchAndBoundStrategy = (coins: Utxo[], target: number): Utxo[] | undefin
 }
 
 // select coins for given amount, with respective blinding private key
-export function selectCoins(utxos: Utxo[], asset: string, minAmount: number): Utxo[] {
+export function selectCoins(amount: number, utxos: Utxo[]): Utxo[] {
   // sort utxos in descending order of value will decrease number of inputs
   // (and fees) but will increase utxo fragmentation
-  const _utxos = utxos
-    .filter((utxo) => utxo.blindingData && utxo.blindingData.asset === asset)
-    .sort((a, b) => utxoValue(b) - utxoValue(a))
-
+  const sortedUtxos = utxos.sort((a, b) => utxoValue(b) - utxoValue(a))
   // try to find a combination with exact value (aka no change) first
-  return branchAndBoundStrategy(_utxos, minAmount) ?? accumulativeStrategy(_utxos, minAmount)
+  return branchAndBoundStrategy(amount, sortedUtxos) ?? accumulativeStrategy(amount, sortedUtxos)
 }

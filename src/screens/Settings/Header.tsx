@@ -4,7 +4,7 @@ import SettingsBlackIcon from '../../icons/SettingsBlack'
 import { ConfigContext } from '../../providers/config'
 import { WalletContext } from '../../providers/wallet'
 
-function Header({ hideBack, setOption }: any) {
+export default function Header({ hideBack, setOption }: any) {
   const { toggleShowConfig } = useContext(ConfigContext)
   const { reloading } = useContext(WalletContext)
 
@@ -29,5 +29,3 @@ function Header({ hideBack, setOption }: any) {
     </header>
   )
 }
-
-export default Header

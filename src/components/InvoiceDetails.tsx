@@ -14,7 +14,7 @@ interface InvoiceDetailsProps {
   invoice: string
 }
 
-function InvoiceDetails({ invoice }: InvoiceDetailsProps) {
+export default function InvoiceDetails({ invoice }: InvoiceDetailsProps) {
   const { note, satoshis } = decodeInvoice(invoice)
 
   return (
@@ -25,5 +25,3 @@ function InvoiceDetails({ invoice }: InvoiceDetailsProps) {
     </div>
   )
 }
-
-export default InvoiceDetails

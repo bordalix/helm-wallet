@@ -8,7 +8,7 @@ import Select from '../../components/Select'
 import Content from '../../components/Content'
 import Toast from '../../components/Toast'
 
-function Network() {
+export default function Network() {
   const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)
 
   const [showToast, setShowToast] = useState(false)
@@ -38,5 +38,3 @@ function Network() {
     </div>
   )
 }
-
-export default Network

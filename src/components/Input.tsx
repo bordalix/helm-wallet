@@ -9,7 +9,7 @@ interface InputProps {
   type?: string
 }
 
-function Input({ label, left, onChange, placeholder, right, type }: InputProps) {
+export default function Input({ label, left, onChange, placeholder, right, type }: InputProps) {
   const commonSidesClassName = 'w-16 pt-3 mx-auto text-sm bg-gray-700 text-gray-100'
 
   const inputClassName =
@@ -26,5 +26,3 @@ function Input({ label, left, onChange, placeholder, right, type }: InputProps) 
     </fieldset>
   )
 }
-
-export default Input

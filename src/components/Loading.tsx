@@ -1,6 +1,6 @@
 import LoadingIcon from '../icons/Loading'
 
-function Loading() {
+export default function Loading() {
   return (
     <div className='flex h-screen'>
       <div className='m-auto'>
@@ -9,5 +9,3 @@ function Loading() {
     </div>
   )
 }
-
-export default Loading

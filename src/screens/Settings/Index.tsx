@@ -41,7 +41,7 @@ interface Option {
   option: Options
 }
 
-function Settings() {
+export default function Settings() {
   const { wallet } = useContext(WalletContext)
 
   const [option, setOption] = useState(Options.Menu)
@@ -129,5 +129,3 @@ function Settings() {
     </OuterContainer>
   )
 }
-
-export default Settings

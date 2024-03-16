@@ -17,7 +17,7 @@ const TransactionLine = ({ data }: { data: Transaction }) => {
   )
 }
 
-function TransactionsList({ short }: { short?: boolean }) {
+export default function TransactionsList({ short }: { short?: boolean }) {
   const { navigate } = useContext(NavigationContext)
   const { wallet } = useContext(WalletContext)
 
@@ -46,5 +46,3 @@ function TransactionsList({ short }: { short?: boolean }) {
     </div>
   )
 }
-
-export default TransactionsList

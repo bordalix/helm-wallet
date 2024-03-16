@@ -6,7 +6,7 @@ import { ConfigContext } from '../../providers/config'
 import { WalletContext } from '../../providers/wallet'
 import Content from '../../components/Content'
 
-function Logout() {
+export default function Logout() {
   const { toggleShowConfig } = useContext(ConfigContext)
   const { logout } = useContext(WalletContext)
 
@@ -28,5 +28,3 @@ function Logout() {
     </div>
   )
 }
-
-export default Logout

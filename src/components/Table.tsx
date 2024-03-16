@@ -2,7 +2,7 @@ interface TableProps {
   data: string[][]
 }
 
-function Table({ data }: TableProps) {
+export default function Table({ data }: TableProps) {
   return (
     <table className='w-full table-fixed'>
       <tbody>
@@ -16,5 +16,3 @@ function Table({ data }: TableProps) {
     </table>
   )
 }
-
-export default Table

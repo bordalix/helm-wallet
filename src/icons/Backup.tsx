@@ -1,4 +1,4 @@
-function BackupIcon() {
+export default function BackupIcon() {
   return (
     <svg xmlns='http://www.w3.org/2000/svg' className='h-8 w-8' viewBox='0 0 24 24'>
       <g fill='none' stroke='currentColor' strokeLinecap='round' strokeLinejoin='round' strokeWidth='1.5'>
@@ -10,5 +10,3 @@ function BackupIcon() {
     </svg>
   )
 }
-
-export default BackupIcon

@@ -11,9 +11,9 @@ import { NavigationContext, Pages } from '../../../providers/navigation'
 import { ConfigContext } from '../../../providers/config'
 import { extractError } from '../../../lib/error'
 import { WalletContext } from '../../../providers/wallet'
-import { reverseSwap } from '../../../lib/swap'
+import { reverseSwap } from '../../../lib/swaps'
 
-function ReceiveInvoice() {
+export default function ReceiveInvoice() {
   const { config } = useContext(ConfigContext)
   const { recvInfo, setRecvInfo } = useContext(FlowContext)
   const { navigate } = useContext(NavigationContext)
@@ -65,5 +65,3 @@ function ReceiveInvoice() {
     </Container>
   )
 }
-
-export default ReceiveInvoice

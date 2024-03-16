@@ -7,7 +7,7 @@ interface TextareaProps {
   value: string | number
 }
 
-function Textarea({ children, label, onChange, value }: TextareaProps) {
+export default function Textarea({ children, label, onChange, value }: TextareaProps) {
   const className = 'bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg w-80  p-2.5'
   const readOnly = typeof onChange === 'undefined'
 
@@ -20,5 +20,3 @@ function Textarea({ children, label, onChange, value }: TextareaProps) {
     </div>
   )
 }
-
-export default Textarea

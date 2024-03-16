@@ -7,7 +7,7 @@ import Select from '../../components/Select'
 import Content from '../../components/Content'
 import Toast from '../../components/Toast'
 
-function Notifications() {
+export default function Notifications() {
   const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)
 
   const [showToast, setShowToast] = useState(false)
@@ -41,5 +41,3 @@ function Notifications() {
     </div>
   )
 }
-
-export default Notifications

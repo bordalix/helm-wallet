@@ -1,11 +1,12 @@
 import { ReactNode, createContext, useContext, useEffect, useRef, useState } from 'react'
-import { readConfigFromStorage, readWalletFromStorage, saveWalletToStorage } from '../lib/storage'
+import { readWalletFromStorage, saveWalletToStorage } from '../lib/storage'
 import { NavigationContext, Pages } from './navigation'
 import { NetworkName } from '../lib/network'
 import { Mnemonic, Transaction, XPubs } from '../lib/types'
 import { ConfigContext } from './config'
 import { getUtxos } from '../lib/utxo'
 import { getTransactions } from '../lib/transactions'
+import { selectCoins } from '../lib/coinSelection'
 
 export interface Wallet {
   initialized: boolean
@@ -35,6 +36,7 @@ const defaultWallet: Wallet = {
 interface WalletContextProps {
   loading: boolean
   reloading: boolean
+  feesToSendSats: (sats: number) => number
   increaseIndex: () => void
   logout: () => void
   reloadWallet: (wallet: Wallet, gap?: number) => void
@@ -48,6 +50,7 @@ interface WalletContextProps {
 export const WalletContext = createContext<WalletContextProps>({
   loading: true,
   reloading: false,
+  feesToSendSats: () => 0,
   increaseIndex: () => {},
   logout: () => {},
   reloadWallet: () => {},
@@ -78,13 +81,10 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => setMnemonic('')
 
   const reloadWallet = async (wallet: Wallet, gap = 5) => {
-    console.log('reloadWallet gap reloading', gap, reloading)
     if (reloading) return
     setReloading(true)
     const utxos = await getUtxos(config, wallet, gap)
     const transactions = await getTransactions(config, wallet, gap)
-    console.log('utxos', utxos)
-    console.log('transactions', transactions)
     updateWallet({ ...wallet, transactions, utxos, nextIndex: 2 })
     setReloading(false)
   }
@@ -92,6 +92,14 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const resetWallet = () => {
     updateWallet(defaultWallet)
     navigate(Pages.Init)
+  }
+
+  const feesToSendSats = (sats: number): number => {
+    console.log('sats', sats)
+    const inputs = selectCoins(sats, wallet.utxos)
+    console.log('inputs.length', inputs.length)
+    console.log('inputs', inputs)
+    return 273 * inputs.length
   }
 
   const sendSats = (sats: number, address: string) => {
@@ -106,14 +114,11 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!loading) return
-    readWalletFromStorage().then((wallet: Wallet | undefined) => {
-      console.log('readWalletFromStorage', wallet)
-      readConfigFromStorage().then(console.log)
-      setLoading(false)
-      if (!wallet) return navigate(Pages.Init)
-      setWallet(wallet)
-      navigate(Pages.Wallet)
-    })
+    const wallet = readWalletFromStorage()
+    setLoading(false)
+    if (!wallet) return navigate(Pages.Init)
+    setWallet(wallet)
+    navigate(Pages.Wallet)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading])
 
@@ -122,6 +127,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
       value={{
         loading,
         reloading,
+        feesToSendSats,
         increaseIndex,
         logout,
         reloadWallet,

@@ -4,8 +4,6 @@ interface ContainerProps {
   children: ReactNode
 }
 
-function Container({ children }: ContainerProps) {
+export default function Container({ children }: ContainerProps) {
   return <div className='flex flex-col h-full justify-between'>{children}</div>
 }
-
-export default Container

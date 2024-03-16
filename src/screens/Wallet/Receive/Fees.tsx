@@ -10,7 +10,7 @@ import { prettyNumber } from '../../../lib/format'
 import Table from '../../../components/Table'
 import { BoltzContext } from '../../../providers/boltz'
 
-function ReceiveFees() {
+export default function ReceiveFees() {
   const { expectedFees } = useContext(BoltzContext)
   const { navigate } = useContext(NavigationContext)
   const { recvInfo, setRecvInfo } = useContext(FlowContext)
@@ -46,5 +46,3 @@ function ReceiveFees() {
     </Container>
   )
 }
-
-export default ReceiveFees

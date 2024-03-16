@@ -6,7 +6,7 @@ interface ModalProps {
   children: ReactNode
 }
 
-function Modal({ open, onClose, children }: ModalProps) {
+export default function Modal({ open, onClose, children }: ModalProps) {
   const backdropClass = `fixed inset-0 flex justify-center items-center ${open ? 'visible bg-black/20' : 'invisible'}`
   const modalClass = `bg-white rounded-xl shadow p-6 transition-all ${
     open ? 'scale-100 opacity-100' : 'scale-125 opacity-0'
@@ -19,5 +19,3 @@ function Modal({ open, onClose, children }: ModalProps) {
     </div>
   )
 }
-
-export default Modal

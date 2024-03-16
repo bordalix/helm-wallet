@@ -12,7 +12,7 @@ import { FlowContext } from '../../providers/flow'
 import { ConfigContext } from '../../providers/config'
 import Container from '../../components/Container'
 
-function InitPassword() {
+export default function InitPassword() {
   const { navigate } = useContext(NavigationContext)
   const { config, updateConfig } = useContext(ConfigContext)
   const { wallet, reloadWallet } = useContext(WalletContext)
@@ -48,5 +48,3 @@ function InitPassword() {
     </Container>
   )
 }
-
-export default InitPassword

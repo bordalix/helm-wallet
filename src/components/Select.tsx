@@ -7,7 +7,7 @@ interface SelectProps {
   value: string | number
 }
 
-function Select({ children, label, onChange, value }: SelectProps) {
+export default function Select({ children, label, onChange, value }: SelectProps) {
   const className = 'bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg w-80  p-2.5'
 
   return (
@@ -19,5 +19,3 @@ function Select({ children, label, onChange, value }: SelectProps) {
     </div>
   )
 }
-
-export default Select

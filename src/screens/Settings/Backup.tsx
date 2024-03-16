@@ -9,7 +9,7 @@ import Container from '../../components/Container'
 import NeedsPassword from '../../components/NeedsPassword'
 import { WalletContext } from '../../providers/wallet'
 
-function Backup() {
+export default function Backup() {
   const { toggleShowConfig } = useContext(ConfigContext)
   const { setMnemonic, wallet } = useContext(WalletContext)
 
@@ -31,5 +31,3 @@ function Backup() {
     </Container>
   )
 }
-
-export default Backup

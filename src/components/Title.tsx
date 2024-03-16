@@ -3,7 +3,7 @@ interface TitleProps {
   text: string
 }
 
-function Title({ subtext, text }: TitleProps) {
+export default function Title({ subtext, text }: TitleProps) {
   return (
     <div className='min-h-24'>
       <h1 className='text-3xl font-bold'>{text}</h1>
@@ -11,5 +11,3 @@ function Title({ subtext, text }: TitleProps) {
     </div>
   )
 }
-
-export default Title

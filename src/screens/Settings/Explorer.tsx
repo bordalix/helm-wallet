@@ -9,7 +9,7 @@ import Container from '../../components/Container'
 import Content from '../../components/Content'
 import Toast from '../../components/Toast'
 
-function Explorer() {
+export default function Explorer() {
   const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)
 
   const [showToast, setShowToast] = useState(false)
@@ -37,5 +37,3 @@ function Explorer() {
     </Container>
   )
 }
-
-export default Explorer

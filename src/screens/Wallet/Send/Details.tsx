@@ -8,7 +8,7 @@ import Container from '../../../components/Container'
 import ButtonsOnBottom from '../../../components/ButtonsOnBottom'
 import InvoiceDetails from '../../../components/InvoiceDetails'
 
-function SendDetails() {
+export default function SendDetails() {
   const { navigate } = useContext(NavigationContext)
   const { sendInfo, setSendInfo } = useContext(FlowContext)
 
@@ -32,5 +32,3 @@ function SendDetails() {
     </Container>
   )
 }
-
-export default SendDetails

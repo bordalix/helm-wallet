@@ -4,8 +4,6 @@ interface ContentProps {
   children: ReactNode
 }
 
-function Content({ children }: ContentProps) {
+export default function Content({ children }: ContentProps) {
   return <div className='w-80 mx-auto'>{children}</div>
 }
-
-export default Content

@@ -9,7 +9,7 @@ import NeedsPassword from '../../components/NeedsPassword'
 import Container from '../../components/Container'
 import { saveMnemonicToStorage } from '../../lib/storage'
 
-function Password() {
+export default function Password() {
   const { toggleShowConfig } = useContext(ConfigContext)
 
   const [label, setLabel] = useState('')
@@ -35,5 +35,3 @@ function Password() {
     </Container>
   )
 }
-
-export default Password

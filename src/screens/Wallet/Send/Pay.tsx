@@ -11,9 +11,9 @@ import LoadingIcon from '../../../icons/Loading'
 import { prettyNumber } from '../../../lib/format'
 import { WalletContext } from '../../../providers/wallet'
 import { ConfigContext } from '../../../providers/config'
-import { finalizeSubmarineSwap } from '../../../lib/swap'
+import { finalizeSubmarineSwap } from '../../../lib/swaps'
 
-function SendPayment() {
+export default function SendPayment() {
   const { config } = useContext(ConfigContext)
   const { navigate } = useContext(NavigationContext)
   const { sendInfo, setSendInfo } = useContext(FlowContext)
@@ -51,5 +51,3 @@ function SendPayment() {
     </Container>
   )
 }
-
-export default SendPayment

@@ -9,23 +9,20 @@ import Container from '../../components/Container'
 import Content from '../../components/Content'
 import QRCodeIcon from '../../icons/QRCode'
 import ScanIcon from '../../icons/Scan'
-import { readWalletFromStorage } from '../../lib/storage'
 import { generateAddress } from '../../lib/address'
 import Transactions from '../../components/Transactions'
 
-function Wallet() {
+export default function Wallet() {
   const { navigate } = useContext(NavigationContext)
   const { wallet } = useContext(WalletContext)
 
   // get next address and respective pubkey
-  if (wallet.masterBlindingKey)
+  if (wallet.masterBlindingKey) {
     generateAddress(wallet).then((nextAddress) => {
       console.log('destinationAddress', nextAddress.address)
       console.log('confidentialAddress', nextAddress.confidentialAddress)
     })
-
-  readWalletFromStorage().then(console.log)
-  console.log('wallet', wallet)
+  }
 
   return (
     <Container>
@@ -40,5 +37,3 @@ function Wallet() {
     </Container>
   )
 }
-
-export default Wallet

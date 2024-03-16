@@ -12,7 +12,7 @@ const Testnet = () => (
   </div>
 )
 
-function Header() {
+export default function Header() {
   const { config, toggleShowConfig } = useContext(ConfigContext)
   const { navigate } = useContext(NavigationContext)
   const { reloading, wallet } = useContext(WalletContext)
@@ -35,5 +35,3 @@ function Header() {
     </header>
   )
 }
-
-export default Header

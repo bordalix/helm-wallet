@@ -6,8 +6,6 @@ interface BalanceProps {
   value: Satoshis
 }
 
-function Balance({ value }: BalanceProps) {
+export default function Balance({ value }: BalanceProps) {
   return <Title text={prettyNumber(fromSatoshis(value)) + ' BTC'} subtext={prettyNumber(value) + ' sats'} />
 }
-
-export default Balance

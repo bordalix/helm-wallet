@@ -22,7 +22,7 @@ import ReceiveFees from './screens/Wallet/Receive/Fees'
 import SendSuccess from './screens/Wallet/Send/Success'
 import Transactions from './screens/Wallet/Transactions'
 
-const App = () => {
+export default function App() {
   const { loading, showConfig } = useContext(ConfigContext)
   const { screen } = useContext(NavigationContext)
 
@@ -53,5 +53,3 @@ const App = () => {
     </OuterContainer>
   )
 }
-
-export default App

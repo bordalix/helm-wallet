@@ -16,7 +16,7 @@ enum ButtonLabel {
   Ok = 'Continue',
 }
 
-function ReceiveAmount() {
+export default function ReceiveAmount() {
   const { navigate } = useContext(NavigationContext)
   const { setRecvInfo } = useContext(FlowContext)
   const { limits } = useContext(BoltzContext)
@@ -50,5 +50,3 @@ function ReceiveAmount() {
     </Container>
   )
 }
-
-export default ReceiveAmount
