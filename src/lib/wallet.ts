@@ -2,7 +2,6 @@ import { mnemonicToSeed } from 'bip39'
 import BIP32Factory from 'bip32'
 import { Mnemonic, Satoshis, XPubs } from './types'
 import { NetworkName } from './network'
-import { Config } from '../providers/config'
 import { ECPairFactory, ECPairInterface } from 'ecpair'
 import * as ecc from '@bitcoinerlab/secp256k1'
 import { Wallet } from '../providers/wallet'
@@ -21,7 +20,7 @@ const derivationPath = {
 
 export const gapLimits = [5, 20, 40, 80]
 
-export const getMnemonicKeys = async ({ network }: Config, { mnemonic }: Wallet): Promise<ECPairInterface> => {
+export const getMnemonicKeys = async ({ mnemonic, network }: Wallet): Promise<ECPairInterface> => {
   const seed = await mnemonicToSeed(mnemonic)
   if (!seed) throw new Error('Could not get seed from mnemonic')
   const masterNode = bip32.fromSeed(seed)
@@ -29,8 +28,8 @@ export const getMnemonicKeys = async ({ network }: Config, { mnemonic }: Wallet)
   return ECPairFactory(ecc).fromPrivateKey(key.privateKey!)
 }
 
-export const generateRandomKeys = (config: Config): ECPairInterface => {
-  const network = liquid.networks[config.network]
+export const generateRandomKeys = (net: NetworkName): ECPairInterface => {
+  const network = liquid.networks[net]
   return ECPairFactory(ecc).makeRandom({ network })
 }
 

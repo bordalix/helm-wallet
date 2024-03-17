@@ -16,7 +16,7 @@ import {
 } from 'liquidjs-lib'
 import { Config } from '../providers/config'
 import { generateAddress } from './address'
-import zkpLib from '@vulpemventures/secp256k1-zkp'
+import zkpInit from '@vulpemventures/secp256k1-zkp'
 import { satoshiToConfidentialValue } from 'liquidjs-lib/src/confidential'
 import { getScriptType } from 'liquidjs-lib/src/address'
 
@@ -52,7 +52,7 @@ export const sendSats = async (
 
   const { change, coins, txfee } = iterator(sats)
 
-  const network = networks[config.network]
+  const network = networks[wallet.network]
 
   const pset = Creator.newPset()
   const updater = new Updater(pset)
@@ -94,8 +94,8 @@ export const sendSats = async (
   console.log('gst', getScriptType(pset.inputs[0].witnessUtxo?.script!))
 
   const signer = new Signer(pset)
-  const ecc = (await zkpLib()).ecc
-  const keys = await getMnemonicKeys(config, wallet)
+  const ecc = (await zkpInit()).ecc
+  const keys = await getMnemonicKeys(wallet)
 
   for (const [index] of signer.pset.inputs.entries()) {
     const sighash = Transaction.SIGHASH_ALL // '||' lets to overwrite SIGHASH_DEFAULT (0x00)

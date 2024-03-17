@@ -18,8 +18,8 @@ import Backup from './Backup'
 import BackupIcon from '../../icons/Backup'
 import Password from './Password'
 import OuterContainer from '../../components/OuterContainer'
-import RestoreIcon from '../../icons/Restore'
-import Restore from './Restore'
+import ResetIcon from '../../icons/Reset'
+import Reset from './Reset'
 import InfoIcon from '../../icons/Info'
 import About from './About'
 
@@ -33,7 +33,7 @@ enum Options {
   Notifications = 'notifications',
   Password = 'password',
   Reload = 'reload',
-  Restore = 'restore',
+  Reset = 'reset',
 }
 
 interface Option {
@@ -82,8 +82,8 @@ export default function Settings() {
       option: Options.Reload,
     },
     {
-      icon: <RestoreIcon />,
-      option: Options.Restore,
+      icon: <ResetIcon />,
+      option: Options.Reset,
     },
   ]
 
@@ -123,7 +123,7 @@ export default function Settings() {
         {option === Options.Notifications && <Notifications />}
         {option === Options.Password && <Password />}
         {option === Options.Reload && <Reload />}
-        {option === Options.Restore && <Restore backup={() => setOption(Options.Backup)} />}
+        {option === Options.Reset && <Reset backup={() => setOption(Options.Backup)} />}
       </div>
       <Footer />
     </OuterContainer>

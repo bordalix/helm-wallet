@@ -13,7 +13,7 @@ const Testnet = () => (
 )
 
 export default function Header() {
-  const { config, toggleShowConfig } = useContext(ConfigContext)
+  const { toggleShowConfig } = useContext(ConfigContext)
   const { navigate } = useContext(NavigationContext)
   const { reloading, wallet } = useContext(WalletContext)
 
@@ -28,7 +28,7 @@ export default function Header() {
       >
         <LogoIcon />
       </button>
-      {config.network === NetworkName.Testnet ? <Testnet /> : null}
+      {wallet.network === NetworkName.Testnet ? <Testnet /> : null}
       <button onClick={toggleShowConfig} className='p-2 rounded-full bg-gray-100'>
         <SettingsIcon />
       </button>

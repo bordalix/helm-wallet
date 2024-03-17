@@ -1,12 +1,10 @@
 import { ReactNode, createContext, useEffect, useState } from 'react'
 import { clearStorage, readConfigFromStorage, saveConfigToStorage } from '../lib/storage'
 import { ExplorerName } from '../lib/explorers'
-import { NetworkName } from '../lib/network'
 
 export interface Config {
   explorer: ExplorerName
   gap: number
-  network: NetworkName
   notifications: boolean
   password: string
 }
@@ -14,7 +12,6 @@ export interface Config {
 const defaultConfig: Config = {
   explorer: ExplorerName.Mempool,
   gap: 5,
-  network: NetworkName.Testnet,
   notifications: false,
   password: '',
 }
@@ -45,11 +42,6 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   const toggleShowConfig = () => setShowConfig(!showConfig)
 
   const updateConfig = (data: Config) => {
-    if (data.network === NetworkName.Regtest) {
-      data.explorer = ExplorerName.Nigiri
-    } else if (data.explorer === ExplorerName.Nigiri) {
-      data.explorer = ExplorerName.Mempool
-    }
     setConfig(data)
     saveConfigToStorage(data)
   }

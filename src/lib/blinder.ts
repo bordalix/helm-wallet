@@ -3,6 +3,7 @@ import * as liquid from 'liquidjs-lib'
 import zkpInit from '@vulpemventures/secp256k1-zkp'
 import { UnblindedOutput } from './types'
 import { Config } from '../providers/config'
+import { Wallet } from '../providers/wallet'
 
 let confidential: liquid.confidential.Confidential
 
@@ -16,9 +17,10 @@ export const unblindOutput = async (
   vout: number,
   blindingKeys: BlindingKeyPair,
   config: Config,
+  wallet: Wallet,
 ): Promise<UnblindedOutput> => {
   if (!confidential) confidential = new liquid.confidential.Confidential((await zkpInit()) as any)
-  const txhex = await fetchTxHex(txid, config)
+  const txhex = await fetchTxHex(txid, config, wallet)
   const tx = liquid.Transaction.fromHex(txhex)
   const unblinded = confidential.unblindOutputWithKey(tx.outs[vout], blindingKeys.privateKey)
   return { ...unblinded, value: Number(unblinded.value) }

@@ -1,6 +1,6 @@
-import { Config } from '../providers/config'
+import { NetworkName } from './network'
 
-export const getBoltzApiUrl = ({ network }: Config) =>
+export const getBoltzApiUrl = (network: NetworkName) =>
   network === 'testnet' ? 'https://testnet.boltz.exchange/api' : 'https://api.boltz.exchange'
 
-export const getBoltzWsUrl = (config: Config) => `${getBoltzApiUrl(config).replace('https://', 'ws://')}/v2/ws`
+export const getBoltzWsUrl = (network: NetworkName) => `${getBoltzApiUrl(network).replace('https://', 'ws://')}/v2/ws`

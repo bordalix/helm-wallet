@@ -14,6 +14,7 @@ import bolt11 from 'bolt11'
 import { SendInfo } from '../providers/flow'
 import { getBoltzApiUrl, getBoltzWsUrl } from './boltz'
 import { sendSats } from './transactions'
+import { NetworkName } from './network'
 
 /**
  * Submarine swap flow:
@@ -47,11 +48,11 @@ export interface SubmarineSwapResponse {
 export const submarineSwap = async (
   invoice: any,
   refundPublicKey: string,
-  config: Config,
+  network: NetworkName,
 ): Promise<SubmarineSwapResponse> => {
   // Create a Submarine Swap
   const swapResponse: SubmarineSwapResponse = (
-    await axios.post(`${getBoltzApiUrl(config)}/v2/swap/submarine`, {
+    await axios.post(`${getBoltzApiUrl(network)}/v2/swap/submarine`, {
       invoice,
       to: 'BTC',
       from: 'L-BTC',
@@ -74,7 +75,7 @@ export const finalizeSubmarineSwap = (
   if (!invoice || !keys || !swapResponse) return
 
   // Create a WebSocket and subscribe to updates for the created swap
-  const webSocket = new WebSocket(getBoltzWsUrl(config))
+  const webSocket = new WebSocket(getBoltzWsUrl(wallet.network))
   webSocket.onopen = () => {
     webSocket.send(
       JSON.stringify({
@@ -115,8 +116,9 @@ export const finalizeSubmarineSwap = (
         console.log('Creating cooperative claim transaction')
 
         // Get the information request to create a partial signature
-        const claimTxDetails = (await axios.get(`${getBoltzApiUrl(config)}/v2/swap/submarine/${swapResponse.id}/claim`))
-          .data
+        const claimTxDetails = (
+          await axios.get(`${getBoltzApiUrl(wallet.network)}/v2/swap/submarine/${swapResponse.id}/claim`)
+        ).data
 
         // Verify that Boltz actually paid the invoice by comparing the preimage hash
         // of the invoice to the SHA256 hash of the preimage from the response
@@ -142,7 +144,7 @@ export const finalizeSubmarineSwap = (
         musig.initializeSession(Buffer.from(claimTxDetails.transactionHash, 'hex'))
 
         // Give our public nonce and the partial signature to Boltz
-        await axios.post(`${getBoltzApiUrl(config)}/v2/swap/submarine/${swapResponse.id}/claim`, {
+        await axios.post(`${getBoltzApiUrl(wallet.network)}/v2/swap/submarine/${swapResponse.id}/claim`, {
           pubNonce: Buffer.from(musig.getPublicNonce()).toString('hex'),
           partialSignature: Buffer.from(musig.signPartial()).toString('hex'),
         })
@@ -197,8 +199,8 @@ export const reverseSwap2 = async (
   initEccLib(ecc)
 
   // Endpoint of the Boltz instance to be used
-  const endpoint = getBoltzApiUrl(config)
-  const network = liquid.networks[config.network]
+  const endpoint = getBoltzApiUrl(wallet.network)
+  const network = liquid.networks[wallet.network]
 
   // Create a random preimage for the swap; has to have a length of 32 bytes
   const preimage = randomBytes(32)
@@ -225,7 +227,7 @@ export const reverseSwap2 = async (
   console.log()
 
   // Create a WebSocket and subscribe to updates for the created swap
-  const webSocket = new WebSocket(getBoltzWsUrl(config))
+  const webSocket = new WebSocket(getBoltzWsUrl(wallet.network))
   webSocket.onopen = () => {
     webSocket.send(
       JSON.stringify({

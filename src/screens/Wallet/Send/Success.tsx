@@ -9,15 +9,17 @@ import Container from '../../../components/Container'
 import { getTxIdURL } from '../../../lib/explorers'
 import { ConfigContext } from '../../../providers/config'
 import { FlowContext } from '../../../providers/flow'
+import { WalletContext } from '../../../providers/wallet'
 
 export default function SendSuccess() {
   const { config } = useContext(ConfigContext)
   const { sendInfo } = useContext(FlowContext)
   const { navigate } = useContext(NavigationContext)
+  const { wallet } = useContext(WalletContext)
 
   const handleExplorer = () => {
     if (!sendInfo.txid) return
-    window.open(getTxIdURL(sendInfo.txid, config), '_blank', 'noreferrer')
+    window.open(getTxIdURL(sendInfo.txid, config, wallet), '_blank', 'noreferrer')
   }
 
   const goBackToWallet = () => navigate(Pages.Wallet)

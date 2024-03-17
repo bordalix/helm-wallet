@@ -8,9 +8,11 @@ import Select from '../../components/Select'
 import Container from '../../components/Container'
 import Content from '../../components/Content'
 import Toast from '../../components/Toast'
+import { WalletContext } from '../../providers/wallet'
 
 export default function Explorer() {
   const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)
+  const { wallet } = useContext(WalletContext)
 
   const [showToast, setShowToast] = useState(false)
 
@@ -25,7 +27,7 @@ export default function Explorer() {
       <Content>
         <Title text='Explorer' subtext='Change your explorer' />
         <Select onChange={handleChange} value={config.explorer}>
-          {getExplorerNames(config).map((e) => (
+          {getExplorerNames(wallet.network).map((e) => (
             <option key={e}>{e}</option>
           ))}
         </Select>

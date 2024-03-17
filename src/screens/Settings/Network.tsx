@@ -7,14 +7,16 @@ import { getNetworkNames } from '../../lib/network'
 import Select from '../../components/Select'
 import Content from '../../components/Content'
 import Toast from '../../components/Toast'
+import { WalletContext } from '../../providers/wallet'
 
 export default function Network() {
-  const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)
+  const { toggleShowConfig } = useContext(ConfigContext)
+  const { wallet, updateWallet } = useContext(WalletContext)
 
   const [showToast, setShowToast] = useState(false)
 
   const handleChange = (e: any) => {
-    updateConfig({ ...config, network: e.target.value })
+    updateWallet({ ...wallet, network: e.target.value })
     setShowToast(true)
     setTimeout(() => setShowToast(false), 2_000)
   }
@@ -23,7 +25,7 @@ export default function Network() {
     <div className='flex flex-col h-full justify-between'>
       <Content>
         <Title text='Network' subtext='Change your network' />
-        <Select onChange={handleChange} value={config.network}>
+        <Select onChange={handleChange} value={wallet.network}>
           {getNetworkNames().map((e) => (
             <option key={e} value={e}>
               {e}

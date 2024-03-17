@@ -39,14 +39,14 @@ const getTransactionAmount = async (
   if (utxo) return utxo.value
   for (const vin of txInfo.vin) {
     if (vin.prevout.scriptpubkey_address === address) {
-      const { value } = await unblindOutput(vin.txid, vin.vout, blindingKeys, config)
+      const { value } = await unblindOutput(vin.txid, vin.vout, blindingKeys, config, wallet)
       return -value
     }
   }
   for (let i = 0; txInfo.vout[i]; i++) {
     const vout = txInfo.vout[i]
     if (vout.scriptpubkey_address === address) {
-      const { value } = await unblindOutput(txInfo.txid, i, blindingKeys, config)
+      const { value } = await unblindOutput(txInfo.txid, i, blindingKeys, config, wallet)
       return value
     }
   }
@@ -68,19 +68,19 @@ export const fetchHistory = async (config: Config, wallet: Wallet, defaultGap = 
   while (gap > 0) {
     const { address, blindingKeys } = await generateAddress(wallet, index)
     if (!address || !blindingKeys) throw new Error('Could not generate new address')
-    const data = await fetchAddress(address, config)
+    const data = await fetchAddress(address, config, wallet)
     if (data?.chain_stats?.tx_count > 0 || data?.mempool_stats?.tx_count > 0) {
       gap = defaultGap // resets gap
       lastIndexWithTx = index
-      for (const txInfo of await fetchAddressTxs(address, config)) {
+      for (const txInfo of await fetchAddressTxs(address, config, wallet)) {
         transactions.push({
           amount: await getTransactionAmount(address, blindingKeys, txInfo, config, wallet),
           date: txInfo.status.block_time,
           txid: txInfo.txid,
         })
       }
-      for (const utxo of await fetchUtxos(address, config)) {
-        const unblinded = await unblindOutput(utxo.txid, utxo.vout, blindingKeys, config)
+      for (const utxo of await fetchUtxos(address, config, wallet)) {
+        const unblinded = await unblindOutput(utxo.txid, utxo.vout, blindingKeys, config, wallet)
         const script = liquid.address.toOutputScript(address)
         utxos.push({ ...utxo, ...unblinded, address, script, value: Number(unblinded.value) })
       }
@@ -88,7 +88,7 @@ export const fetchHistory = async (config: Config, wallet: Wallet, defaultGap = 
     index += 1
     gap -= 1
   }
-  const lbtc = liquid.networks[config.network].assetHash
+  const lbtc = liquid.networks[wallet.network].assetHash
   const lbtcUtxos = utxos.filter((utxo) => utxo.asset.reverse().toString('hex') === lbtc)
   return { nextIndex: lastIndexWithTx + 1, transactions, utxos: lbtcUtxos }
 }

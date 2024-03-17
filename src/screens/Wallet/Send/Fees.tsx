@@ -7,7 +7,6 @@ import Content from '../../../components/Content'
 import Container from '../../../components/Container'
 import { FlowContext, emptySendInfo } from '../../../providers/flow'
 import { prettyNumber } from '../../../lib/format'
-import { ConfigContext } from '../../../providers/config'
 import { WalletContext } from '../../../providers/wallet'
 import { submarineSwap } from '../../../lib/swaps'
 import Error from '../../../components/Error'
@@ -20,7 +19,6 @@ import { feesToSendSats } from '../../../lib/transactions'
 import { getBalance } from '../../../lib/wallet'
 
 export default function SendFees() {
-  const { config } = useContext(ConfigContext)
   const { setMnemonic, wallet } = useContext(WalletContext)
   const { navigate } = useContext(NavigationContext)
   const { sendInfo, setSendInfo } = useContext(FlowContext)
@@ -34,7 +32,7 @@ export default function SendFees() {
 
   useEffect(() => {
     if (invoice && wallet.mnemonic) {
-      submarineSwap(invoice, refundPublicKey, config)
+      submarineSwap(invoice, refundPublicKey, wallet.network)
         .then((swapResponse) => {
           const { expectedAmount } = swapResponse
           const txFees = feesToSendSats(expectedAmount, wallet)

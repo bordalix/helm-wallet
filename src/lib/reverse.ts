@@ -24,14 +24,14 @@ export const reverseSwap = async (
   // Create a random preimage for the swap; has to have a length of 32 bytes
   const preimage = randomBytes(32)
   const keys = ECPairFactory(ecc).makeRandom()
-  const network = getNetwork(config.network)
+  const network = getNetwork(wallet.network)
   const destinationAddress = (await generateAddress(wallet)).confidentialAddress
 
   let claimTx: Transaction
 
   // Create a Submarine Swap
   const createdResponse = (
-    await axios.post(`${getBoltzApiUrl(config)}/v2/swap/reverse`, {
+    await axios.post(`${getBoltzApiUrl(wallet.network)}/v2/swap/reverse`, {
       invoiceAmount,
       to: 'L-BTC',
       from: 'BTC',
@@ -46,7 +46,7 @@ export const reverseSwap = async (
   console.log()
 
   // Create a WebSocket and subscribe to updates for the created swap
-  const webSocket = new WebSocket(getBoltzWsUrl(config))
+  const webSocket = new WebSocket(getBoltzWsUrl(wallet.network))
   webSocket.onopen = () => {
     webSocket.send(
       JSON.stringify({
@@ -124,7 +124,7 @@ export const reverseSwap = async (
 
         // Get the partial signature from Boltz
         const boltzSig = (
-          await axios.post(`${getBoltzApiUrl(config)}/v2/swap/reverse/${createdResponse.id}/claim`, {
+          await axios.post(`${getBoltzApiUrl(wallet.network)}/v2/swap/reverse/${createdResponse.id}/claim`, {
             index: 0,
             transaction: claimTx.toHex(),
             preimage: preimage.toString('hex'),
@@ -156,7 +156,7 @@ export const reverseSwap = async (
         claimTx.ins[0].witness = [musig.aggregatePartials()]
 
         // Broadcast the finalized transaction
-        await axios.post(`${getBoltzApiUrl(config)}/v2/chain/L-BTC/transaction`, {
+        await axios.post(`${getBoltzApiUrl(wallet.network)}/v2/chain/L-BTC/transaction`, {
           hex: claimTx.toHex(),
         })
 
