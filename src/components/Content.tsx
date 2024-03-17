@@ -5,5 +5,5 @@ interface ContentProps {
 }
 
 export default function Content({ children }: ContentProps) {
-  return <div className='w-80 mx-auto'>{children}</div>
+  return <div className='w-full'>{children}</div>
 }

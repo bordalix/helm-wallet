@@ -19,7 +19,7 @@ export default function Restore({ backup }: { backup: () => void }) {
   return (
     <Container>
       <Content>
-        <Title text='Restore wallet' />
+        <Title text='Reset wallet' />
         <p className='mt-10 mb-4'>
           Did you{' '}
           <span className='underline cursor-pointer' onClick={backup}>
@@ -30,7 +30,7 @@ export default function Restore({ backup }: { backup: () => void }) {
         <p>This operation cannot be undone.</p>
       </Content>
       <ButtonsOnBottom>
-        <Button onClick={handleReset} label='Restore wallet' />
+        <Button onClick={handleReset} label='Reset wallet' />
         <Button onClick={toggleShowConfig} label='Cancel' secondary />
       </ButtonsOnBottom>
     </Container>

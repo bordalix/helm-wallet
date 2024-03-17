@@ -21,7 +21,7 @@ export default function NewPassword({ onNewPassword, setLabel }: NewPasswordProp
   useEffect(() => {
     onNewPassword(password === confirm ? password : '')
     if (!password) return setLabel("Can't be empty")
-    if (password !== confirm) return setLabel('Must match')
+    if (password !== confirm) return setLabel('Passwords must match')
     setLabel('Save password')
   }, [password, confirm])
 

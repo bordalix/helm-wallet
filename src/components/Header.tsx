@@ -8,7 +8,7 @@ import { NetworkName } from '../lib/network'
 
 const Testnet = () => (
   <div className='flex items-center'>
-    <p className='border p-1 rounded-md uppercase text-sm'>Testnet</p>
+    <p className='border px-0.5 rounded-md uppercase text-gray-500 text-xxs'>Testnet</p>
   </div>
 )
 
@@ -20,7 +20,7 @@ export default function Header() {
   const handleClick = () => navigate(wallet.initialized ? Pages.Wallet : Pages.Init)
 
   return (
-    <header className='flex justify-between w-full mb-6'>
+    <header className='flex justify-between w-full mb-3'>
       <button
         onClick={handleClick}
         aria-label='Back to homepage'

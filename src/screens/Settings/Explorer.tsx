@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext } from 'react'
 import Button from '../../components/Button'
 import ButtonsOnBottom from '../../components/ButtonsOnBottom'
 import Title from '../../components/Title'
@@ -7,31 +7,26 @@ import { getExplorerNames } from '../../lib/explorers'
 import Select from '../../components/Select'
 import Container from '../../components/Container'
 import Content from '../../components/Content'
-import Toast from '../../components/Toast'
 import { WalletContext } from '../../providers/wallet'
 
 export default function Explorer() {
   const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)
   const { wallet } = useContext(WalletContext)
 
-  const [showToast, setShowToast] = useState(false)
-
   const handleChange = (e: any) => {
     updateConfig({ ...config, explorer: e.target.value })
-    setShowToast(true)
-    setTimeout(() => setShowToast(false), 2_000)
   }
 
   return (
     <Container>
       <Content>
-        <Title text='Explorer' subtext='Change your explorer' />
+        <Title text='Explorer' subtext='Choose your explorer' />
         <Select onChange={handleChange} value={config.explorer}>
           {getExplorerNames(wallet.network).map((e) => (
             <option key={e}>{e}</option>
           ))}
         </Select>
-        {showToast ? <Toast text='Saved' /> : null}
+        <p className='mt-10'>Thor uses this to query the blockchain</p>
       </Content>
       <ButtonsOnBottom>
         <Button onClick={toggleShowConfig} label='Back to wallet' secondary />

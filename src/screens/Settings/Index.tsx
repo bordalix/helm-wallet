@@ -100,7 +100,7 @@ export default function Settings() {
           <div>
             {validOptions().map(({ icon, option }) => (
               <div
-                className='flex justify-between cursor-pointer px-2.5 py-4 first:border-t-2 border-b-2'
+                className='flex justify-between cursor-pointer px-2.5 py-3 first:border-t-2 border-b-2'
                 key={option}
                 onClick={() => setOption(option)}
               >

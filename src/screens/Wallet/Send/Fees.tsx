@@ -73,9 +73,8 @@ export default function SendFees() {
   return (
     <Container>
       <Content>
-        <Title text='Payment details' subtext='Values in sats' />
-        <Error error={Boolean(error)} text={error} />
-        {error ? null : <Table data={data} />}
+        <Title text='Payment fees' subtext='Values in sats' />
+        {error ? <Error error text={error} /> : <Table data={data} />}
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handlePay} label={label} disabled={Boolean(error)} />

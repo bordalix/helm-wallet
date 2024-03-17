@@ -21,7 +21,7 @@ export default function SendInvoice() {
   const [invoice, setInvoice] = useState('')
 
   // Firefox doesn't support navigator.clipboard.readText()
-  const firefox = !('readText' in navigator.clipboard)
+  const firefox = !navigator.clipboard || !('readText' in navigator.clipboard)
 
   useEffect(() => {
     if (!invoice) return
@@ -56,12 +56,15 @@ export default function SendInvoice() {
   return (
     <Container>
       <Content>
-        <Title text='Send' subtext='Scan or paste invoice' />
+        <Title text='Send' subtext={`${firefox ? 'Paste' : 'Scan or paste'} invoice`} />
         <Error error={Boolean(error)} text={error} />
         {error ? null : (
           <div className='flex flex-col h-full justify-between'>
-            <BarcodeScanner setInvoice={setInvoice} setError={setError} />
-            {firefox ? <Input label='Paste your invoice here' left='&#9889;' onChange={handleChange} /> : null}
+            {firefox ? (
+              <Input label='Paste your invoice here' left='&#9889;' onChange={handleChange} />
+            ) : (
+              <BarcodeScanner setInvoice={setInvoice} setError={setError} />
+            )}
           </div>
         )}
       </Content>

@@ -30,19 +30,21 @@ export default function TransactionsList({ short }: { short?: boolean }) {
   const showTxs = short ? sorted.slice(0, showMax) : sorted
 
   return (
-    <div className='flex flex-col gap-2 h-96 overflow-auto'>
+    <div className='mt-4'>
       <Label text={`${short ? 'Last' : 'All'} transactions`} />
-      {showTxs.map((t) => (
-        <TransactionLine key={t.txid} data={t} />
-      ))}
-      {short && transactions.length > showMax ? (
-        <div className='border bg-gray-100 p-2 flex justify-end w-full rounded-md'>
-          <div className='flex' onClick={() => navigate(Pages.Transactions)}>
-            <p className='mr-2 cursor-pointer'>All transactions</p>
-            <ArrowIcon tiny />
+      <div className='flex flex-col gap-2 h-72 overflow-auto'>
+        {showTxs.map((t) => (
+          <TransactionLine key={t.txid} data={t} />
+        ))}
+        {short && transactions.length > showMax ? (
+          <div className='border bg-gray-100 p-2 flex justify-end w-full rounded-md'>
+            <div className='flex' onClick={() => navigate(Pages.Transactions)}>
+              <p className='mr-2 cursor-pointer'>All transactions</p>
+              <ArrowIcon tiny />
+            </div>
           </div>
-        </div>
-      ) : null}
+        ) : null}
+      </div>
     </div>
   )
 }

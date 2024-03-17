@@ -4,7 +4,7 @@ interface TableProps {
 
 export default function Table({ data }: TableProps) {
   return (
-    <table className='w-full table-fixed'>
+    <table className='w-full table-fixed mt-0.5'>
       <tbody>
         {data.map((row, idx) => (
           <tr key={row[0]} className={idx + 1 === data.length ? 'border-t' : ''}>

@@ -57,8 +57,7 @@ export default function ReceiveInvoice() {
     <Container>
       <Content>
         <Title text='Invoice' subtext='Scan or copy to clipboard' />
-        <Error error={Boolean(error)} text={error} />
-        {error ? null : <QrCode invoice={invoice} />}
+        {error ? <Error error text={error} /> : <QrCode invoice={invoice} />}
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handleCopy} label={buttonLabel} />

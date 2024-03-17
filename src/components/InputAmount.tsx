@@ -47,9 +47,9 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
   }
 
   return (
-    <fieldset className='text-left text-gray-800 mx-auto'>
+    <fieldset className='text-left text-gray-800 mx-auto mt-4'>
       {label ? <Label text={label} /> : null}
-      <div className='flex items-center h-12 rounded-l-md bg-gray-100 mb-2'>
+      <div className='flex items-center h-12 rounded-l-md bg-gray-100'>
         {isMobile ? (
           <p className={className}>{amount}</p>
         ) : (
@@ -59,11 +59,11 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
           <div className='mx-auto font-semibold'>{unit}</div>
         </div>
       </div>
-      <p className='text-right text-sm mb-10'>{alternativeAmount()}</p>
+      <p className='text-right text-xs mb-2'>{alternativeAmount()}</p>
       {isMobile ? (
         <Columns cols={3}>
           {keys.map((k) => (
-            <p key={k} className='text-center p-4 bg-gray-100' onClick={() => clickHandler(k)}>
+            <p key={k} className='text-center p-3 bg-gray-100' onClick={() => clickHandler(k)}>
               {k}
             </p>
           ))}

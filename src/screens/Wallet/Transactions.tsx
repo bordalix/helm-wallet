@@ -19,6 +19,7 @@ export default function Transactions() {
         <TransactionsList />
       </Content>
       <ButtonsOnBottom>
+        <Button onClick={goBackToWallet} label='Export CSV file' />
         <Button onClick={goBackToWallet} label='Back to wallet' secondary />
       </ButtonsOnBottom>
     </Container>
