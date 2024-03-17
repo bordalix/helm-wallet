@@ -61,9 +61,9 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!loading) return
-    const data = readConfigFromStorage()
+    const _config = readConfigFromStorage()
+    updateConfig(_config ?? defaultConfig)
     setLoading(false)
-    if (data) setConfig(data)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading])
 

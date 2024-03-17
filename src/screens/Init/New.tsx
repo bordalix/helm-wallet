@@ -28,6 +28,7 @@ export default function InitNew() {
     <Container>
       <Content>
         <Title text='Your new wallet' subtext='Write down the following words' />
+        <p className='p-2' />
         <Columns>
           {mnemonic.split(' ').map((word, i) => (
             <Word key={word} left={i + 1} text={word} />

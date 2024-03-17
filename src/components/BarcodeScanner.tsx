@@ -2,11 +2,11 @@ import { useRef, useEffect } from 'react'
 import { BrowserMultiFormatReader } from '@zxing/library'
 
 interface BarcodeScannerProps {
-  setData: (arg0: string) => void
   setError: (arg0: string) => void
+  setInvoice: (arg0: string) => void
 }
 
-export default function BarcodeScanner({ setData, setError }: BarcodeScannerProps) {
+export default function BarcodeScanner({ setError, setInvoice }: BarcodeScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const reader = useRef(new BrowserMultiFormatReader())
 
@@ -28,7 +28,7 @@ export default function BarcodeScanner({ setData, setError }: BarcodeScannerProp
         (result, error) => {
           if (result) {
             const aux = JSON.stringify(result)
-            setData(JSON.parse(aux).text)
+            setInvoice(JSON.parse(aux).text)
           }
           if (error) console.error(error)
         },

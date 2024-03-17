@@ -35,7 +35,7 @@ const getTransactionAmount = async (
   config: Config,
   wallet: Wallet,
 ): Promise<number> => {
-  const utxo = wallet.utxos.find((u) => u.address === address && u.txid === txInfo.txid)
+  const utxo = wallet.utxos[wallet.network].find((u) => u.address === address && u.txid === txInfo.txid)
   if (utxo) return utxo.value
   for (const vin of txInfo.vin) {
     if (vin.prevout.scriptpubkey_address === address) {
@@ -53,44 +53,42 @@ const getTransactionAmount = async (
   return 0
 }
 
-export const fetchHistory = async (
-  config: Config,
-  wallet: Wallet,
-  defaultGap = 5,
-): Promise<{ transactions: Transaction[]; utxos: Utxo[] }> => {
+export interface HistoryResponse {
+  nextIndex: number
+  transactions: Transaction[]
+  utxos: Utxo[]
+}
+
+export const fetchHistory = async (config: Config, wallet: Wallet, defaultGap = 5): Promise<HistoryResponse> => {
   const transactions: Transaction[] = []
   const utxos: Utxo[] = []
-
-  for (let chain = 0; chain < 2; chain++) {
-    let index = 0
-    let gap = defaultGap
-    while (gap > 0) {
-      const { address, blindingKeys } = await generateAddress(wallet, chain, index)
-      if (!address || !blindingKeys) throw new Error('Could not generate new address')
-      const data = await fetchAddress(address, config)
-      console.log('address', address)
-      console.log('data.chain_stats.tx_count', data.chain_stats.tx_count)
-      console.log('data.mempool_stats.tx_count', data.mempool_stats.tx_count)
-      if (data?.chain_stats?.tx_count > 0 || data?.mempool_stats?.tx_count > 0) {
-        gap = defaultGap // resets gap
-        for (const txInfo of await fetchAddressTxs(address, config)) {
-          transactions.push({
-            amount: await getTransactionAmount(address, blindingKeys, txInfo, config, wallet),
-            date: txInfo.status.block_time,
-            txid: txInfo.txid,
-          })
-        }
-        for (const utxo of await fetchUtxos(address, config)) {
-          const unblinded = await unblindOutput(utxo.txid, utxo.vout, blindingKeys, config)
-          const script = liquid.address.toOutputScript(address)
-          utxos.push({ ...utxo, ...unblinded, address, script, value: Number(unblinded.value) })
-        }
+  let index = 0
+  let lastIndexWithTx = 0
+  let gap = defaultGap
+  while (gap > 0) {
+    const { address, blindingKeys } = await generateAddress(wallet, index)
+    if (!address || !blindingKeys) throw new Error('Could not generate new address')
+    const data = await fetchAddress(address, config)
+    if (data?.chain_stats?.tx_count > 0 || data?.mempool_stats?.tx_count > 0) {
+      gap = defaultGap // resets gap
+      lastIndexWithTx = index
+      for (const txInfo of await fetchAddressTxs(address, config)) {
+        transactions.push({
+          amount: await getTransactionAmount(address, blindingKeys, txInfo, config, wallet),
+          date: txInfo.status.block_time,
+          txid: txInfo.txid,
+        })
       }
-      index += 1
-      gap -= 1
+      for (const utxo of await fetchUtxos(address, config)) {
+        const unblinded = await unblindOutput(utxo.txid, utxo.vout, blindingKeys, config)
+        const script = liquid.address.toOutputScript(address)
+        utxos.push({ ...utxo, ...unblinded, address, script, value: Number(unblinded.value) })
+      }
     }
+    index += 1
+    gap -= 1
   }
   const lbtc = liquid.networks[config.network].assetHash
   const lbtcUtxos = utxos.filter((utxo) => utxo.asset.reverse().toString('hex') === lbtc)
-  return { transactions, utxos: lbtcUtxos }
+  return { nextIndex: lastIndexWithTx + 1, transactions, utxos: lbtcUtxos }
 }

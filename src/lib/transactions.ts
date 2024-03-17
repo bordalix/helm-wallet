@@ -24,7 +24,7 @@ const feePerInput = 273
 
 export const feesToSendSats = (sats: number, wallet: Wallet): number => {
   if (sats === 0) return 0
-  const coins = selectCoins(sats, wallet.utxos)
+  const coins = selectCoins(sats, wallet.utxos[wallet.network])
   return feePerInput * coins.length // TODO
 }
 
@@ -35,12 +35,13 @@ export const sendSats = async (
   wallet: Wallet,
 ): Promise<string> => {
   // check if enough balance
+  const utxos = wallet.utxos[wallet.network]
   const balance = getBalance(wallet)
-  if (!balance || balance - sats - wallet.utxos.length * feePerInput < 0) return ''
+  if (!balance || balance - sats - utxos.length * feePerInput < 0) return ''
 
   // find best coins combo to pay this
   const iterator = (amount: number): { change: number; coins: Utxo[]; txfee: number } => {
-    const coins = selectCoins(amount, wallet.utxos)
+    const coins = selectCoins(amount, utxos)
     const value = coins.reduce((prev, curr) => prev + curr.value, 0)
     const txfee = coins.length * feePerInput
     const change = value - amount - txfee
@@ -84,7 +85,7 @@ export const sendSats = async (
       {
         amount: change,
         asset: network.assetHash,
-        script: (await generateAddress(wallet, 1)).script,
+        script: (await generateAddress(wallet)).script,
       },
     ])
   }

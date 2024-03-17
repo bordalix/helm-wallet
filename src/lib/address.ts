@@ -16,10 +16,11 @@ export interface NewAddress {
   script: Buffer
 }
 
-export const generateAddress = async (wallet: Wallet, chain = 0, index?: number): Promise<NewAddress> => {
+export const generateAddress = async (wallet: Wallet, index?: number): Promise<NewAddress> => {
+  const chain = 0
   const xpub = wallet.xpubs[wallet.network]
   const network = getNetwork(wallet.network)
-  const nextIndex = index ?? wallet.nextIndex
+  const nextIndex = index ?? wallet.nextIndex[wallet.network]
   const pubkey = bip32.fromBase58(xpub).derive(chain).derive(nextIndex).publicKey
   const { address, output } = liquid.payments.p2wpkh({ network, pubkey })
   if (!address || !output) throw new Error('Unable to generate liquid payment')

@@ -5,6 +5,7 @@ import Title from '../../components/Title'
 import ButtonsOnBottom from '../../components/ButtonsOnBottom'
 import Columns from '../../components/Columns'
 import Word from '../../components/Word'
+import Error from '../../components/Error'
 import { NavigationContext, Pages } from '../../providers/navigation'
 import Content from '../../components/Content'
 import { FlowContext } from '../../providers/flow'
@@ -21,14 +22,13 @@ export default function InitOld() {
   const { setInitInfo } = useContext(FlowContext)
 
   const [label, setLabel] = useState(ButtonLabel.Incomplete)
-  const [passphrase, setPassphrase] = useState(['', '', '', '', '', '', '', '', '', '', '', ''])
+  const [passphrase, setPassphrase] = useState(Array.from({ length: 12 }, () => ''))
 
   useEffect(() => {
     const completed = [...passphrase].filter((a) => a)?.length === 12
     if (!completed) return setLabel(ButtonLabel.Incomplete)
     const valid = validateMnemonic(passphrase.join(' '))
-    if (!valid) return setLabel(ButtonLabel.Invalid)
-    setLabel(ButtonLabel.Ok)
+    setLabel(valid ? ButtonLabel.Ok : ButtonLabel.Invalid)
   }, [passphrase])
 
   const handleChange = (e: any, i: number) => {
@@ -56,6 +56,9 @@ export default function InitOld() {
     <Container>
       <Content>
         <Title text='Restore wallet' subtext='Insert your secret words' />
+        <p className='mb-4'>
+          <Error error={label === ButtonLabel.Invalid} text={label} />
+        </p>
         <Columns>
           {[...passphrase].map((word, i) => (
             // eslint-disable-next-line react/no-array-index-key

@@ -2,7 +2,7 @@ import { ReactNode, createContext, useContext, useEffect, useRef, useState } fro
 import { readWalletFromStorage, saveWalletToStorage } from '../lib/storage'
 import { NavigationContext, Pages } from './navigation'
 import { NetworkName } from '../lib/network'
-import { Mnemonic, Transaction, XPubs } from '../lib/types'
+import { Mnemonic, NextIndexes, Transactions, Utxos, XPubs } from '../lib/types'
 import { ConfigContext } from './config'
 import { fetchHistory } from '../lib/fetch'
 
@@ -11,9 +11,9 @@ export interface Wallet {
   masterBlindingKey?: string
   mnemonic: Mnemonic
   network: NetworkName
-  nextIndex: number
-  transactions: Transaction[]
-  utxos: any[]
+  nextIndex: NextIndexes
+  transactions: Transactions
+  utxos: Utxos
   xpubs: XPubs
 }
 
@@ -21,9 +21,21 @@ const defaultWallet: Wallet = {
   initialized: false,
   mnemonic: '',
   network: NetworkName.Testnet,
-  nextIndex: 1,
-  transactions: [],
-  utxos: [],
+  nextIndex: {
+    [NetworkName.Liquid]: 1,
+    [NetworkName.Regtest]: 1,
+    [NetworkName.Testnet]: 1,
+  },
+  transactions: {
+    [NetworkName.Liquid]: [],
+    [NetworkName.Regtest]: [],
+    [NetworkName.Testnet]: [],
+  },
+  utxos: {
+    [NetworkName.Liquid]: [],
+    [NetworkName.Regtest]: [],
+    [NetworkName.Testnet]: [],
+  },
   xpubs: {
     [NetworkName.Liquid]: '',
     [NetworkName.Regtest]: '',
@@ -35,6 +47,7 @@ interface WalletContextProps {
   loading: boolean
   reloading: boolean
   increaseIndex: () => void
+  initialize: (wallet: Wallet) => void
   logout: () => void
   reloadWallet: (wallet: Wallet, gap?: number) => void
   resetWallet: () => void
@@ -47,6 +60,7 @@ export const WalletContext = createContext<WalletContextProps>({
   loading: true,
   reloading: false,
   increaseIndex: () => {},
+  initialize: () => {},
   logout: () => {},
   reloadWallet: () => {},
   resetWallet: () => {},
@@ -71,10 +85,17 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const increaseIndex = () => {
-    console.log('increase index to', wallet.nextIndex + 1)
-    const _wallet = { ...wallet, nextIndex: wallet.nextIndex + 1 }
-    saveWalletToStorage(_wallet)
-    setWallet(_wallet)
+    const clone = { ...wallet }
+    const currentValue = clone.nextIndex[config.network]
+    clone.nextIndex[config.network] = currentValue + 1
+    console.log('increase index to', currentValue + 1)
+    saveWalletToStorage(clone)
+    setWallet(clone)
+  }
+
+  const initialize = (wallet: Wallet) => {
+    reloadWallet({ ...wallet, initialized: true })
+    navigate(Pages.Wallet)
   }
 
   const logout = () => setMnemonic('')
@@ -82,8 +103,13 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const reloadWallet = async (wallet: Wallet, gap = 5) => {
     if (reloading) return
     setReloading(true)
-    const { transactions, utxos } = await fetchHistory(config, wallet, gap)
-    updateWallet({ ...wallet, transactions, utxos })
+    console.log('reloading wallet')
+    const clone = { ...wallet }
+    const { nextIndex, transactions, utxos } = await fetchHistory(config, wallet, gap)
+    clone.nextIndex[config.network] = nextIndex
+    clone.transactions[config.network] = transactions
+    clone.utxos[config.network] = utxos
+    updateWallet(clone)
     setReloading(false)
   }
 
@@ -93,17 +119,17 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const updateWallet = (data: Wallet) => {
+    console.log('updateWallet', data)
     setWallet({ ...data, mnemonic: mnemonic.current })
     saveWalletToStorage(data)
   }
 
   useEffect(() => {
     if (!loading) return
-    const wallet = readWalletFromStorage()
+    const _wallet = readWalletFromStorage()
+    updateWallet(_wallet ?? defaultWallet)
     setLoading(false)
-    if (!wallet) return navigate(Pages.Init)
-    setWallet(wallet)
-    navigate(Pages.Wallet)
+    navigate(_wallet?.initialized ? Pages.Wallet : Pages.Init)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading])
 
@@ -113,6 +139,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
         loading,
         reloading,
         increaseIndex,
+        initialize,
         logout,
         reloadWallet,
         resetWallet,

@@ -5,3 +5,4 @@ TODO list:
 - zkpInit vs zkpLib
 - unite fetchTransactions and fetchUtxos DONE
 - update next index
+- put network on wallet instead of config

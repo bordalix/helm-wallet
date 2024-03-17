@@ -52,7 +52,7 @@ export default function NeedsPassword({ onClose, onMnemonic }: NeedsPasswordProp
       ) : (
         <div className='flex flex-col gap-4'>
           <Input label='Insert password' onChange={handleChange} />
-          {error ? <Error error={error} /> : null}
+          <Error error={Boolean(error)} text={error} />
           <Button label='Unlock' onClick={handleProceed} disabled={disabled} />
         </div>
       )}

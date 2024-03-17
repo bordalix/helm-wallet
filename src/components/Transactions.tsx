@@ -5,6 +5,7 @@ import { Transaction } from '../lib/types'
 import { prettyAgo, prettyNumber } from '../lib/format'
 import ArrowIcon from '../icons/Arrow'
 import { NavigationContext, Pages } from '../providers/navigation'
+import { ConfigContext } from '../providers/config'
 
 const TransactionLine = ({ data }: { data: Transaction }) => {
   const amount = `${data.amount > 0 ? '+' : '-'} ${prettyNumber(data.amount)} sats`
@@ -18,15 +19,16 @@ const TransactionLine = ({ data }: { data: Transaction }) => {
 }
 
 export default function TransactionsList({ short }: { short?: boolean }) {
+  const { config } = useContext(ConfigContext)
   const { navigate } = useContext(NavigationContext)
   const { wallet } = useContext(WalletContext)
 
-  const { transactions } = wallet
+  const transactions = wallet.transactions[config.network]
 
   if (transactions?.length === 0) return <></>
 
   const showMax = 3
-  const sorted = transactions.sort((a, b) => b.date - a.date)
+  const sorted = transactions.sort((a, b) => (!a.date ? -1 : !b.date ? 1 : b.date - a.date))
   const showTxs = short ? sorted.slice(0, showMax) : sorted
 
   return (

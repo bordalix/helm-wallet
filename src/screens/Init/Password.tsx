@@ -15,7 +15,7 @@ import Container from '../../components/Container'
 export default function InitPassword() {
   const { navigate } = useContext(NavigationContext)
   const { config, updateConfig } = useContext(ConfigContext)
-  const { wallet, reloadWallet } = useContext(WalletContext)
+  const { wallet, initialize } = useContext(WalletContext)
   const { initInfo } = useContext(FlowContext)
 
   const [label, setLabel] = useState('')
@@ -23,13 +23,14 @@ export default function InitPassword() {
 
   const handleCancel = () => navigate(Pages.Init)
 
+  console.log('config', config)
+
   const handleProceed = () => {
     const { mnemonic } = initInfo
     saveMnemonicToStorage(mnemonic, password)
     getMasterKeys(mnemonic).then(({ masterBlindingKey, xpubs }) => {
       updateConfig(config)
-      reloadWallet({ ...wallet, initialized: true, masterBlindingKey, xpubs })
-      navigate(Pages.Wallet)
+      initialize({ ...wallet, masterBlindingKey, xpubs })
     })
   }
 

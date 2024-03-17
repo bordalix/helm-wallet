@@ -57,11 +57,10 @@ export default function SendInvoice() {
     <Container>
       <Content>
         <Title text='Send' subtext='Scan or paste invoice' />
-        {error ? (
-          <Error error={error} />
-        ) : (
+        <Error error={Boolean(error)} text={error} />
+        {error ? null : (
           <div className='flex flex-col h-full justify-between'>
-            {/* TODO <BarcodeScanner setData={setData} setError={setError} /> */}
+            <BarcodeScanner setInvoice={setInvoice} setError={setError} />
             {firefox ? <Input label='Paste your invoice here' left='&#9889;' onChange={handleChange} /> : null}
           </div>
         )}

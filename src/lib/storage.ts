@@ -20,12 +20,14 @@ export const saveConfigToStorage = (config: Config): void => {
   localStorage.setItem('config', JSON.stringify(config))
 }
 
-export const readConfigFromStorage = (): Config => {
+export const readConfigFromStorage = (): Config | undefined => {
   const config = localStorage.getItem('config')
-  return config ? JSON.parse(config) : {}
+  console.log('readConfigFromStorage', config)
+  return config ? JSON.parse(config) : undefined
 }
 
 export const saveWalletToStorage = (wallet: Wallet): void => {
+  console.log('saveWalletToStorage', wallet)
   localStorage.setItem('wallet', JSON.stringify(wallet))
 }
 

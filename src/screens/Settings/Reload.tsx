@@ -37,7 +37,7 @@ export default function Reload() {
         ) : (
           <>
             <p className='mt-10'>Increase value if you're missing some coins</p>
-            <p className='mt-4'>High values makes reloads take longer</p>
+            <p className='mt-4'>Higher values makes reloads take longer and increases data usage</p>
           </>
         )}
       </Content>
