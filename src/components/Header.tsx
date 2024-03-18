@@ -20,7 +20,7 @@ export default function Header() {
   const handleClick = () => navigate(wallet.initialized ? Pages.Wallet : Pages.Init)
 
   return (
-    <header className='flex justify-between w-full mb-3'>
+    <header className='flex justify-between w-full mb-3 sm:mb-10'>
       <button
         onClick={handleClick}
         aria-label='Back to homepage'

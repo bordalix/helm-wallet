@@ -15,3 +15,4 @@ DONE
 - have utxos per network on storage
 - zkpInit vs zkpLib
 - remove toast
+- responsive

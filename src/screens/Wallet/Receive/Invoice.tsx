@@ -12,6 +12,7 @@ import { ConfigContext } from '../../../providers/config'
 import { extractError } from '../../../lib/error'
 import { WalletContext } from '../../../providers/wallet'
 import { reverseSwap } from '../../../lib/reverse'
+import { copyToClipboard } from '../../../lib/clipboard'
 
 export default function ReceiveInvoice() {
   const { config } = useContext(ConfigContext)
@@ -23,6 +24,8 @@ export default function ReceiveInvoice() {
   const [buttonLabel, setButtonLabel] = useState(label)
   const [error, setError] = useState('')
   const [invoice, setInvoice] = useState('')
+
+  const firefox = !navigator.clipboard || !('writeText' in navigator.clipboard)
 
   const onFinish = (txid: string) => {
     increaseIndex()
@@ -36,11 +39,10 @@ export default function ReceiveInvoice() {
     navigate(Pages.Wallet)
   }
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(invoice).then(() => {
-      setButtonLabel('Copied')
-      setTimeout(() => setButtonLabel(label), 2000)
-    })
+  const handleCopy = async () => {
+    await copyToClipboard(invoice)
+    setButtonLabel('Copied')
+    setTimeout(() => setButtonLabel(label), 2000)
   }
 
   useEffect(() => {
@@ -60,7 +62,7 @@ export default function ReceiveInvoice() {
         {error ? <Error error text={error} /> : <QrCode invoice={invoice} />}
       </Content>
       <ButtonsOnBottom>
-        <Button onClick={handleCopy} label={buttonLabel} />
+        {!firefox && <Button onClick={handleCopy} label={buttonLabel} />}
         <Button onClick={handleCancel} label='Cancel' secondary />
       </ButtonsOnBottom>
     </Container>

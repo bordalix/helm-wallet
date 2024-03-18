@@ -37,9 +37,12 @@ export default function TransactionsList({ short }: { short?: boolean }) {
           <TransactionLine key={t.txid} data={t} />
         ))}
         {short && transactions.length > showMax ? (
-          <div className='border bg-gray-100 p-2 flex justify-end w-full rounded-md'>
-            <div className='flex' onClick={() => navigate(Pages.Transactions)}>
-              <p className='mr-2 cursor-pointer'>All transactions</p>
+          <div
+            className='border bg-gray-100 cursor-pointer p-2 flex justify-end w-full rounded-md'
+            onClick={() => navigate(Pages.Transactions)}
+          >
+            <div className='flex'>
+              <p className='mr-2'>All transactions</p>
               <ArrowIcon tiny />
             </div>
           </div>

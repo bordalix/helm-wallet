@@ -59,11 +59,11 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
           <div className='mx-auto font-semibold'>{unit}</div>
         </div>
       </div>
-      <p className='text-right text-xs mb-2'>{alternativeAmount()}</p>
+      <p className='text-right text-xs mb-2 sm:mb-4 sm:mt-2'>{alternativeAmount()}</p>
       {isMobile ? (
         <Columns cols={3}>
           {keys.map((k) => (
-            <p key={k} className='text-center p-3 bg-gray-100' onClick={() => clickHandler(k)}>
+            <p key={k} className='text-center p-3 sm:p-5 bg-gray-100' onClick={() => clickHandler(k)}>
               {k}
             </p>
           ))}

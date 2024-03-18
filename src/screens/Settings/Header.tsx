@@ -9,23 +9,21 @@ export default function Header({ hideBack, setOption }: any) {
   const { reloading } = useContext(WalletContext)
 
   return (
-    <header className='mb-4'>
-      <div className='flex justify-between w-full'>
-        {hideBack ? (
-          <p />
-        ) : (
-          <button
-            onClick={() => setOption('menu')}
-            aria-label='Back'
-            className={(reloading ? 'animate-pulse ' : '') + 'p-2 rounded-full bg-gray-100'}
-          >
-            <BackIcon />
-          </button>
-        )}
-        <button onClick={toggleShowConfig} className='p-2 rounded-full bg-gray-800'>
-          <SettingsBlackIcon />
+    <header className='flex justify-between w-full mb-4 sm:mb-10'>
+      {hideBack ? (
+        <p />
+      ) : (
+        <button
+          onClick={() => setOption('menu')}
+          aria-label='Back'
+          className={(reloading ? 'animate-pulse ' : '') + 'p-2 rounded-full bg-gray-100'}
+        >
+          <BackIcon />
         </button>
-      </div>
+      )}
+      <button onClick={toggleShowConfig} className='p-2 rounded-full bg-gray-800'>
+        <SettingsBlackIcon />
+      </button>
     </header>
   )
 }

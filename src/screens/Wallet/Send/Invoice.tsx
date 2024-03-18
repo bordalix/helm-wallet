@@ -10,6 +10,7 @@ import Input from '../../../components/Input'
 import Content from '../../../components/Content'
 import Title from '../../../components/Title'
 import Container from '../../../components/Container'
+import { pasteFromClipboard } from '../../../lib/clipboard'
 
 export default function SendInvoice() {
   const { navigate } = useContext(NavigationContext)
@@ -38,12 +39,11 @@ export default function SendInvoice() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [invoice])
 
-  const handlePaste = () => {
-    navigator.clipboard.readText().then((invoice: string): void => {
-      setButtonLabel('Pasted')
-      setTimeout(() => setButtonLabel(defaultLabel), 2000)
-      setInvoice(invoice)
-    })
+  const handlePaste = async () => {
+    const invoice = await pasteFromClipboard()
+    setButtonLabel('Pasted')
+    setTimeout(() => setButtonLabel(defaultLabel), 2000)
+    setInvoice(invoice)
   }
 
   const handleCancel = () => {
