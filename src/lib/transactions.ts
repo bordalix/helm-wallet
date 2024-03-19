@@ -14,7 +14,6 @@ import {
   networks,
   script,
 } from 'liquidjs-lib'
-import { Config } from '../providers/config'
 import { generateAddress } from './address'
 import zkpInit from '@vulpemventures/secp256k1-zkp'
 import { satoshiToConfidentialValue } from 'liquidjs-lib/src/confidential'
@@ -28,12 +27,7 @@ export const feesToSendSats = (sats: number, wallet: Wallet): number => {
   return feePerInput * coins.length // TODO
 }
 
-export const sendSats = async (
-  sats: number,
-  destinationAddress: string,
-  config: Config,
-  wallet: Wallet,
-): Promise<string> => {
+export const sendSats = async (sats: number, destinationAddress: string, wallet: Wallet): Promise<string> => {
   // check if enough balance
   const utxos = wallet.utxos[wallet.network]
   const balance = getBalance(wallet)
@@ -41,17 +35,18 @@ export const sendSats = async (
 
   // find best coins combo to pay this
   const iterator = (amount: number): { change: number; coins: Utxo[]; txfee: number } => {
+    console.log('iterator', amount)
     const coins = selectCoins(amount, utxos)
     const value = coins.reduce((prev, curr) => prev + curr.value, 0)
     const txfee = coins.length * feePerInput
     const change = value - amount - txfee
-    console.log(amount, value, txfee, change)
+    console.log('amount, value, txfee, change', amount, value, txfee, change)
     if (change < 0) return iterator(amount + txfee)
     return { change, coins, txfee }
   }
 
   const { change, coins, txfee } = iterator(sats)
-
+  console.log('coins', coins)
   const network = networks[wallet.network]
 
   const pset = Creator.newPset()

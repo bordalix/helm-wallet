@@ -28,6 +28,7 @@ export const readConfigFromStorage = (): Config | undefined => {
 
 export const saveWalletToStorage = (wallet: Wallet): void => {
   console.log('saveWalletToStorage', wallet)
+  if (wallet.mnemonic) wallet.mnemonic = ''
   localStorage.setItem('wallet', JSON.stringify(wallet))
 }
 

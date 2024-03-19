@@ -6,6 +6,7 @@ TODO list:
 - save csv file
 - copy & paste in mobile
 - qrcode scanner in firefox
+- don't save mnemonic to storage
 
 DONE
 
