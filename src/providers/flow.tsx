@@ -1,7 +1,8 @@
 import { ReactNode, createContext, useState } from 'react'
 import { Invoice } from '../lib/lightning'
 import { ECPairInterface } from 'ecpair'
-import { ReverseSwapResponse, SubmarineSwapResponse } from '../lib/swaps'
+import { SubmarineSwapResponse } from '../lib/submarineSwap'
+import { ReverseSwapResponse } from '../lib/reverseSwap'
 
 export interface InitInfo {
   mnemonic: string

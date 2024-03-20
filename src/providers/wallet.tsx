@@ -88,7 +88,6 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     const clone = { ...wallet }
     const currentValue = clone.nextIndex[wallet.network]
     clone.nextIndex[wallet.network] = currentValue + 1
-    console.log('increase index to', currentValue + 1)
     saveWalletToStorage(clone)
     setWallet(clone)
   }
@@ -103,7 +102,6 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const reloadWallet = async (wallet: Wallet, gap = 5) => {
     if (reloading) return
     setReloading(true)
-    console.log('reloading wallet')
     const clone = { ...wallet }
     const { nextIndex, transactions, utxos } = await fetchHistory(config, wallet, gap)
     clone.nextIndex[wallet.network] = nextIndex
@@ -119,7 +117,6 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const updateWallet = (data: Wallet) => {
-    console.log('updateWallet', data)
     setWallet({ ...data, mnemonic: mnemonic.current })
     saveWalletToStorage(data)
   }

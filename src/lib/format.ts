@@ -10,6 +10,15 @@ export const prettyNumber = (num: number): string => {
   return new Intl.NumberFormat('en', { style: 'decimal', maximumFractionDigits: 8 }).format(num)
 }
 
+export const prettyUnixTimestamp = (num: number): string => {
+  if (!num) return ''
+  const date = new Date(num * 1000)
+  return new Intl.DateTimeFormat('en', {
+    dateStyle: 'full',
+    timeStyle: 'long',
+  }).format(date)
+}
+
 export const fromSatoshis = (num: Satoshis): number => {
   return Decimal.div(num, 100_000_000).toNumber()
 }

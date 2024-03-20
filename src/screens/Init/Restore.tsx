@@ -56,9 +56,7 @@ export default function InitOld() {
     <Container>
       <Content>
         <Title text='Restore wallet' subtext='Insert your secret words' />
-        <p className='mb-4'>
-          <Error error={label === ButtonLabel.Invalid} text={label} />
-        </p>
+        <Error error={label === ButtonLabel.Invalid} text={label} />
         <Columns>
           {[...passphrase].map((word, i) => (
             // eslint-disable-next-line react/no-array-index-key

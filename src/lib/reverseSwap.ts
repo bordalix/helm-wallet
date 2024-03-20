@@ -8,13 +8,39 @@ import { ECPairFactory } from 'ecpair'
 import * as ecc from '@bitcoinerlab/secp256k1'
 import { generateAddress } from './address'
 import { getNetwork } from './network'
-import { Config } from '../providers/config'
 import { Wallet } from '../providers/wallet'
 import { getBoltzApiUrl, getBoltzWsUrl } from './boltz'
 
+/**
+ * Reverse swap flow:
+ * 1. user generates preimage and sends hash to boltz
+ * 2. user generates public key and sends to boltz
+ * 3. user receives lightning invoice
+ * 4. user validates lightining invoice
+ */
+
+export interface ReverseSwapResponse {
+  id: string
+  invoice: string
+  swapTree: {
+    claimLeaf: {
+      version: number
+      output: string
+    }
+    refundLeaf: {
+      version: number
+      output: string
+    }
+  }
+  blindingKey: string
+  lockupAddress: string
+  onchainAmount: number
+  refundPublicKey: string
+  timeoutBlockHeight: number
+}
+
 export const reverseSwap = async (
   invoiceAmount: number,
-  config: Config,
   wallet: Wallet,
   onFinish: (txid: string) => void,
   onInvoice: (invoice: string) => void,
@@ -38,7 +64,7 @@ export const reverseSwap = async (
       claimPublicKey: keys.publicKey.toString('hex'),
       preimageHash: crypto.sha256(preimage).toString('hex'),
     })
-  ).data
+  ).data as ReverseSwapResponse
 
   onInvoice(createdResponse.invoice)
   console.log('Created swap')

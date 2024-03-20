@@ -57,16 +57,18 @@ export default function SendInvoice() {
     <Container>
       <Content>
         <Title text='Send' subtext={`${firefox ? 'Paste' : 'Scan or paste'} invoice`} />
-        <Error error={Boolean(error)} text={error} />
-        {error ? null : (
-          <div className='flex flex-col h-full justify-between'>
-            {firefox ? (
-              <Input label='Paste your invoice here' left='&#9889;' onChange={handleChange} />
-            ) : (
-              <BarcodeScanner setInvoice={setInvoice} setError={setError} />
-            )}
-          </div>
-        )}
+        <div className='flex flex-col gap-2'>
+          <Error error={Boolean(error)} text={error} />
+          {error ? null : (
+            <div className='flex flex-col h-full justify-between'>
+              {firefox ? (
+                <Input label='Paste your invoice here' left='&#9889;' onChange={handleChange} />
+              ) : (
+                <BarcodeScanner setInvoice={setInvoice} setError={setError} />
+              )}
+            </div>
+          )}
+        </div>
       </Content>
       <ButtonsOnBottom>
         {!firefox && <Button onClick={handlePaste} label={buttonLabel} />}

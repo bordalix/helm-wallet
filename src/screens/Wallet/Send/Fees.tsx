@@ -8,7 +8,7 @@ import Container from '../../../components/Container'
 import { FlowContext, emptySendInfo } from '../../../providers/flow'
 import { prettyNumber } from '../../../lib/format'
 import { WalletContext } from '../../../providers/wallet'
-import { submarineSwap } from '../../../lib/swaps'
+import { submarineSwap } from '../../../lib/submarineSwap'
 import Error from '../../../components/Error'
 import { extractError } from '../../../lib/error'
 import Table from '../../../components/Table'
@@ -40,7 +40,6 @@ export default function SendFees() {
           setSendInfo({ ...sendInfo, keys, swapResponse, txFees, total: expectedAmount + txFees })
         })
         .catch((error: any) => {
-          console.log('error', error)
           setError(extractError(error))
         })
     }
@@ -74,7 +73,10 @@ export default function SendFees() {
     <Container>
       <Content>
         <Title text='Payment fees' subtext='Values in sats' />
-        {error ? <Error error text={error} /> : <Table data={data} />}
+        <div className='flex flex-col gap-2'>
+          <Error error={Boolean(error)} text={error} />
+          <Table data={data} />
+        </div>
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handlePay} label={label} disabled={Boolean(error)} />

@@ -8,14 +8,12 @@ import ButtonsOnBottom from '../../../components/ButtonsOnBottom'
 import Error from '../../../components/Error'
 import { FlowContext, emptyRecvInfo } from '../../../providers/flow'
 import { NavigationContext, Pages } from '../../../providers/navigation'
-import { ConfigContext } from '../../../providers/config'
 import { extractError } from '../../../lib/error'
 import { WalletContext } from '../../../providers/wallet'
-import { reverseSwap } from '../../../lib/reverse'
+import { reverseSwap } from '../../../lib/reverseSwap'
 import { copyToClipboard } from '../../../lib/clipboard'
 
 export default function ReceiveInvoice() {
-  const { config } = useContext(ConfigContext)
   const { recvInfo, setRecvInfo } = useContext(FlowContext)
   const { navigate } = useContext(NavigationContext)
   const { increaseIndex, reloadWallet, wallet } = useContext(WalletContext)
@@ -48,7 +46,7 @@ export default function ReceiveInvoice() {
   useEffect(() => {
     if (!invoice) {
       try {
-        reverseSwap(Number(recvInfo.amount), config, wallet, onFinish, setInvoice)
+        reverseSwap(Number(recvInfo.amount), wallet, onFinish, setInvoice)
       } catch (error) {
         setError(extractError(error))
       }
@@ -59,7 +57,10 @@ export default function ReceiveInvoice() {
     <Container>
       <Content>
         <Title text='Invoice' subtext='Scan or copy to clipboard' />
-        {error ? <Error error text={error} /> : <QrCode invoice={invoice} />}
+        <div className='flex flex-col gap-2'>
+          <Error error={Boolean(error)} text={error} />
+          <QrCode invoice={invoice} />
+        </div>
       </Content>
       <ButtonsOnBottom>
         {!firefox && <Button onClick={handleCopy} label={buttonLabel} />}

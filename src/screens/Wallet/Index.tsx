@@ -15,8 +15,6 @@ export default function Wallet() {
   const { navigate } = useContext(NavigationContext)
   const { wallet } = useContext(WalletContext)
 
-  console.log('wallet nextIndex', wallet.nextIndex)
-
   return (
     <Container>
       <Content>

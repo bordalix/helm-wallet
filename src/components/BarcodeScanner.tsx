@@ -25,12 +25,11 @@ export default function BarcodeScanner({ setError, setInvoice }: BarcodeScannerP
           },
         },
         videoRef.current,
-        (result, error) => {
+        (result) => {
           if (result) {
             const aux = JSON.stringify(result)
             setInvoice(JSON.parse(aux).text)
           }
-          if (error) console.error(error)
         },
       )
     })

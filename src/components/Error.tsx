@@ -6,7 +6,5 @@ interface ErrorProps {
 export default function Error({ error, text }: ErrorProps) {
   return error ? (
     <p className='bg-red-500 font-semibold p-1 rounded-md text-sm text-white first-letter:uppercase'>{text}</p>
-  ) : (
-    <p className='p-0.5'>&nbsp;</p>
-  )
+  ) : null
 }

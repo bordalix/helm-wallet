@@ -3,6 +3,7 @@ import { Wallet } from '../providers/wallet'
 import { generateAddress } from './address'
 import { BlindingKeyPair, unblindOutput } from './blinder'
 import { AddressTxInfo, fetchAddress, fetchAddressTxs, fetchUtxos } from './explorers'
+import { prettyUnixTimestamp } from './format'
 import { Transaction, Utxo } from './types'
 import * as liquid from 'liquidjs-lib'
 
@@ -66,7 +67,7 @@ export const fetchHistory = async (config: Config, wallet: Wallet, defaultGap = 
   let lastIndexWithTx = 0
   let gap = defaultGap
   while (gap > 0) {
-    const { address, blindingKeys } = await generateAddress(wallet, index)
+    const { address, blindingKeys, pubkey } = await generateAddress(wallet, index)
     if (!address || !blindingKeys) throw new Error('Could not generate new address')
     const data = await fetchAddress(address, config, wallet)
     if (data?.chain_stats?.tx_count > 0 || data?.mempool_stats?.tx_count > 0) {
@@ -75,14 +76,15 @@ export const fetchHistory = async (config: Config, wallet: Wallet, defaultGap = 
       for (const txInfo of await fetchAddressTxs(address, config, wallet)) {
         transactions.push({
           amount: await getTransactionAmount(address, blindingKeys, txInfo, config, wallet),
-          date: txInfo.status.block_time,
+          date: prettyUnixTimestamp(txInfo.status.block_time),
+          unixdate: txInfo.status.block_time,
           txid: txInfo.txid,
         })
       }
       for (const utxo of await fetchUtxos(address, config, wallet)) {
         const unblinded = await unblindOutput(utxo.txid, utxo.vout, blindingKeys, config, wallet)
         const script = liquid.address.toOutputScript(address)
-        utxos.push({ ...utxo, ...unblinded, address, script, value: Number(unblinded.value) })
+        utxos.push({ ...utxo, ...unblinded, address, pubkey, script, value: Number(unblinded.value) })
       }
     }
     index += 1

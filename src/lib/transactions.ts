@@ -3,6 +3,7 @@ import { getBalance, getMnemonicKeys } from './wallet'
 import { Wallet } from '../providers/wallet'
 import { selectCoins } from './coinSelection'
 import {
+  AssetHash,
   Creator,
   Extractor,
   Finalizer,
@@ -17,7 +18,7 @@ import {
 import { generateAddress } from './address'
 import zkpInit from '@vulpemventures/secp256k1-zkp'
 import { satoshiToConfidentialValue } from 'liquidjs-lib/src/confidential'
-import { getScriptType } from 'liquidjs-lib/src/address'
+import { blindPset } from './blinder'
 
 const feePerInput = 273
 
@@ -35,7 +36,6 @@ export const sendSats = async (sats: number, destinationAddress: string, wallet:
 
   // find best coins combo to pay this
   const iterator = (amount: number): { change: number; coins: Utxo[]; txfee: number } => {
-    console.log('iterator', amount)
     const coins = selectCoins(amount, utxos)
     const value = coins.reduce((prev, curr) => prev + curr.value, 0)
     const txfee = coins.length * feePerInput
@@ -46,7 +46,7 @@ export const sendSats = async (sats: number, destinationAddress: string, wallet:
   }
 
   const { change, coins, txfee } = iterator(sats)
-  console.log('coins', coins)
+  coins.map((coin) => console.log('coin', { ...coin, value: satoshiToConfidentialValue(coin.value) }))
   const network = networks[wallet.network]
 
   const pset = Creator.newPset()
@@ -85,21 +85,30 @@ export const sendSats = async (sats: number, destinationAddress: string, wallet:
     ])
   }
 
-  console.log('pset input', pset.inputs[0].witnessUtxo?.script)
-  console.log('gst', getScriptType(pset.inputs[0].witnessUtxo?.script!))
+  console.log('pset input', pset.inputs[0])
 
-  const signer = new Signer(pset)
+  const blindedPset = await blindPset(pset, {
+    index: 0,
+    value: coins[0].value.toString(),
+    valueBlindingFactor: Buffer.from(coins[0].valueBlindingFactor, 'hex'),
+    asset: AssetHash.fromHex(coins[0].asset).bytesWithoutPrefix,
+    assetBlindingFactor: Buffer.from(coins[0].assetBlindingFactor, 'hex'),
+  })
+
+  const signer = new Signer(blindedPset)
   const ecc = (await zkpInit()).ecc
   const keys = await getMnemonicKeys(wallet)
 
   for (const [index] of signer.pset.inputs.entries()) {
-    const sighash = Transaction.SIGHASH_ALL // '||' lets to overwrite SIGHASH_DEFAULT (0x00)
+    const sighash = Transaction.SIGHASH_ALL
     const signature = keys.sign(pset.getInputPreimage(index, sighash))
+    console.log('pset.getInputPreimage(index, sighash)', pset.getInputPreimage(index, sighash))
+    console.log('signature', signature)
     signer.addSignature(
       index,
       {
         partialSig: {
-          pubkey: keys.publicKey,
+          pubkey: coins[index].pubkey,
           signature: script.signature.encode(signature, sighash),
         },
       },

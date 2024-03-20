@@ -1,7 +1,7 @@
 import { Encrypted, decrypt, encrypt } from './encryption'
 import { Config } from '../providers/config'
 import { Mnemonic } from './types'
-import { NetworkName } from './network'
+import { NetworkName, getNetworkNames } from './network'
 import { ExplorerName } from './explorers'
 import { Wallet } from '../providers/wallet'
 
@@ -22,19 +22,28 @@ export const saveConfigToStorage = (config: Config): void => {
 
 export const readConfigFromStorage = (): Config | undefined => {
   const config = localStorage.getItem('config')
-  console.log('readConfigFromStorage', config)
   return config ? JSON.parse(config) : undefined
 }
 
 export const saveWalletToStorage = (wallet: Wallet): void => {
-  console.log('saveWalletToStorage', wallet)
   if (wallet.mnemonic) wallet.mnemonic = ''
   localStorage.setItem('wallet', JSON.stringify(wallet))
 }
 
 export const readWalletFromStorage = (): Wallet | undefined => {
-  const wallet = localStorage.getItem('wallet')
-  return wallet ? JSON.parse(wallet) : undefined
+  const data = localStorage.getItem('wallet')
+  if (!data) return undefined
+  const wallet = JSON.parse(data)
+  for (const [n] of getNetworkNames()) {
+    for (const utxo of wallet.utxos[n]) {
+      utxo.asset = Buffer.from(utxo.asset.data)
+      utxo.assetBlindingFactor = Buffer.from(utxo.assetBlindingFactor.data)
+      utxo.pubkey = Buffer.from(utxo.pubkey.data)
+      utxo.script = Buffer.from(utxo.script.data)
+      utxo.valueBlindingFactor = Buffer.from(utxo.valueBlindingFactor.data)
+    }
+  }
+  return wallet
 }
 
 export const saveMnemonicToStorage = async (mnemonic: string, password: string): Promise<void> => {

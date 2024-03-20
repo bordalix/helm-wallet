@@ -16,8 +16,9 @@ export type NextIndexes = Record<NetworkName, NextIndex>
 
 export type Transaction = {
   amount: number
-  date: number
+  date: string
   txid: string
+  unixdate: number
 }
 export type Transactions = Record<NetworkName, Transaction[]>
 

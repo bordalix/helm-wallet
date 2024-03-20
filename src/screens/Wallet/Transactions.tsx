@@ -6,9 +6,33 @@ import { NavigationContext, Pages } from '../../providers/navigation'
 import Content from '../../components/Content'
 import Container from '../../components/Container'
 import TransactionsList from '../../components/Transactions'
+import { WalletContext } from '../../providers/wallet'
 
 export default function Transactions() {
   const { navigate } = useContext(NavigationContext)
+  const { wallet } = useContext(WalletContext)
+
+  const exportCSVFile = () => {
+    const transactions = wallet.transactions[wallet.network]
+    if (transactions?.length === 0) return
+    const csvHeader =
+      Object.keys(transactions[0])
+        .map((k) => `"${k}"`)
+        .join(',') + '\n'
+    const csvBody = transactions
+      .map((row) =>
+        Object.values(row)
+          .map((k) => `"${k}"`)
+          .join(','),
+      )
+      .join('\n')
+    const hiddenElement = document.createElement('a')
+    hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csvHeader + csvBody)
+    hiddenElement.target = '_blank'
+    hiddenElement.download = 'transactions.csv'
+    document.body.appendChild(hiddenElement) // required for firefox
+    hiddenElement.click()
+  }
 
   const goBackToWallet = () => navigate(Pages.Wallet)
 
@@ -19,7 +43,7 @@ export default function Transactions() {
         <TransactionsList />
       </Content>
       <ButtonsOnBottom>
-        <Button onClick={goBackToWallet} label='Export CSV file' />
+        <Button onClick={exportCSVFile} label='Export CSV file' />
         <Button onClick={goBackToWallet} label='Back to wallet' secondary />
       </ButtonsOnBottom>
     </Container>

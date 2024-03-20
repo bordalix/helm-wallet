@@ -3,10 +3,8 @@ TODO list:
 - send sats
 - notifications?
 - save backup file
-- save csv file
 - copy & paste in mobile
 - qrcode scanner in firefox
-- don't save mnemonic to storage
 
 DONE
 
@@ -17,3 +15,5 @@ DONE
 - zkpInit vs zkpLib
 - remove toast
 - responsive
+- don't save mnemonic to storage
+- export csv file

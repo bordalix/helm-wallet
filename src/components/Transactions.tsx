@@ -7,8 +7,8 @@ import ArrowIcon from '../icons/Arrow'
 import { NavigationContext, Pages } from '../providers/navigation'
 
 const TransactionLine = ({ data }: { data: Transaction }) => {
-  const amount = `${data.amount > 0 ? '+' : '-'} ${prettyNumber(data.amount)} sats`
-  const date = data.date ? `${prettyAgo(data.date)} ago` : 'just now'
+  const amount = `${data.amount > 0 ? '+' : '-'} ${prettyNumber(Math.abs(data.amount))} sats`
+  const date = data.unixdate ? `${prettyAgo(data.unixdate)} ago` : 'just now'
   return (
     <div className='border p-2 flex justify-between w-full rounded-md'>
       <p>{amount}</p>
@@ -26,7 +26,7 @@ export default function TransactionsList({ short }: { short?: boolean }) {
   if (transactions?.length === 0) return <></>
 
   const showMax = 3
-  const sorted = transactions.sort((a, b) => (!a.date ? -1 : !b.date ? 1 : b.date - a.date))
+  const sorted = transactions.sort((a, b) => (!a.unixdate ? -1 : !b.unixdate ? 1 : b.unixdate - a.unixdate))
   const showTxs = short ? sorted.slice(0, showMax) : sorted
 
   return (

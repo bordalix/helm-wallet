@@ -10,10 +10,11 @@ import { WalletContext } from '../../providers/wallet'
 
 export default function Network() {
   const { toggleShowConfig } = useContext(ConfigContext)
-  const { wallet, updateWallet } = useContext(WalletContext)
+  const { wallet, reloadWallet, updateWallet } = useContext(WalletContext)
 
   const handleChange = (e: any) => {
     updateWallet({ ...wallet, network: e.target.value })
+    reloadWallet({ ...wallet, network: e.target.value })
   }
 
   return (
@@ -21,9 +22,9 @@ export default function Network() {
       <Content>
         <Title text='Network' subtext='Choose your network' />
         <Select onChange={handleChange} value={wallet.network}>
-          {getNetworkNames().map((e) => (
-            <option key={e} value={e}>
-              {e}
+          {getNetworkNames().map(([value, label]) => (
+            <option key={value} value={value}>
+              {label}
             </option>
           ))}
         </Select>

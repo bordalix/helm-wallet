@@ -10,11 +10,9 @@ import NeedsPassword from '../../../components/NeedsPassword'
 import LoadingIcon from '../../../icons/Loading'
 import { prettyNumber } from '../../../lib/format'
 import { WalletContext } from '../../../providers/wallet'
-import { ConfigContext } from '../../../providers/config'
-import { finalizeSubmarineSwap } from '../../../lib/swaps'
+import { finalizeSubmarineSwap } from '../../../lib/submarineSwap'
 
 export default function SendPayment() {
-  const { config } = useContext(ConfigContext)
   const { navigate } = useContext(NavigationContext)
   const { sendInfo, setSendInfo } = useContext(FlowContext)
   const { reloadWallet, setMnemonic, wallet } = useContext(WalletContext)
@@ -35,7 +33,7 @@ export default function SendPayment() {
 
   useEffect(() => {
     if (wallet.mnemonic) {
-      finalizeSubmarineSwap(sendInfo, config, wallet, onTxid)
+      finalizeSubmarineSwap(sendInfo, wallet, onTxid)
     }
   }, [wallet.mnemonic])
 

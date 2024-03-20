@@ -23,8 +23,6 @@ export default function InitPassword() {
 
   const handleCancel = () => navigate(Pages.Init)
 
-  console.log('config', config)
-
   const handleProceed = () => {
     const { mnemonic } = initInfo
     saveMnemonicToStorage(mnemonic, password)
