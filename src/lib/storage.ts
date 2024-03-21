@@ -38,9 +38,18 @@ export const readWalletFromStorage = (): Wallet | undefined => {
     for (const utxo of wallet.utxos[n]) {
       utxo.asset = Buffer.from(utxo.asset.data)
       utxo.assetBlindingFactor = Buffer.from(utxo.assetBlindingFactor.data)
+      utxo.blindingPrivateKey = Buffer.from(utxo.blindingPrivateKey.data)
+      utxo.blindingPublicKey = Buffer.from(utxo.blindingPublicKey.data)
       utxo.pubkey = Buffer.from(utxo.pubkey.data)
       utxo.script = Buffer.from(utxo.script.data)
       utxo.valueBlindingFactor = Buffer.from(utxo.valueBlindingFactor.data)
+      const p = utxo.prevout
+      p.asset = Buffer.from(p.asset.data)
+      p.nonce = Buffer.from(p.nonce.data)
+      p.rangeProof = Buffer.from(p.rangeProof.data)
+      p.script = Buffer.from(p.script.data)
+      p.surjectionProof = Buffer.from(p.surjectionProof.data)
+      p.value = Buffer.from(p.value.data)
     }
   }
   return wallet

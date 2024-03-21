@@ -1,9 +1,9 @@
 import { fetchTxHex } from './explorers'
 import zkpInit, { Secp256k1ZKP } from '@vulpemventures/secp256k1-zkp'
-import { UnblindedOutput } from './types'
+import { UnblindedOutput, Utxo } from './types'
 import { Config } from '../providers/config'
 import { Wallet } from '../providers/wallet'
-import { Blinder, confidential, OwnedInput, Pset, Transaction, ZKPGenerator, ZKPValidator } from 'liquidjs-lib'
+import { Blinder, confidential, Pset, Transaction, ZKPGenerator, ZKPValidator } from 'liquidjs-lib'
 
 let zkp: Secp256k1ZKP
 
@@ -24,16 +24,20 @@ export const unblindOutput = async (
   const txhex = await fetchTxHex(txid, config, wallet)
   const tx = Transaction.fromHex(txhex)
   const unblinded = confi.unblindOutputWithKey(tx.outs[vout], blindingKeys.privateKey)
-  return { ...unblinded, value: Number(unblinded.value) }
+  return { ...unblinded, prevout: tx.outs[vout] }
 }
 
-export const blindPset = async (pset: Pset, ownedInput: OwnedInput): Promise<Pset> => {
+export const blindPset = async (pset: Pset, utxos: Utxo[]) => {
   if (!zkp) zkp = await zkpInit()
-  const { ecc } = zkp
   const zkpValidator = new ZKPValidator(zkp as any)
-  const zkpGenerator = new ZKPGenerator(zkp as any, ZKPGenerator.WithOwnedInputs([ownedInput]))
-  const outputBlindingArgs = zkpGenerator.blindOutputs(pset, Pset.ECCKeysGenerator(ecc))
-  const blinder = new Blinder(pset, [ownedInput], zkpValidator, zkpGenerator)
+  const zkpGenerator = new ZKPGenerator(
+    zkp as any,
+    ZKPGenerator.WithBlindingKeysOfInputs(utxos.map((utxo) => utxo.blindingPrivateKey!)),
+  )
+  const outputBlindingArgs = zkpGenerator.blindOutputs(pset, Pset.ECCKeysGenerator(zkp.ecc))
+
+  const blinder = new Blinder(pset, zkpGenerator.unblindInputs(pset), zkpValidator, zkpGenerator)
+
   blinder.blindLast({ outputBlindingArgs })
   return blinder.pset
 }

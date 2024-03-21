@@ -36,9 +36,7 @@ export default function InitPassword() {
     <Container>
       <Content>
         <Title text='Password' subtext='Define your password' />
-        <div className='mt-10'>
-          <NewPassword onNewPassword={setPassword} setLabel={setLabel} />
-        </div>
+        <NewPassword onNewPassword={setPassword} setLabel={setLabel} />
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handleProceed} label={label} disabled={!password} />

@@ -3,7 +3,6 @@ import { getBalance, getMnemonicKeys } from './wallet'
 import { Wallet } from '../providers/wallet'
 import { selectCoins } from './coinSelection'
 import {
-  AssetHash,
   Creator,
   Extractor,
   Finalizer,
@@ -16,11 +15,11 @@ import {
   script,
 } from 'liquidjs-lib'
 import { generateAddress } from './address'
-import zkpInit from '@vulpemventures/secp256k1-zkp'
-import { satoshiToConfidentialValue } from 'liquidjs-lib/src/confidential'
+import zkpInit, { Secp256k1ZKP } from '@vulpemventures/secp256k1-zkp'
 import { blindPset } from './blinder'
 
 const feePerInput = 273
+let zkp: Secp256k1ZKP
 
 export const feesToSendSats = (sats: number, wallet: Wallet): number => {
   if (sats === 0) return 0
@@ -28,25 +27,29 @@ export const feesToSendSats = (sats: number, wallet: Wallet): number => {
   return feePerInput * coins.length // TODO
 }
 
-export const sendSats = async (sats: number, destinationAddress: string, wallet: Wallet): Promise<string> => {
+export const sendSats = async (
+  sats: number,
+  destinationAddress: string,
+  blindingKey: any,
+  wallet: Wallet,
+): Promise<string> => {
   // check if enough balance
   const utxos = wallet.utxos[wallet.network]
   const balance = getBalance(wallet)
   if (!balance || balance - sats - utxos.length * feePerInput < 0) return ''
 
   // find best coins combo to pay this
-  const iterator = (amount: number): { change: number; coins: Utxo[]; txfee: number } => {
+  const iterator = (amount: number): { changeAmount: number; coins: Utxo[]; txfee: number } => {
     const coins = selectCoins(amount, utxos)
     const value = coins.reduce((prev, curr) => prev + curr.value, 0)
     const txfee = coins.length * feePerInput
     const change = value - amount - txfee
-    console.log('amount, value, txfee, change', amount, value, txfee, change)
     if (change < 0) return iterator(amount + txfee)
-    return { change, coins, txfee }
+    return { changeAmount, coins, txfee }
   }
 
-  const { change, coins, txfee } = iterator(sats)
-  coins.map((coin) => console.log('coin', { ...coin, value: satoshiToConfidentialValue(coin.value) }))
+  const { changeAmount, coins, txfee } = iterator(sats)
+
   const network = networks[wallet.network]
 
   const pset = Creator.newPset()
@@ -57,7 +60,7 @@ export const sendSats = async (sats: number, destinationAddress: string, wallet:
       coins.map((coin) => ({
         txid: coin.txid,
         txIndex: coin.vout,
-        witnessUtxo: { ...coin, value: satoshiToConfidentialValue(coin.value) },
+        witnessUtxo: coin.prevout,
         sighashType: Transaction.SIGHASH_ALL,
       })),
     )
@@ -67,6 +70,8 @@ export const sendSats = async (sats: number, destinationAddress: string, wallet:
         amount: sats,
         asset: network.assetHash,
         script: address.toOutputScript(destinationAddress, network),
+        blindingPublicKey: Buffer.from(blindingKey, 'hex'),
+        blinderIndex: 0,
       },
       // network fees
       {
@@ -75,28 +80,25 @@ export const sendSats = async (sats: number, destinationAddress: string, wallet:
       },
     ])
 
-  if (change) {
+  if (changeAmount) {
+    const { blindingKeys, script } = await generateAddress(wallet)
     updater.addOutputs([
       {
-        amount: change,
+        amount: changeAmount,
         asset: network.assetHash,
-        script: (await generateAddress(wallet)).script,
+        script,
+        blinderIndex: 0,
+        blindingPublicKey: blindingKeys.publicKey,
       },
     ])
   }
 
   console.log('pset input', pset.inputs[0])
 
-  const blindedPset = await blindPset(pset, {
-    index: 0,
-    value: coins[0].value.toString(),
-    valueBlindingFactor: Buffer.from(coins[0].valueBlindingFactor, 'hex'),
-    asset: AssetHash.fromHex(coins[0].asset).bytesWithoutPrefix,
-    assetBlindingFactor: Buffer.from(coins[0].assetBlindingFactor, 'hex'),
-  })
+  const blindedPset = await blindPset(pset, coins)
 
+  if (!zkp) zkp = await zkpInit()
   const signer = new Signer(blindedPset)
-  const ecc = (await zkpInit()).ecc
   const keys = await getMnemonicKeys(wallet)
 
   for (const [index] of signer.pset.inputs.entries()) {
@@ -112,7 +114,7 @@ export const sendSats = async (sats: number, destinationAddress: string, wallet:
           signature: script.signature.encode(signature, sighash),
         },
       },
-      Pset.ECDSASigValidator(ecc),
+      Pset.ECDSASigValidator(zkp.ecc),
     )
   }
 
@@ -120,7 +122,7 @@ export const sendSats = async (sats: number, destinationAddress: string, wallet:
   finalizer.finalize()
   const txHex = Extractor.extract(finalizer.pset).toHex()
 
-  console.log('sendSats', sats, destinationAddress, coins, change, txfee)
+  console.log('sendSats', sats, destinationAddress, coins, changeAmount, txfee)
   console.log('txHex', txHex)
   return 'b29d036678113b2671a308496f06b1665d23ab16b5af8cd126cc8a2273353774' // TODO
 }

@@ -41,14 +41,14 @@ const getTransactionAmount = async (
   for (const vin of txInfo.vin) {
     if (vin.prevout.scriptpubkey_address === address) {
       const { value } = await unblindOutput(vin.txid, vin.vout, blindingKeys, config, wallet)
-      return -value
+      return -Number(value)
     }
   }
   for (let i = 0; txInfo.vout[i]; i++) {
     const vout = txInfo.vout[i]
     if (vout.scriptpubkey_address === address) {
       const { value } = await unblindOutput(txInfo.txid, i, blindingKeys, config, wallet)
-      return value
+      return Number(value)
     }
   }
   return 0
@@ -84,7 +84,16 @@ export const fetchHistory = async (config: Config, wallet: Wallet, defaultGap = 
       for (const utxo of await fetchUtxos(address, config, wallet)) {
         const unblinded = await unblindOutput(utxo.txid, utxo.vout, blindingKeys, config, wallet)
         const script = liquid.address.toOutputScript(address)
-        utxos.push({ ...utxo, ...unblinded, address, pubkey, script, value: Number(unblinded.value) })
+        utxos.push({
+          ...utxo,
+          ...unblinded,
+          address,
+          blindingPublicKey: blindingKeys.publicKey,
+          blindingPrivateKey: blindingKeys.privateKey,
+          pubkey,
+          script,
+          value: Number(unblinded.value),
+        })
       }
     }
     index += 1

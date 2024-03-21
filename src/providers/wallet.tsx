@@ -107,6 +107,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     clone.nextIndex[wallet.network] = nextIndex
     clone.transactions[wallet.network] = transactions
     clone.utxos[wallet.network] = utxos
+    console.log('clone', clone)
     updateWallet(clone)
     setReloading(false)
   }
@@ -124,6 +125,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (!loading) return
     const _wallet = readWalletFromStorage()
+    console.log('wallet', _wallet)
     updateWallet(_wallet ?? defaultWallet)
     setLoading(false)
     navigate(_wallet?.initialized ? Pages.Wallet : Pages.Init)

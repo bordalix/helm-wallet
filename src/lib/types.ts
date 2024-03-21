@@ -1,5 +1,6 @@
-import { TxOutput } from 'liquidjs-lib'
+import { TxOutput, confidential } from 'liquidjs-lib'
 import { NetworkName } from './network'
+import { Output } from 'liquidjs-lib/src/transaction'
 
 export type Mnemonic = string
 export type Password = string
@@ -22,7 +23,7 @@ export type Transaction = {
 }
 export type Transactions = Record<NetworkName, Transaction[]>
 
-export type UnblindedOutput = any
+export type UnblindedOutput = confidential.UnblindOutputResult | { prevout: Output; value: number }
 
 export type Utxo = any
 export type Utxos = Record<NetworkName, Utxo[]>
