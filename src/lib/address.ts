@@ -12,6 +12,7 @@ export interface NewAddress {
   address: string
   blindingKeys: BlindingKeyPair
   confidentialAddress: string
+  nextIndex: number
   pubkey: Buffer
   script: Buffer
 }
@@ -28,5 +29,5 @@ export const generateAddress = async (wallet: Wallet, index?: number): Promise<N
   const unconfidentialAddress = liquid.address.fromOutputScript(script, network)
   const blindingKeys = await deriveBlindingKey(script, wallet)
   const confidentialAddress = liquid.address.toConfidential(unconfidentialAddress, blindingKeys.publicKey)
-  return { address, blindingKeys, confidentialAddress, pubkey, script }
+  return { address, blindingKeys, confidentialAddress, nextIndex, pubkey, script }
 }

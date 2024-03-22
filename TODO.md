@@ -5,6 +5,11 @@ TODO list:
 - save backup file
 - copy & paste in mobile
 - qrcode scanner in firefox
+- tests
+- documentation
+- cleanup code
+- remove `any`
+- add derivationPath to UTXO
 
 DONE
 

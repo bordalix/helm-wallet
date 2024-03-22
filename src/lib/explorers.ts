@@ -60,7 +60,12 @@ const getExplorerURL = ({ explorer }: Config, { network }: Wallet) => {
 }
 
 export const getTxIdURL = (txid: string, config: Config, wallet: Wallet) => {
-  return `${getExplorerURL(config, wallet)}/tx/${txid}`
+  // stupid bug from mempool
+  const url = getExplorerURL(config, wallet)?.replace(
+    'https://liquid.network/liquidtestnet',
+    'https://liquid.network/testnet',
+  )
+  return `${url}/tx/${txid}`
 }
 
 export interface AddressInfo {
@@ -133,5 +138,14 @@ export const fetchUtxos = async (address: string, config: Config, wallet: Wallet
 export const fetchTxHex = async (txid: string, config: Config, wallet: Wallet): Promise<string> => {
   const url = `${getExplorerURL(config, wallet)}/api/tx/${txid}/hex`
   const response = await fetch(url)
+  return await response.text()
+}
+
+export const broadcastTxHex = async (txHex: string, config: Config, wallet: Wallet): Promise<string> => {
+  const url = `${getExplorerURL(config, wallet)}/api/tx`
+  const response = await fetch(url, {
+    method: 'POST',
+    body: txHex,
+  })
   return await response.text()
 }

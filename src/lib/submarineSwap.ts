@@ -10,6 +10,7 @@ import { SendInfo } from '../providers/flow'
 import { getBoltzApiUrl, getBoltzWsUrl } from './boltz'
 import { sendSats } from './transactions'
 import { NetworkName } from './network'
+import { Config } from '../providers/config'
 
 /**
  * Submarine swap flow:
@@ -60,7 +61,12 @@ export const submarineSwap = async (
   return swapResponse
 }
 
-export const finalizeSubmarineSwap = (sendInfo: SendInfo, wallet: Wallet, onTxid: (txid: string) => void) => {
+export const finalizeSubmarineSwap = (
+  sendInfo: SendInfo,
+  config: Config,
+  wallet: Wallet,
+  onTxid: (txid: string) => void,
+) => {
   const { invoice, keys, swapResponse } = sendInfo
   if (!invoice || !keys || !swapResponse) return
 
@@ -97,7 +103,7 @@ export const finalizeSubmarineSwap = (sendInfo: SendInfo, wallet: Wallet, onTxid
       // "invoice.set" means Boltz is waiting for an onchain transaction to be sent
       case 'invoice.set': {
         console.log('Waiting for onchain transaction')
-        sendSats(swapResponse.expectedAmount, swapResponse.address, wallet)
+        sendSats(swapResponse.expectedAmount, swapResponse.address, config, wallet)
         break
       }
 

@@ -67,7 +67,7 @@ export const fetchHistory = async (config: Config, wallet: Wallet, defaultGap = 
   let lastIndexWithTx = 0
   let gap = defaultGap
   while (gap > 0) {
-    const { address, blindingKeys, pubkey } = await generateAddress(wallet, index)
+    const { address, blindingKeys, nextIndex, pubkey } = await generateAddress(wallet, index)
     if (!address || !blindingKeys) throw new Error('Could not generate new address')
     const data = await fetchAddress(address, config, wallet)
     if (data?.chain_stats?.tx_count > 0 || data?.mempool_stats?.tx_count > 0) {
@@ -90,6 +90,7 @@ export const fetchHistory = async (config: Config, wallet: Wallet, defaultGap = 
           address,
           blindingPublicKey: blindingKeys.publicKey,
           blindingPrivateKey: blindingKeys.privateKey,
+          nextIndex,
           pubkey,
           script,
           value: Number(unblinded.value),

@@ -1,6 +1,6 @@
 import { mnemonicToSeed } from 'bip39'
 import BIP32Factory from 'bip32'
-import { Mnemonic, Satoshis, XPubs } from './types'
+import { Mnemonic, Satoshis, Utxo, XPubs } from './types'
 import { NetworkName } from './network'
 import { ECPairFactory, ECPairInterface } from 'ecpair'
 import * as ecc from '@bitcoinerlab/secp256k1'
@@ -25,6 +25,18 @@ export const getMnemonicKeys = async ({ mnemonic, network }: Wallet): Promise<EC
   if (!seed) throw new Error('Could not get seed from mnemonic')
   const masterNode = bip32.fromSeed(seed)
   const key = masterNode.derivePath(derivationPath[network].replace('m/', ''))
+  return ECPairFactory(ecc).fromPrivateKey(key.privateKey!)
+}
+
+export const getCoinKeys = async (coin: Utxo, wallet: Wallet): Promise<ECPairInterface> => {
+  const { mnemonic, network } = wallet
+  const seed = await mnemonicToSeed(mnemonic)
+  if (!seed) throw new Error('Could not get seed from mnemonic')
+  const masterNode = bip32.fromSeed(seed)
+  const key = masterNode.derivePath(derivationPath[network].replace('m/', '')).derive(0).derive(coin.nextIndex)
+  console.log('key.privateKey', key.privateKey?.toString('hex'))
+  console.log('key.publicKey', key.publicKey.toString('hex'))
+  console.log('coin.pubkey', coin.pubkey.toString('hex'))
   return ECPairFactory(ecc).fromPrivateKey(key.privateKey!)
 }
 

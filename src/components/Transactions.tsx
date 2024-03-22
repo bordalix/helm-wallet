@@ -34,7 +34,7 @@ export default function TransactionsList({ short }: { short?: boolean }) {
       <Label text={`${short ? 'Last' : 'All'} transactions`} />
       <div className='flex flex-col gap-2 h-72 overflow-auto'>
         {showTxs.map((t) => (
-          <TransactionLine key={t.txid} data={t} />
+          <TransactionLine key={`${t.amount} ${t.txid}`} data={t} />
         ))}
         {short && transactions.length > showMax ? (
           <div

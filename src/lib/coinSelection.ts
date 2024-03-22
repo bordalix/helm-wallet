@@ -1,3 +1,4 @@
+import { feePerInput } from './constants'
 import { Utxo } from './types'
 
 const utxoValue = (u: Utxo) => u.value || 0
@@ -94,10 +95,25 @@ const branchAndBoundStrategy = (target: number, coins: Utxo[]): Utxo[] | undefin
 }
 
 // select coins for given amount, with respective blinding private key
-export function selectCoins(amount: number, utxos: Utxo[]): Utxo[] {
+function sortAndSelect(amount: number, utxos: Utxo[]): Utxo[] {
   // sort utxos in descending order of value will decrease number of inputs
   // (and fees) but will increase utxo fragmentation
   const sortedUtxos = utxos.sort((a, b) => utxoValue(b) - utxoValue(a))
   // try to find a combination with exact value (aka no change) first
   return branchAndBoundStrategy(amount, sortedUtxos) ?? accumulativeStrategy(amount, sortedUtxos)
+}
+
+export const selectCoins = (amount: number, utxos: Utxo[]) => {
+  // find best coins combo to pay this amount
+  const iterator = (amount: number): { changeAmount: number; coins: Utxo[]; txfee: number } => {
+    const coins = sortAndSelect(amount, utxos)
+    const value = coins.reduce((prev, curr) => prev + curr.value, 0)
+    const txfee = coins.length * feePerInput
+    const changeAmount = value - amount - txfee
+    if (changeAmount < 0) return iterator(amount + txfee)
+    return { changeAmount, coins, txfee }
+  }
+
+  const { changeAmount, coins, txfee } = iterator(amount)
+  return { amount, changeAmount, coins, txfee }
 }
