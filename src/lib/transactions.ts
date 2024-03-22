@@ -27,24 +27,19 @@ export const feesToSendSats = (sats: number, wallet: Wallet): number => {
   return feePerInput * coins.length // TODO
 }
 
-export const sendSats = async (
-  sats: number,
-  destinationAddress: string,
-  blindingKey: any,
-  wallet: Wallet,
-): Promise<string> => {
+export const sendSats = async (sats: number, destinationAddress: string, wallet: Wallet): Promise<string> => {
   // check if enough balance
   const utxos = wallet.utxos[wallet.network]
   const balance = getBalance(wallet)
   if (!balance || balance - sats - utxos.length * feePerInput < 0) return ''
 
-  // find best coins combo to pay this
+  // find best coins combo to pay this amount
   const iterator = (amount: number): { changeAmount: number; coins: Utxo[]; txfee: number } => {
     const coins = selectCoins(amount, utxos)
     const value = coins.reduce((prev, curr) => prev + curr.value, 0)
     const txfee = coins.length * feePerInput
-    const change = value - amount - txfee
-    if (change < 0) return iterator(amount + txfee)
+    const changeAmount = value - amount - txfee
+    if (changeAmount < 0) return iterator(amount + txfee)
     return { changeAmount, coins, txfee }
   }
 
@@ -70,7 +65,7 @@ export const sendSats = async (
         amount: sats,
         asset: network.assetHash,
         script: address.toOutputScript(destinationAddress, network),
-        blindingPublicKey: Buffer.from(blindingKey, 'hex'),
+        blindingPublicKey: address.fromConfidential(destinationAddress).blindingKey,
         blinderIndex: 0,
       },
       // network fees
@@ -81,14 +76,14 @@ export const sendSats = async (
     ])
 
   if (changeAmount) {
-    const { blindingKeys, script } = await generateAddress(wallet)
+    const changeAddress = await generateAddress(wallet)
     updater.addOutputs([
       {
         amount: changeAmount,
         asset: network.assetHash,
-        script,
+        script: changeAddress.script,
         blinderIndex: 0,
-        blindingPublicKey: blindingKeys.publicKey,
+        blindingPublicKey: changeAddress.blindingKeys.publicKey,
       },
     ])
   }
