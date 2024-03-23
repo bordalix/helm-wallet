@@ -61,6 +61,7 @@ export interface HistoryResponse {
 }
 
 export const fetchHistory = async (config: Config, wallet: Wallet, defaultGap = 5): Promise<HistoryResponse> => {
+  const txids: Record<string, Transaction[]> = {}
   const transactions: Transaction[] = []
   const utxos: Utxo[] = []
   let index = 0
@@ -74,7 +75,8 @@ export const fetchHistory = async (config: Config, wallet: Wallet, defaultGap = 
       gap = defaultGap // resets gap
       lastIndexWithTx = index
       for (const txInfo of await fetchAddressTxs(address, wallet)) {
-        transactions.push({
+        if (!txids[txInfo.txid]) txids[txInfo.txid] = []
+        txids[txInfo.txid].push({
           amount: await getTransactionAmount(address, blindingKeys, txInfo, config, wallet),
           date: prettyUnixTimestamp(txInfo.status.block_time),
           unixdate: txInfo.status.block_time,
@@ -100,7 +102,14 @@ export const fetchHistory = async (config: Config, wallet: Wallet, defaultGap = 
     index += 1
     gap -= 1
   }
+  // filter lbtc utxos
   const lbtc = liquid.networks[wallet.network].assetHash
   const lbtcUtxos = utxos.filter((utxo) => utxo.asset.reverse().toString('hex') === lbtc)
+  // aggregate transactions by txid
+  for (const id of Object.keys(txids)) {
+    const first = txids[id][0]
+    const amount = txids[id].length === 1 ? first.amount : txids[id].reduce((prev, curr) => curr.amount + prev, 0)
+    transactions.push({ ...first, amount })
+  }
   return { nextIndex: lastIndexWithTx + 1, transactions, utxos: lbtcUtxos }
 }

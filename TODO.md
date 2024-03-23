@@ -7,8 +7,6 @@ TODO list:
 - documentation
 - cleanup code
 - remove `any`
-- agregate change on tx (a-b=c)
-- send all
 
 DONE
 
@@ -25,3 +23,5 @@ DONE
 - move explorer to wallet
 - send sats
 - save backup file
+- send all
+- aggregate transactions amount
