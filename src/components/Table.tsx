@@ -1,8 +1,4 @@
-interface TableProps {
-  data: string[][]
-}
-
-export default function Table({ data }: TableProps) {
+export default function Table({ data }: { data: string[][] }) {
   return (
     <table className='w-full table-fixed mt-0.5'>
       <tbody>

@@ -1,7 +1,8 @@
+import { ReactNode } from 'react'
 import Label from './Label'
 
 interface TextareaProps {
-  children?: any
+  children?: ReactNode
   label?: string
   onChange?: (arg0: any) => void
   value: string | number

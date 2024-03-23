@@ -7,12 +7,6 @@ import { signPset } from './signer'
 import { finalizeAndBroadcast } from './finalizer'
 import { feeForCoins } from './fees'
 
-export const feesToSendSats = (sats: number, wallet: Wallet): number => {
-  if (sats === 0) return 0
-  const { coins } = selectCoins(sats, wallet.utxos[wallet.network])
-  return feeForCoins(coins.length)
-}
-
 export const sendSats = async (sats: number, destinationAddress: string, wallet: Wallet): Promise<string> => {
   // check if enough balance
   const utxos = wallet.utxos[wallet.network]

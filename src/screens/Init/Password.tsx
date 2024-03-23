@@ -9,12 +9,10 @@ import Content from '../../components/Content'
 import NewPassword from '../../components/NewPassword'
 import { saveMnemonicToStorage } from '../../lib/storage'
 import { FlowContext } from '../../providers/flow'
-import { ConfigContext } from '../../providers/config'
 import Container from '../../components/Container'
 
 export default function InitPassword() {
   const { navigate } = useContext(NavigationContext)
-  const { config, updateConfig } = useContext(ConfigContext)
   const { wallet, initialize } = useContext(WalletContext)
   const { initInfo } = useContext(FlowContext)
 
@@ -27,7 +25,6 @@ export default function InitPassword() {
     const { mnemonic } = initInfo
     saveMnemonicToStorage(mnemonic, password)
     getMasterKeys(mnemonic).then(({ masterBlindingKey, xpubs }) => {
-      updateConfig(config)
       initialize({ ...wallet, masterBlindingKey, xpubs })
     })
   }

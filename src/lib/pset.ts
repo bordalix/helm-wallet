@@ -2,8 +2,9 @@ import { networks, Creator, Updater, Transaction, address } from 'liquidjs-lib'
 import { Wallet } from '../providers/wallet'
 import { generateAddress } from './address'
 import { Utxo } from './types'
+import { CoinsSelected } from './coinSelection'
 
-export const buildPset = async (coinSelection: any, destinationAddress: string, wallet: Wallet) => {
+export const buildPset = async (coinSelection: CoinsSelected, destinationAddress: string, wallet: Wallet) => {
   const network = networks[wallet.network]
   const { amount, changeAmount, coins, txfee } = coinSelection
 

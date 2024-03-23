@@ -33,9 +33,7 @@ export const blindPset = async (pset: Pset, utxos: Utxo[]) => {
     ZKPGenerator.WithBlindingKeysOfInputs(utxos.map((utxo) => utxo.blindingPrivateKey!)),
   )
   const outputBlindingArgs = zkpGenerator.blindOutputs(pset, Pset.ECCKeysGenerator(zkp.ecc))
-
   const blinder = new Blinder(pset, zkpGenerator.unblindInputs(pset), zkpValidator, zkpGenerator)
-
   blinder.blindLast({ outputBlindingArgs })
   return blinder.pset
 }

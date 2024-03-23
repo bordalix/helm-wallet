@@ -51,7 +51,7 @@ export default function SendInvoice() {
     navigate(Pages.Wallet)
   }
 
-  const handleChange = (e: any) => setInvoice(e.target.value)
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setInvoice(e.target.value)
 
   return (
     <Container>

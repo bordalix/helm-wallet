@@ -103,7 +103,14 @@ function sortAndSelect(amount: number, utxos: Utxo[]): Utxo[] {
   return branchAndBoundStrategy(amount, sortedUtxos) ?? accumulativeStrategy(amount, sortedUtxos)
 }
 
-export const selectCoins = (amount: number, utxos: Utxo[]) => {
+export interface CoinsSelected {
+  amount: number
+  changeAmount: number
+  coins: Utxo[]
+  txfee: number
+}
+
+export const selectCoins = (amount: number, utxos: Utxo[]): CoinsSelected => {
   // find best coins combo to pay this amount
   let changeAmount = 0,
     coins,

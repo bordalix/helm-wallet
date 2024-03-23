@@ -6,7 +6,7 @@ import { Utxo } from './types'
 
 let zkp: Secp256k1ZKP
 
-export const signPset = async (pset: any, coins: Utxo[], wallet: Wallet) => {
+export const signPset = async (pset: Pset, coins: Utxo[], wallet: Wallet) => {
   if (!zkp) zkp = await zkpInit()
   const signer = new Signer(pset)
 

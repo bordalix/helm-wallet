@@ -3,7 +3,7 @@ import Label from './Label'
 interface InputProps {
   label?: string
   left?: string
-  onChange: (arg0: any) => void
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   placeholder?: string
   right?: string
   type?: string

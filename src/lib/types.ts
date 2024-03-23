@@ -23,9 +23,43 @@ export type Transaction = {
 }
 export type Transactions = Record<NetworkName, Transaction[]>
 
-export type UnblindedOutput = confidential.UnblindOutputResult | { prevout: Output; value: number }
+export type UnblindedOutput = confidential.UnblindOutputResult & { prevout: Output }
 
-export type Utxo = any
+export type BlindedUtxo = {
+  txid: string
+  vout: number
+  status: {
+    confirmed: boolean
+    block_height: number
+    block_hash: string
+    block_time: number
+  }
+  valuecommitment: string
+  assetcommitment: string
+  noncecommitment: string
+}
+
+export type Utxo = BlindedUtxo & {
+  value: number
+  asset: string
+  address: string
+  blindingPublicKey: Buffer
+  blindingPrivateKey: Buffer
+  nextIndex: number
+  pubkey: Buffer
+  script: Buffer
+  valueBlindingFactor?: Buffer
+  assetBlindingFactor?: Buffer
+  prevout?: {
+    asset: Buffer
+    value: Buffer
+    nonce: Buffer
+    script: Buffer
+    rangeProof?: Buffer
+    surjectionProof?: Buffer
+  }
+}
+
 export type Utxos = Record<NetworkName, Utxo[]>
 
 export type XPub = string

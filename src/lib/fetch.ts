@@ -89,6 +89,7 @@ export const fetchHistory = async (wallet: Wallet): Promise<HistoryResponse> => 
           ...utxo,
           ...unblinded,
           address,
+          asset: unblinded.asset.reverse().toString('hex'),
           blindingPublicKey: blindingKeys.publicKey,
           blindingPrivateKey: blindingKeys.privateKey,
           nextIndex,
@@ -102,13 +103,8 @@ export const fetchHistory = async (wallet: Wallet): Promise<HistoryResponse> => 
     gap -= 1
   }
   // filter lbtc utxos
-  console.log('after utxos length', utxos.length)
   const lbtc = liquid.networks[wallet.network].assetHash
-  const lbtcUtxos = utxos.filter((utxo) => {
-    const clone = Buffer.from(utxo.asset)
-    return clone.reverse().toString('hex') === lbtc
-  })
-  console.log('after lbtcUtxos length', lbtcUtxos.length)
+  const lbtcUtxos = utxos.filter((utxo) => utxo.asset === lbtc)
 
   // aggregate transactions by txid
   for (const id of Object.keys(txids)) {
@@ -116,5 +112,6 @@ export const fetchHistory = async (wallet: Wallet): Promise<HistoryResponse> => 
     const amount = txids[id].length === 1 ? first.amount : txids[id].reduce((prev, curr) => curr.amount + prev, 0)
     transactions.push({ ...first, amount })
   }
+
   return { nextIndex: lastIndexWithTx + 1, transactions, utxos: lbtcUtxos }
 }

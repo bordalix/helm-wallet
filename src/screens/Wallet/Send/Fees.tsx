@@ -15,8 +15,8 @@ import Table from '../../../components/Table'
 import NeedsPassword from '../../../components/NeedsPassword'
 import { ECPairFactory } from 'ecpair'
 import * as ecc from '@bitcoinerlab/secp256k1'
-import { feesToSendSats } from '../../../lib/transactions'
 import { getBalance } from '../../../lib/wallet'
+import { feesToSendSats } from '../../../lib/fees'
 
 export default function SendFees() {
   const { setMnemonic, wallet } = useContext(WalletContext)

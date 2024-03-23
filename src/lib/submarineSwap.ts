@@ -41,7 +41,7 @@ export interface SubmarineSwapResponse {
 }
 
 export const submarineSwap = async (
-  invoice: any,
+  invoice: string,
   refundPublicKey: string,
   network: NetworkName,
 ): Promise<SubmarineSwapResponse> => {

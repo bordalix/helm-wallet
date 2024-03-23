@@ -1,16 +1,7 @@
 import { Encrypted, decrypt, encrypt } from './encryption'
 import { Config } from '../providers/config'
-import { Mnemonic } from './types'
-import { NetworkName, getNetworkNames } from './network'
-import { ExplorerName } from './explorers'
+import { getNetworkNames } from './network'
 import { Wallet } from '../providers/wallet'
-
-export interface SettingsData {
-  explorer: ExplorerName
-  mnemonic: Mnemonic
-  network: NetworkName
-  password: string
-}
 
 export const clearStorage = () => {
   return localStorage.clear()
@@ -34,10 +25,8 @@ export const readWalletFromStorage = (): Wallet | undefined => {
   const data = localStorage.getItem('wallet')
   if (!data) return undefined
   const wallet = JSON.parse(data)
-  if (!wallet.explorer) wallet.explorer = 'Mempool'
   for (const [n] of getNetworkNames()) {
     for (const utxo of wallet.utxos[n]) {
-      utxo.asset = Buffer.from(utxo.asset.data)
       utxo.assetBlindingFactor = Buffer.from(utxo.assetBlindingFactor.data)
       utxo.blindingPrivateKey = Buffer.from(utxo.blindingPrivateKey.data)
       utxo.blindingPublicKey = Buffer.from(utxo.blindingPublicKey.data)

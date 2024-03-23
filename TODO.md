@@ -6,7 +6,6 @@ TODO list:
 - tests
 - documentation
 - cleanup code
-- remove `any`
 
 DONE
 
@@ -26,3 +25,4 @@ DONE
 - send all
 - aggregate transactions amount
 - fee calculation
+- remove `any`

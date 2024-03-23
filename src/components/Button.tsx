@@ -4,7 +4,7 @@ interface ButtonProps {
   disabled?: boolean
   icon?: ReactElement
   label: string
-  onClick: (arg0: any) => void
+  onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
   secondary?: boolean
 }
 

@@ -1,5 +1,6 @@
 import { Wallet } from '../providers/wallet'
 import { NetworkName } from './network'
+import { BlindedUtxo } from './types'
 
 export enum ExplorerName {
   Blockstream = 'Blockstream',
@@ -51,7 +52,8 @@ const explorers: Explorer[] = [
   },
 ]
 
-export const getExplorerNames = (network: NetworkName) => explorers.filter((e: any) => e[network]).map((e) => e.name)
+export const getExplorerNames = (network: NetworkName) =>
+  explorers.filter((e: Explorer) => e[network]).map((e) => e.name)
 
 const getExplorerURL = ({ explorer, network }: Wallet) => {
   const exp = explorers.find((e) => e.name === explorer)
@@ -108,23 +110,7 @@ export const fetchAddressTxs = async (address: string, wallet: Wallet): Promise<
   return await response.json()
 }
 
-export interface UtxoInfo {
-  txid: string
-  vout: number
-  status: {
-    confirmed: boolean
-    block_height: number
-    block_hash: string
-    block_time: number
-  }
-  asset: string
-  value: number
-  valuecommitment: string
-  assetcommitment: string
-  noncecommitment: string
-}
-
-export const fetchUtxos = async (address: string, wallet: Wallet): Promise<UtxoInfo[]> => {
+export const fetchUtxos = async (address: string, wallet: Wallet): Promise<BlindedUtxo[]> => {
   const url = `${getExplorerURL(wallet)}/api/address/${address}/utxo`
   const response = await fetch(url)
   return await response.json()

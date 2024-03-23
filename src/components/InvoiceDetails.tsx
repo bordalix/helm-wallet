@@ -1,7 +1,7 @@
 import { formatInvoice, prettyNumber } from '../lib/format'
 import { decodeInvoice } from '../lib/lightning'
 
-export const Item = ({ title, body }: any) => {
+export const Item = ({ title, body }: { title: string; body: string }) => {
   return (
     <div className='mb-8'>
       <p className='font-bold'>{title}</p>

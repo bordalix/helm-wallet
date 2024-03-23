@@ -1,8 +1,8 @@
-import { Extractor, Finalizer } from 'liquidjs-lib'
+import { Extractor, Finalizer, Pset } from 'liquidjs-lib'
 import { Wallet } from '../providers/wallet'
 import { broadcastTxHex } from './explorers'
 
-export const finalizeAndBroadcast = async (pset: any, wallet: Wallet) => {
+export const finalizeAndBroadcast = async (pset: Pset, wallet: Wallet) => {
   const finalizer = new Finalizer(pset)
   finalizer.finalize()
   const txHex = Extractor.extract(finalizer.pset).toHex()

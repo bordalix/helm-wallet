@@ -25,6 +25,7 @@ export default function SendPayment() {
     increaseIndex()
     setSendInfo({ ...sendInfo, txid })
     setTimeout(() => reloadWallet(wallet), timeToReload)
+    setTimeout(() => reloadWallet(wallet), 60_000)
     navigate(Pages.SendSuccess)
   }
 

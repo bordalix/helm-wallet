@@ -1,7 +1,8 @@
+import { ReactNode } from 'react'
 import Label from './Label'
 
 interface SelectProps {
-  children: any
+  children: ReactNode
   label?: string
   onChange: (arg0: any) => void
   value: string | number
