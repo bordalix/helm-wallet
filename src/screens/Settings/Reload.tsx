@@ -35,10 +35,14 @@ export default function Reload() {
             <p className='mt-10'>You can go back to wallet, reloading will keep working on the background</p>
           </center>
         ) : (
-          <>
-            <p className='mt-10'>Increase if you're missing some coins</p>
-            <p className='mt-4'>Higher values makes reloads take longer and increases data usage</p>
-          </>
+          <div className='flex flex-col gap-6 mt-10'>
+            <p>Increase limit if you're missing some coins</p>
+            <p>
+              Higher values makes reloads take longer
+              <br />
+              and increases data usage
+            </p>
+          </div>
         )}
       </Content>
       <ButtonsOnBottom>

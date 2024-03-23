@@ -10,10 +10,14 @@ import Content from '../../components/Content'
 import QRCodeIcon from '../../icons/QRCode'
 import ScanIcon from '../../icons/Scan'
 import Transactions from '../../components/Transactions'
+import { BoltzContext } from '../../providers/boltz'
 
 export default function Wallet() {
+  const { limits, maxAllowedAmount } = useContext(BoltzContext)
   const { navigate } = useContext(NavigationContext)
   const { wallet } = useContext(WalletContext)
+
+  const canSend = maxAllowedAmount(wallet) > limits.minimal
 
   return (
     <Container>
@@ -22,7 +26,7 @@ export default function Wallet() {
         <Transactions short />
       </Content>
       <ButtonsOnBottom>
-        <Button icon={<ScanIcon />} label='Send' onClick={() => navigate(Pages.SendInvoice)} />
+        <Button icon={<ScanIcon />} label='Send' onClick={() => navigate(Pages.SendInvoice)} disabled={!canSend} />
         <Button icon={<QRCodeIcon />} label='Receive' onClick={() => navigate(Pages.ReceiveAmount)} />
       </ButtonsOnBottom>
     </Container>

@@ -20,14 +20,16 @@ export default function Restore({ backup }: { backup: () => void }) {
     <Container>
       <Content>
         <Title text='Reset wallet' />
-        <p className='mt-10 mb-4'>
-          Did you{' '}
-          <span className='underline cursor-pointer' onClick={backup}>
-            backup your wallet
-          </span>
-          ?
-        </p>
-        <p>This operation cannot be undone.</p>
+        <div className='flex flex-col gap-6 mt-10'>
+          <p>
+            Did you{' '}
+            <span className='underline cursor-pointer' onClick={backup}>
+              backup your wallet
+            </span>
+            ?
+          </p>
+          <p>This operation cannot be undone.</p>
+        </div>
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handleReset} label='Reset wallet' />

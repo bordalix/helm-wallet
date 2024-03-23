@@ -11,14 +11,10 @@ import Content from '../../../components/Content'
 import Title from '../../../components/Title'
 import Container from '../../../components/Container'
 import { pasteFromClipboard } from '../../../lib/clipboard'
-import { WalletContext } from '../../../providers/wallet'
-import { BoltzContext } from '../../../providers/boltz'
 
 export default function SendInvoice() {
   const { navigate } = useContext(NavigationContext)
   const { setSendInfo } = useContext(FlowContext)
-  const { wallet } = useContext(WalletContext)
-  const { maxAllowedAmount } = useContext(BoltzContext)
 
   const defaultLabel = 'Paste invoice'
   const [buttonLabel, setButtonLabel] = useState(defaultLabel)
@@ -43,10 +39,6 @@ export default function SendInvoice() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [invoice])
 
-  const sendAllAmount = () => {
-    return maxAllowedAmount(wallet)
-  }
-
   const handlePaste = async () => {
     const invoice = await pasteFromClipboard()
     setButtonLabel('Pasted')
@@ -64,7 +56,7 @@ export default function SendInvoice() {
   return (
     <Container>
       <Content>
-        <Title text='Send' subtext={`Available up to ${sendAllAmount()} sats`} />
+        <Title text='Send' subtext={`${firefox ? 'Paste' : 'Scan or paste'} invoice`} />
         <div className='flex flex-col gap-2'>
           <Error error={Boolean(error)} text={error} />
           {error ? null : (
