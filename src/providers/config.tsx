@@ -1,19 +1,12 @@
 import { ReactNode, createContext, useEffect, useState } from 'react'
 import { clearStorage, readConfigFromStorage, saveConfigToStorage } from '../lib/storage'
-import { ExplorerName } from '../lib/explorers'
 
 export interface Config {
-  explorer: ExplorerName
-  gap: number
   notifications: boolean
-  password: string
 }
 
 const defaultConfig: Config = {
-  explorer: ExplorerName.Mempool,
-  gap: 5,
   notifications: false,
-  password: '',
 }
 
 interface ConfigContextProps {

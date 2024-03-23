@@ -1,4 +1,4 @@
-import { feePerInput } from './constants'
+import { feeForCoins } from './fees'
 import { Utxo } from './types'
 
 const utxoValue = (u: Utxo) => u.value || 0
@@ -114,7 +114,7 @@ export const selectCoins = (amount: number, utxos: Utxo[]) => {
   do {
     coins = sortAndSelect(amount - changeAmount, utxos)
     value = coins.reduce((prev, curr) => prev + curr.value, 0)
-    txfee = coins.length * feePerInput
+    txfee = feeForCoins(coins.length)
     changeAmount = value - amount - txfee
     numAttempts -= 1
   } while (changeAmount < 0 && numAttempts > 0)

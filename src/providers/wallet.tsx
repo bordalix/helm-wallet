@@ -3,12 +3,13 @@ import { readWalletFromStorage, saveWalletToStorage } from '../lib/storage'
 import { NavigationContext, Pages } from './navigation'
 import { NetworkName } from '../lib/network'
 import { Mnemonic, NextIndexes, Transactions, Utxos, XPubs } from '../lib/types'
-import { ConfigContext } from './config'
 import { fetchHistory } from '../lib/fetch'
 import { ExplorerName } from '../lib/explorers'
+import { defaultGapLimit } from '../lib/constants'
 
 export interface Wallet {
   explorer: ExplorerName
+  gapLimit: number
   initialized: boolean
   masterBlindingKey?: string
   mnemonic: Mnemonic
@@ -20,14 +21,15 @@ export interface Wallet {
 }
 
 const defaultWallet: Wallet = {
-  explorer: ExplorerName.Mempool,
+  explorer: ExplorerName.Blockstream,
+  gapLimit: defaultGapLimit,
   initialized: false,
   mnemonic: '',
   network: NetworkName.Testnet,
   nextIndex: {
-    [NetworkName.Liquid]: 1,
-    [NetworkName.Regtest]: 1,
-    [NetworkName.Testnet]: 1,
+    [NetworkName.Liquid]: 0,
+    [NetworkName.Regtest]: 0,
+    [NetworkName.Testnet]: 0,
   },
   transactions: {
     [NetworkName.Liquid]: [],
@@ -73,7 +75,6 @@ export const WalletContext = createContext<WalletContextProps>({
 })
 
 export const WalletProvider = ({ children }: { children: ReactNode }) => {
-  const { config } = useContext(ConfigContext)
   const { navigate } = useContext(NavigationContext)
 
   const [loading, setLoading] = useState(true)
@@ -102,11 +103,17 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => setMnemonic('')
 
-  const reloadWallet = async (wallet: Wallet, gap = 5) => {
+  const reloadWallet = async (wallet: Wallet) => {
     if (reloading) return
     setReloading(true)
     const clone = { ...wallet }
-    const { nextIndex, transactions, utxos } = await fetchHistory(config, wallet, gap)
+    const { nextIndex, transactions, utxos } = await fetchHistory(wallet)
+    console.log(
+      'reload ended nextIndex, transactions.length, utxos.length',
+      nextIndex,
+      transactions.length,
+      utxos.length,
+    )
     clone.nextIndex[wallet.network] = nextIndex
     clone.transactions[wallet.network] = transactions
     clone.utxos[wallet.network] = utxos

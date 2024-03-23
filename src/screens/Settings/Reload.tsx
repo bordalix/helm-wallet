@@ -10,21 +10,21 @@ import LoadingIcon from '../../icons/Loading'
 import { gapLimits } from '../../lib/wallet'
 
 export default function Reload() {
-  const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)
-  const { reloading, reloadWallet, wallet } = useContext(WalletContext)
+  const { toggleShowConfig } = useContext(ConfigContext)
+  const { reloading, reloadWallet, updateWallet, wallet } = useContext(WalletContext)
 
   const handleChange = (e: any) => {
-    const gap = Number(e.target.value)
-    if (gapLimits.includes(gap)) updateConfig({ ...config, gap })
+    const gapLimit = Number(e.target.value)
+    if (gapLimits.includes(gapLimit)) updateWallet({ ...wallet, gapLimit })
   }
 
-  const handleReload = () => reloadWallet(wallet, config.gap)
+  const handleReload = () => reloadWallet(wallet)
 
   return (
     <div className='flex flex-col h-full justify-between'>
       <Content>
         <Title text='Reload' subtext='Reload your UTXOs' />
-        <Select label='Gap limit' onChange={handleChange} value={config.gap}>
+        <Select label='Gap limit' onChange={handleChange} value={wallet.gapLimit}>
           {gapLimits.map((e) => (
             <option key={e}>{e}</option>
           ))}

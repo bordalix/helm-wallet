@@ -10,6 +10,7 @@ import { generateAddress } from './address'
 import { getNetwork } from './network'
 import { Wallet } from '../providers/wallet'
 import { getBoltzApiUrl, getBoltzWsUrl } from './boltz'
+import { satsVbyte } from './fees'
 
 /**
  * Reverse swap flow:
@@ -127,7 +128,7 @@ export const reverseSwap = async (
         console.log('Creating claim transaction')
 
         // Create a claim transaction to be signed cooperatively via a key path spend
-        claimTx = targetFee(2, (fee) =>
+        claimTx = targetFee(satsVbyte, (fee) =>
           constructClaimTransaction(
             [
               {

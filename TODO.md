@@ -25,3 +25,4 @@ DONE
 - save backup file
 - send all
 - aggregate transactions amount
+- fee calculation

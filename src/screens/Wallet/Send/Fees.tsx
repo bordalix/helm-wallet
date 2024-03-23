@@ -72,7 +72,7 @@ export default function SendFees() {
   return (
     <Container>
       <Content>
-        <Title text='Payment fees' subtext='Values in sats' />
+        <Title text='Payment fees' subtext={`You pay ${prettyNumber(total ?? 0)} sats`} />
         <div className='flex flex-col gap-2'>
           <Error error={Boolean(error)} text={error} />
           <Table data={data} />

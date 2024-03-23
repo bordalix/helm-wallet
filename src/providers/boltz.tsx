@@ -5,7 +5,7 @@ import Decimal from 'decimal.js'
 import { getBoltzApiUrl } from '../lib/boltz'
 import { Wallet, WalletContext } from './wallet'
 import { getBalance } from '../lib/wallet'
-import { feePerInput } from '../lib/constants'
+import { feeForCoins } from '../lib/fees'
 
 export interface ExpectedFees {
   boltzFees: Satoshis
@@ -86,7 +86,7 @@ export const BoltzProvider = ({ children }: { children: ReactNode }) => {
 
   const maxAllowedAmount = (wallet: Wallet): number => {
     let amount = getBalance(wallet)
-    const txFees = feePerInput * wallet.utxos[wallet.network].length
+    const txFees = feeForCoins(wallet.utxos[wallet.network].length)
     amount -= txFees
     amount -= sendFees.minerFees
     amount = Decimal.floor(Decimal.div(amount, Decimal.div(Decimal.add(100, sendFees.percentage), 100))).toNumber()
