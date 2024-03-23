@@ -105,15 +105,19 @@ function sortAndSelect(amount: number, utxos: Utxo[]): Utxo[] {
 
 export const selectCoins = (amount: number, utxos: Utxo[]) => {
   // find best coins combo to pay this amount
-  const iterator = (amount: number): { changeAmount: number; coins: Utxo[]; txfee: number } => {
-    const coins = sortAndSelect(amount, utxos)
-    const value = coins.reduce((prev, curr) => prev + curr.value, 0)
-    const txfee = coins.length * feePerInput
-    const changeAmount = value - amount - txfee
-    if (changeAmount < 0) return iterator(amount + txfee)
-    return { changeAmount, coins, txfee }
-  }
+  let changeAmount = 0,
+    coins,
+    numAttempts = 10,
+    txfee = 0,
+    value
 
-  const { changeAmount, coins, txfee } = iterator(amount)
+  do {
+    coins = sortAndSelect(amount - changeAmount, utxos)
+    value = coins.reduce((prev, curr) => prev + curr.value, 0)
+    txfee = coins.length * feePerInput
+    changeAmount = value - amount - txfee
+    numAttempts -= 1
+  } while (changeAmount < 0 && numAttempts > 0)
+
   return { amount, changeAmount, coins, txfee }
 }

@@ -10,18 +10,18 @@ import Content from '../../components/Content'
 import { WalletContext } from '../../providers/wallet'
 
 export default function Explorer() {
-  const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)
-  const { wallet } = useContext(WalletContext)
+  const { toggleShowConfig } = useContext(ConfigContext)
+  const { wallet, updateWallet } = useContext(WalletContext)
 
   const handleChange = (e: any) => {
-    updateConfig({ ...config, explorer: e.target.value })
+    updateWallet({ ...wallet, explorer: e.target.value })
   }
 
   return (
     <Container>
       <Content>
         <Title text='Explorer' subtext='Choose your explorer' />
-        <Select onChange={handleChange} value={config.explorer}>
+        <Select onChange={handleChange} value={wallet.explorer}>
           {getExplorerNames(wallet.network).map((e) => (
             <option key={e}>{e}</option>
           ))}

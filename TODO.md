@@ -1,15 +1,14 @@
 TODO list:
 
-- send sats
 - notifications?
-- save backup file
 - copy & paste in mobile
 - qrcode scanner in firefox
 - tests
 - documentation
 - cleanup code
 - remove `any`
-- add derivationPath to UTXO
+- agregate change on tx (a-b=c)
+- send all
 
 DONE
 
@@ -22,3 +21,7 @@ DONE
 - responsive
 - don't save mnemonic to storage
 - export csv file
+- add derivationPath to UTXO
+- move explorer to wallet
+- send sats
+- save backup file

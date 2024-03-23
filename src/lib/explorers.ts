@@ -1,4 +1,3 @@
-import { Config } from '../providers/config'
 import { Wallet } from '../providers/wallet'
 import { NetworkName } from './network'
 
@@ -54,17 +53,14 @@ const explorers: Explorer[] = [
 
 export const getExplorerNames = (network: NetworkName) => explorers.filter((e: any) => e[network]).map((e) => e.name)
 
-const getExplorerURL = ({ explorer }: Config, { network }: Wallet) => {
+const getExplorerURL = ({ explorer, network }: Wallet) => {
   const exp = explorers.find((e) => e.name === explorer)
   if (exp?.[network]) return exp[network]?.webExplorerURL
 }
 
-export const getTxIdURL = (txid: string, config: Config, wallet: Wallet) => {
+export const getTxIdURL = (txid: string, wallet: Wallet) => {
   // stupid bug from mempool
-  const url = getExplorerURL(config, wallet)?.replace(
-    'https://liquid.network/liquidtestnet',
-    'https://liquid.network/testnet',
-  )
+  const url = getExplorerURL(wallet)?.replace('https://liquid.network/liquidtestnet', 'https://liquid.network/testnet')
   return `${url}/tx/${txid}`
 }
 
@@ -82,9 +78,8 @@ export interface AddressInfo {
   }
 }
 
-export const fetchAddress = async (address: string, config: Config, wallet: Wallet): Promise<AddressInfo> => {
-  const explorerURL = getExplorerURL(config, wallet)
-  const url = `${explorerURL}/api/address/${address}`
+export const fetchAddress = async (address: string, wallet: Wallet): Promise<AddressInfo> => {
+  const url = `${getExplorerURL(wallet)}/api/address/${address}`
   const response = await fetch(url)
   return await response.json()
 }
@@ -106,8 +101,8 @@ export interface AddressTxInfo {
   }
 }
 
-export const fetchAddressTxs = async (address: string, config: Config, wallet: Wallet): Promise<AddressTxInfo[]> => {
-  const explorerURL = getExplorerURL(config, wallet)
+export const fetchAddressTxs = async (address: string, wallet: Wallet): Promise<AddressTxInfo[]> => {
+  const explorerURL = getExplorerURL(wallet)
   const url = `${explorerURL}/api/address/${address}/txs`
   const response = await fetch(url)
   return await response.json()
@@ -129,20 +124,20 @@ export interface UtxoInfo {
   noncecommitment: string
 }
 
-export const fetchUtxos = async (address: string, config: Config, wallet: Wallet): Promise<UtxoInfo[]> => {
-  const url = `${getExplorerURL(config, wallet)}/api/address/${address}/utxo`
+export const fetchUtxos = async (address: string, wallet: Wallet): Promise<UtxoInfo[]> => {
+  const url = `${getExplorerURL(wallet)}/api/address/${address}/utxo`
   const response = await fetch(url)
   return await response.json()
 }
 
-export const fetchTxHex = async (txid: string, config: Config, wallet: Wallet): Promise<string> => {
-  const url = `${getExplorerURL(config, wallet)}/api/tx/${txid}/hex`
+export const fetchTxHex = async (txid: string, wallet: Wallet): Promise<string> => {
+  const url = `${getExplorerURL(wallet)}/api/tx/${txid}/hex`
   const response = await fetch(url)
   return await response.text()
 }
 
-export const broadcastTxHex = async (txHex: string, config: Config, wallet: Wallet): Promise<string> => {
-  const url = `${getExplorerURL(config, wallet)}/api/tx`
+export const broadcastTxHex = async (txHex: string, wallet: Wallet): Promise<string> => {
+  const url = `${getExplorerURL(wallet)}/api/tx`
   const response = await fetch(url, {
     method: 'POST',
     body: txHex,

@@ -42,7 +42,7 @@ export default function TransactionsList({ short }: { short?: boolean }) {
             onClick={() => navigate(Pages.Transactions)}
           >
             <div className='flex'>
-              <p className='mr-2'>All transactions</p>
+              <p className='mr-2'>All {transactions.length} transactions</p>
               <ArrowIcon tiny />
             </div>
           </div>

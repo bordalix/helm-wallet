@@ -48,6 +48,5 @@ export const buildPset = async (coinSelection: any, destinationAddress: string, 
     ])
   }
 
-  console.log('pset input', pset.inputs[0])
   return pset
 }

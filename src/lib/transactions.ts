@@ -6,7 +6,6 @@ import { feePerInput } from './constants'
 import { buildPset } from './pset'
 import { signPset } from './signer'
 import { finalizeAndBroadcast } from './finalizer'
-import { Config } from '../providers/config'
 
 export const feesToSendSats = (sats: number, wallet: Wallet): number => {
   if (sats === 0) return 0
@@ -14,12 +13,7 @@ export const feesToSendSats = (sats: number, wallet: Wallet): number => {
   return feePerInput * coins.length // TODO
 }
 
-export const sendSats = async (
-  sats: number,
-  destinationAddress: string,
-  config: Config,
-  wallet: Wallet,
-): Promise<string> => {
+export const sendSats = async (sats: number, destinationAddress: string, wallet: Wallet): Promise<string> => {
   // check if enough balance
   const utxos = wallet.utxos[wallet.network]
   const balance = getBalance(wallet)
@@ -30,7 +24,7 @@ export const sendSats = async (
   const pset = await buildPset(coinSelection, destinationAddress, wallet)
   const blindedPset = await blindPset(pset, coinSelection.coins)
   const signedPset = await signPset(blindedPset, coinSelection.coins, wallet)
-  const txid = await finalizeAndBroadcast(signedPset, config, wallet)
+  const txid = await finalizeAndBroadcast(signedPset, wallet)
 
   return txid
 }

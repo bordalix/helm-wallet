@@ -34,9 +34,6 @@ export const getCoinKeys = async (coin: Utxo, wallet: Wallet): Promise<ECPairInt
   if (!seed) throw new Error('Could not get seed from mnemonic')
   const masterNode = bip32.fromSeed(seed)
   const key = masterNode.derivePath(derivationPath[network].replace('m/', '')).derive(0).derive(coin.nextIndex)
-  console.log('key.privateKey', key.privateKey?.toString('hex'))
-  console.log('key.publicKey', key.publicKey.toString('hex'))
-  console.log('coin.pubkey', coin.pubkey.toString('hex'))
   return ECPairFactory(ecc).fromPrivateKey(key.privateKey!)
 }
 
@@ -65,7 +62,7 @@ export const getMasterKeys = async (mnemonic: Mnemonic): Promise<{ masterBlindin
   }
 }
 
-export const deriveBlindingKey = async (script: Buffer, wallet: Wallet): Promise<BlindingKeyPair> => {
+export const deriveBlindingKeys = async (script: Buffer, wallet: Wallet): Promise<BlindingKeyPair> => {
   const { masterBlindingKey } = wallet
   if (!masterBlindingKey) throw new Error('Could not get masterBlindingKey')
   const blindingKeyNode = slip77.fromMasterBlindingKey(masterBlindingKey)
@@ -79,4 +76,9 @@ export const getBalance = (wallet: Wallet): Satoshis => {
   const utxos = wallet.utxos[wallet.network]
   if (!utxos) return 0
   return utxos.reduce((prev, curr) => prev + curr.value, 0)
+}
+
+export const getUtxos = (wallet: Wallet): Utxo[] => {
+  const utxos = wallet.utxos[wallet.network]
+  return utxos ?? []
 }

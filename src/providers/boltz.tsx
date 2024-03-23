@@ -3,7 +3,9 @@ import { fetchURL } from '../lib/fetch'
 import { Satoshis } from '../lib/types'
 import Decimal from 'decimal.js'
 import { getBoltzApiUrl } from '../lib/boltz'
-import { WalletContext } from './wallet'
+import { Wallet, WalletContext } from './wallet'
+import { getBalance } from '../lib/wallet'
+import { feePerInput } from '../lib/constants'
 
 export interface ExpectedFees {
   boltzFees: Satoshis
@@ -38,13 +40,15 @@ const defaultBoltzLimits: BoltzLimits = {
 interface BoltzContextProps {
   error: string
   limits: BoltzLimits
-  expectedFees: (sats: Satoshis, flow: string) => ExpectedFees
+  expectedFees: (sats: Satoshis, flow?: string) => ExpectedFees
+  maxAllowedAmount: (w: Wallet) => number
 }
 
 export const BoltzContext = createContext<BoltzContextProps>({
   error: '',
   limits: defaultBoltzLimits,
   expectedFees: () => defaultExpectedFees,
+  maxAllowedAmount: () => 0,
 })
 
 export const BoltzProvider = ({ children }: { children: ReactNode }) => {
@@ -72,13 +76,24 @@ export const BoltzProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [wallet.network])
 
-  const expectedFees = (satoshis: Satoshis, flow = 'send'): { boltzFees: Satoshis; minerFees: Satoshis } => {
+  const expectedFees = (amount: Satoshis, flow = 'send'): { boltzFees: Satoshis; minerFees: Satoshis } => {
     const fees = flow === 'send' ? sendFees : recvFees
     return {
-      boltzFees: Decimal.ceil(Decimal.mul(satoshis, fees.percentage).div(100)).toNumber(),
+      boltzFees: Decimal.ceil(Decimal.mul(amount, fees.percentage).div(100)).toNumber(),
       minerFees: fees.minerFees,
     }
   }
 
-  return <BoltzContext.Provider value={{ expectedFees, error, limits }}>{children}</BoltzContext.Provider>
+  const maxAllowedAmount = (wallet: Wallet): number => {
+    let amount = getBalance(wallet)
+    const txFees = feePerInput * wallet.utxos[wallet.network].length
+    amount -= txFees
+    amount -= sendFees.minerFees
+    amount = Decimal.floor(Decimal.div(amount, Decimal.div(Decimal.add(100, sendFees.percentage), 100))).toNumber()
+    return amount
+  }
+
+  return (
+    <BoltzContext.Provider value={{ expectedFees, maxAllowedAmount, error, limits }}>{children}</BoltzContext.Provider>
+  )
 }

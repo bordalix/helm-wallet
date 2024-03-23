@@ -34,6 +34,7 @@ export const readWalletFromStorage = (): Wallet | undefined => {
   const data = localStorage.getItem('wallet')
   if (!data) return undefined
   const wallet = JSON.parse(data)
+  if (!wallet.explorer) wallet.explorer = 'Mempool'
   for (const [n] of getNetworkNames()) {
     for (const utxo of wallet.utxos[n]) {
       utxo.asset = Buffer.from(utxo.asset.data)
