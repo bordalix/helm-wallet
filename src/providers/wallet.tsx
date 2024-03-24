@@ -1,5 +1,5 @@
 import { ReactNode, createContext, useContext, useEffect, useRef, useState } from 'react'
-import { readWalletFromStorage, saveWalletToStorage } from '../lib/storage'
+import { readWalletFromStorage, saveMnemonicToStorage, saveWalletToStorage } from '../lib/storage'
 import { NavigationContext, Pages } from './navigation'
 import { NetworkName } from '../lib/network'
 import { Mnemonic, NextIndexes, Transactions, Utxos, XPubs } from '../lib/types'
@@ -123,6 +123,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
 
   const resetWallet = () => {
     updateWallet(defaultWallet)
+    saveMnemonicToStorage('', 'password')
     navigate(Pages.Init)
   }
 
