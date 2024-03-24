@@ -100,7 +100,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     if (reloading) return
     setReloading(true)
     const clone = w ? { ...w } : { ...wallet }
-    const { nextIndex, transactions, utxos } = await fetchHistory(wallet)
+    const { nextIndex, transactions, utxos } = await fetchHistory(clone)
     clone.nextIndex[wallet.network] = nextIndex
     clone.transactions[wallet.network] = transactions
     clone.utxos[wallet.network] = utxos
