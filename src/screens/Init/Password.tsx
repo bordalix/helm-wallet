@@ -22,10 +22,8 @@ export default function InitPassword() {
   const handleCancel = () => navigate(Pages.Init)
 
   const handleProceed = () => {
-    console.log('hehehehehheheheheh')
     const { mnemonic } = initInfo
     saveMnemonicToStorage(mnemonic, password)
-    console.log('gkjhkgjhkghjkghjgkhjgkjh')
     getMasterKeys(mnemonic).then(({ masterBlindingKey, xpubs }) => {
       reloadWallet({ ...wallet, masterBlindingKey, xpubs, initialized: true })
       navigate(Pages.Wallet)

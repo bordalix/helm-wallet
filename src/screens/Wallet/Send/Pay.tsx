@@ -11,7 +11,7 @@ import LoadingIcon from '../../../icons/Loading'
 import { prettyNumber } from '../../../lib/format'
 import { WalletContext } from '../../../providers/wallet'
 import { finalizeSubmarineSwap } from '../../../lib/submarineSwap'
-import { timeToReload } from '../../../lib/constants'
+import { inOneMinute, someSeconds } from '../../../lib/constants'
 
 export default function SendPayment() {
   const { navigate } = useContext(NavigationContext)
@@ -24,8 +24,8 @@ export default function SendPayment() {
   const onTxid = (txid: string) => {
     increaseIndex()
     setSendInfo({ ...sendInfo, txid })
-    setTimeout(reloadWallet, timeToReload)
-    setTimeout(reloadWallet, 60_000)
+    setTimeout(reloadWallet, someSeconds)
+    setTimeout(reloadWallet, inOneMinute)
     navigate(Pages.SendSuccess)
   }
 

@@ -12,7 +12,7 @@ import { extractError } from '../../../lib/error'
 import { WalletContext } from '../../../providers/wallet'
 import { reverseSwap } from '../../../lib/reverseSwap'
 import { copyToClipboard } from '../../../lib/clipboard'
-import { timeToReload } from '../../../lib/constants'
+import { inOneMinute, someSeconds } from '../../../lib/constants'
 
 export default function ReceiveInvoice() {
   const { recvInfo, setRecvInfo } = useContext(FlowContext)
@@ -28,8 +28,8 @@ export default function ReceiveInvoice() {
 
   const onFinish = (txid: string) => {
     increaseIndex()
-    setTimeout(reloadWallet, timeToReload)
-    setTimeout(reloadWallet, 60_000)
+    setTimeout(reloadWallet, someSeconds)
+    setTimeout(reloadWallet, inOneMinute)
     setRecvInfo({ ...recvInfo, txid })
     navigate(Pages.ReceiveSuccess)
   }

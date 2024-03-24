@@ -1,2 +1,3 @@
 export const defaultGapLimit = 5
-export const timeToReload = 10_000 // 10 seconds
+export const someSeconds = 10_000 // 10 seconds
+export const inOneMinute = 60_000
