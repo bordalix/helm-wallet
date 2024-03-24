@@ -28,8 +28,8 @@ export default function ReceiveInvoice() {
 
   const onFinish = (txid: string) => {
     increaseIndex()
-    setTimeout(() => reloadWallet(wallet), timeToReload)
-    setTimeout(() => reloadWallet(wallet), 60_000)
+    setTimeout(reloadWallet, timeToReload)
+    setTimeout(reloadWallet, 60_000)
     setRecvInfo({ ...recvInfo, txid })
     navigate(Pages.ReceiveSuccess)
   }

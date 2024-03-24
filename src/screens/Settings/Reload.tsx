@@ -18,7 +18,7 @@ export default function Reload() {
     if (gapLimits.includes(gapLimit)) updateWallet({ ...wallet, gapLimit })
   }
 
-  const handleReload = () => reloadWallet(wallet)
+  const handleReload = () => reloadWallet()
 
   return (
     <div className='flex flex-col h-full justify-between'>

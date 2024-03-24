@@ -24,8 +24,8 @@ export default function SendPayment() {
   const onTxid = (txid: string) => {
     increaseIndex()
     setSendInfo({ ...sendInfo, txid })
-    setTimeout(() => reloadWallet(wallet), timeToReload)
-    setTimeout(() => reloadWallet(wallet), 60_000)
+    setTimeout(reloadWallet, timeToReload)
+    setTimeout(reloadWallet, 60_000)
     navigate(Pages.SendSuccess)
   }
 

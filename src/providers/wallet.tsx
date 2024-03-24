@@ -52,9 +52,8 @@ interface WalletContextProps {
   loading: boolean
   reloading: boolean
   increaseIndex: () => void
-  initialize: (wallet: Wallet) => void
   logout: () => void
-  reloadWallet: (wallet: Wallet, gap?: number) => void
+  reloadWallet: (w?: Wallet) => void
   resetWallet: () => void
   setMnemonic: (m: Mnemonic) => void
   updateWallet: (w: Wallet) => void
@@ -65,7 +64,6 @@ export const WalletContext = createContext<WalletContextProps>({
   loading: true,
   reloading: false,
   increaseIndex: () => {},
-  initialize: () => {},
   logout: () => {},
   reloadWallet: () => {},
   resetWallet: () => {},
@@ -96,24 +94,13 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     setWallet(clone)
   }
 
-  const initialize = (wallet: Wallet) => {
-    reloadWallet({ ...wallet, initialized: true })
-    navigate(Pages.Wallet)
-  }
-
   const logout = () => setMnemonic('')
 
-  const reloadWallet = async (wallet: Wallet) => {
+  const reloadWallet = async (w?: Wallet) => {
     if (reloading) return
     setReloading(true)
-    const clone = { ...wallet }
+    const clone = w ? { ...w } : { ...wallet }
     const { nextIndex, transactions, utxos } = await fetchHistory(wallet)
-    console.log(
-      'reload ended nextIndex, transactions.length, utxos.length',
-      nextIndex,
-      transactions.length,
-      utxos.length,
-    )
     clone.nextIndex[wallet.network] = nextIndex
     clone.transactions[wallet.network] = transactions
     clone.utxos[wallet.network] = utxos
@@ -128,6 +115,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const updateWallet = (data: Wallet) => {
+    console.log('updateWallet', data)
     setWallet({ ...data, mnemonic: mnemonic.current })
     saveWalletToStorage(data)
   }
@@ -147,7 +135,6 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
         loading,
         reloading,
         increaseIndex,
-        initialize,
         logout,
         reloadWallet,
         resetWallet,

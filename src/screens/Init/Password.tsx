@@ -13,7 +13,7 @@ import Container from '../../components/Container'
 
 export default function InitPassword() {
   const { navigate } = useContext(NavigationContext)
-  const { wallet, initialize } = useContext(WalletContext)
+  const { reloadWallet, updateWallet, wallet } = useContext(WalletContext)
   const { initInfo } = useContext(FlowContext)
 
   const [label, setLabel] = useState('')
@@ -25,7 +25,9 @@ export default function InitPassword() {
     const { mnemonic } = initInfo
     saveMnemonicToStorage(mnemonic, password)
     getMasterKeys(mnemonic).then(({ masterBlindingKey, xpubs }) => {
-      initialize({ ...wallet, masterBlindingKey, xpubs })
+      updateWallet({ ...wallet, masterBlindingKey, xpubs, initialized: true })
+      setTimeout(reloadWallet, 2_100)
+      navigate(Pages.Wallet)
     })
   }
 
