@@ -7,6 +7,7 @@ import Content from '../../components/Content'
 import Container from '../../components/Container'
 import { BoltzContext } from '../../providers/boltz'
 import { WalletContext } from '../../providers/wallet'
+import { prettyNumber } from '../../lib/format'
 
 export default function About() {
   const { maxAllowedAmount } = useContext(BoltzContext)
@@ -25,13 +26,24 @@ export default function About() {
             </a>{' '}
             swaps to send and receive lightning payments
           </p>
+          <p>
+            Uses{' '}
+            <a className='underline cursor-pointer' href='https://mempool.space'>
+              mempool.space
+            </a>{' '}
+            or{' '}
+            <a className='underline cursor-pointer' href='https://blockstream.info'>
+              blockstream.info
+            </a>{' '}
+            to fetch information from the chain
+          </p>
           <p className='underline cursor-pointer'>
             <a href='https://github.com/bordalix/thor'>Github</a>
           </p>
           <p>
             To send all your funds,
             <br />
-            create an invoice of <span className='font-semibold'>{maxAllowedAmount(wallet)}</span> sats
+            create an invoice of <span className='font-semibold'>{prettyNumber(maxAllowedAmount(wallet))}</span> sats
           </p>
         </div>
       </Content>

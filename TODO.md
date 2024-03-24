@@ -7,7 +7,7 @@ TODO list:
 - documentation
 - cleanup code
 - smart reload
-- show blinders on explorer
+- show blinders on explorer???
 
 DONE
 
