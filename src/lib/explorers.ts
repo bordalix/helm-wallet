@@ -122,11 +122,15 @@ export const fetchTxHex = async (txid: string, wallet: Wallet): Promise<string> 
   return await response.text()
 }
 
-export const broadcastTxHex = async (txHex: string, wallet: Wallet): Promise<string> => {
-  const url = `${getExplorerURL(wallet)}/api/tx`
+export const broadcastTxHex = async (txHex: string, wallet: Wallet): Promise<{ id: string }> => {
+  const t = wallet.network === NetworkName.Testnet ? 'testnet.' : ''
+  const url = `https://api.${t}boltz.exchange/v2/chain/L-BTC/transaction`
   const response = await fetch(url, {
+    body: JSON.stringify({ hex: txHex }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
     method: 'POST',
-    body: txHex,
   })
-  return await response.text()
+  return await response.json()
 }

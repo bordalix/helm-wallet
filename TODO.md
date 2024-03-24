@@ -6,6 +6,8 @@ TODO list:
 - tests
 - documentation
 - cleanup code
+- smart reload
+- show blinders on explorer
 
 DONE
 
@@ -26,3 +28,4 @@ DONE
 - aggregate transactions amount
 - fee calculation
 - remove `any`
+- broadcast through Boltz

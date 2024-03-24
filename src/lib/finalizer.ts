@@ -7,7 +7,7 @@ export const finalizeAndBroadcast = async (pset: Pset, wallet: Wallet) => {
   finalizer.finalize()
   const txHex = Extractor.extract(finalizer.pset).toHex()
   console.log('txHex', txHex)
-  const txid = await broadcastTxHex(txHex, wallet)
-  console.log('txid', txid)
-  return txid
+  const { id } = await broadcastTxHex(txHex, wallet)
+  console.log('txid', id)
+  return id
 }
