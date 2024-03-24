@@ -63,7 +63,7 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
       {isMobile ? (
         <Columns cols={3}>
           {keys.map((k) => (
-            <p key={k} className='text-center p-3 sm:p-5 bg-gray-100' onClick={() => clickHandler(k)}>
+            <p key={k} className='text-center p-3 sm:p-5 bg-gray-100 select-none' onClick={() => clickHandler(k)}>
               {k}
             </p>
           ))}
