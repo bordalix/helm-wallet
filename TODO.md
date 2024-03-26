@@ -7,6 +7,7 @@ TODO list:
 - documentation
 - cleanup code
 - smart reload
+- show num of tx when restoring
 - show blinders on explorer???
 - paying to other Thor
 

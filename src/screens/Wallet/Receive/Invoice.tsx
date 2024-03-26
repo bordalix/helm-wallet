@@ -43,7 +43,7 @@ export default function ReceiveInvoice() {
   }
 
   const handleCopy = async () => {
-    await copyToClipboard(invoice)
+    await copyToClipboard(value)
     setButtonLabel('Copied')
     setTimeout(() => setButtonLabel(label), 2000)
   }
