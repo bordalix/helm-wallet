@@ -11,16 +11,18 @@ export const Item = ({ title, body }: { title: string; body: string }) => {
 }
 
 interface InvoiceDetailsProps {
-  invoice: string
+  invoice?: string
 }
 
 export default function InvoiceDetails({ invoice }: InvoiceDetailsProps) {
+  if (!invoice) throw new Error('Missing invoice')
+
   const { note, satoshis } = decodeInvoice(invoice)
 
   return (
     <div>
       <Item title='Amount' body={`${prettyNumber(satoshis)} sats`} />
-      <Item title='Note' body={note} />
+      {note ? <Item title='Note' body={note} /> : null}
       <Item title='Invoice' body={formatInvoice(invoice)} />
     </div>
   )

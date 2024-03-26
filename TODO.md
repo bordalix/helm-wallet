@@ -10,6 +10,7 @@ TODO list:
 - show num of tx when restoring
 - show blinders on explorer???
 - paying to other Thor
+- use websockets
 
 DONE
 

@@ -16,6 +16,8 @@ export default function SendDetails() {
   const { sendInfo, setSendInfo } = useContext(FlowContext)
   const { wallet } = useContext(WalletContext)
 
+  if (!sendInfo.invoice) throw new Error('Missing invoice')
+
   const handleContinue = () => navigate(Pages.SendFees)
 
   const handleCancel = () => {
@@ -24,6 +26,7 @@ export default function SendDetails() {
   }
 
   const { satoshis } = decodeInvoice(sendInfo.invoice)
+  if (!satoshis) throw new Error('Error decoding invoice')
   const lowBalance = getBalance(wallet) < satoshis
   const label = lowBalance ? 'Insufficient funds' : 'Continue'
 

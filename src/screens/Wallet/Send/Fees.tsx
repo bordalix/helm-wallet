@@ -31,7 +31,7 @@ export default function SendFees() {
   const refundPublicKey = keys.publicKey.toString('hex')
 
   useEffect(() => {
-    if (invoice && wallet.mnemonic) {
+    if (invoice && wallet.mnemonic && satoshis) {
       submarineSwap(invoice, refundPublicKey, wallet.network)
         .then((swapResponse) => {
           const { expectedAmount } = swapResponse

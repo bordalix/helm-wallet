@@ -2,10 +2,10 @@
 import bolt11 from 'light-bolt11-decoder'
 
 export interface Invoice {
-  invoice: string
-  paymentHash: string
-  note: string
-  satoshis: number
+  invoice?: string
+  paymentHash?: string
+  note?: string
+  satoshis?: number
 }
 
 const findTag = (decoded: any, tag: string) => {

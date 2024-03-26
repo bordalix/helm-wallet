@@ -115,7 +115,6 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const updateWallet = (data: Wallet) => {
-    console.log('updateWallet', data)
     setWallet({ ...data, mnemonic: mnemonic.current })
     saveWalletToStorage(data)
   }

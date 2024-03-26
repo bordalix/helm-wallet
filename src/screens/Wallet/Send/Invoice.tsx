@@ -31,8 +31,13 @@ export default function SendInvoice() {
     }
     setError('')
     try {
-      setSendInfo(decodeInvoice(invoice))
-      navigate(Pages.SendDetails)
+      if (/^ln/.test(invoice)) {
+        setSendInfo(decodeInvoice(invoice))
+        navigate(Pages.SendDetails)
+      } else {
+        setSendInfo({ address: invoice })
+        navigate(Pages.SendAmount)
+      }
     } catch (e) {
       setError('Invalid invoice')
     }

@@ -14,13 +14,23 @@ export interface RecvInfo {
   txid?: string
 }
 
-export type SendInfo = Invoice & {
+export type SendInfoLightning = Invoice & {
   keys?: ECPairInterface
   swapResponse?: SubmarineSwapResponse
   total?: number
   txFees?: number
   txid?: string
 }
+
+export type SendInfoLiquid = {
+  address?: string
+  keys?: ECPairInterface
+  total?: number
+  txFees?: number
+  txid?: string
+}
+
+export type SendInfo = SendInfoLightning & SendInfoLiquid
 
 interface FlowContextProps {
   initInfo: InitInfo
