@@ -3,7 +3,7 @@ import { readWalletFromStorage, saveMnemonicToStorage, saveWalletToStorage } fro
 import { NavigationContext, Pages } from './navigation'
 import { NetworkName } from '../lib/network'
 import { Mnemonic, NextIndexes, Transactions, Utxos, XPubs } from '../lib/types'
-import { fetchHistory } from '../lib/fetch'
+import { fetchHistory, fetchHistoryWS } from '../lib/fetch'
 import { ExplorerName } from '../lib/explorers'
 import { defaultExplorer, defaultGapLimit, defaultNetwork } from '../lib/constants'
 import { ChainSource, WsElectrumChainSource } from '../lib/chainsource'
@@ -104,6 +104,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     if (reloading) return
     setReloading(true)
     const clone = w ? { ...w } : { ...wallet }
+    fetchHistoryWS(chainSource, wallet)
     const { nextIndex, transactions, utxos } = await fetchHistory(clone)
     clone.nextIndex[wallet.network] = nextIndex
     clone.transactions[wallet.network] = transactions

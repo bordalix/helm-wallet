@@ -110,7 +110,7 @@ export const fetchAddressTxs = async (address: string, wallet: Wallet): Promise<
   return await response.json()
 }
 
-export const fetchUtxos = async (address: string, wallet: Wallet): Promise<BlindedUtxo[]> => {
+export const fetchAddressUtxos = async (address: string, wallet: Wallet): Promise<BlindedUtxo[]> => {
   const url = `${getExplorerURL(wallet)}/api/address/${address}/utxo`
   const response = await fetch(url)
   return await response.json()
