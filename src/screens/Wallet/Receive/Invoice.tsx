@@ -13,6 +13,7 @@ import { WalletContext } from '../../../providers/wallet'
 import { reverseSwap } from '../../../lib/reverseSwap'
 import { copyToClipboard } from '../../../lib/clipboard'
 import { inOneMinute, someSeconds } from '../../../lib/constants'
+import { generateAddress } from '../../../lib/address'
 
 export default function ReceiveInvoice() {
   const { recvInfo, setRecvInfo } = useContext(FlowContext)
@@ -20,7 +21,9 @@ export default function ReceiveInvoice() {
   const { increaseIndex, reloadWallet, wallet } = useContext(WalletContext)
 
   const label = 'Copy to clipboard'
+  const [address, setAddress] = useState('')
   const [buttonLabel, setButtonLabel] = useState(label)
+  const [counter, setCounter] = useState(0)
   const [error, setError] = useState('')
   const [invoice, setInvoice] = useState('')
 
@@ -48,12 +51,17 @@ export default function ReceiveInvoice() {
   useEffect(() => {
     if (!invoice) {
       try {
-        reverseSwap(Number(recvInfo.amount), wallet, onFinish, setInvoice)
+        generateAddress(wallet).then((a) => {
+          setAddress(a.confidentialAddress)
+          reverseSwap(Number(recvInfo.amount), a.confidentialAddress, wallet, onFinish, setInvoice)
+        })
       } catch (error) {
         setError(extractError(error))
       }
     }
   }, [invoice])
+
+  const value = Math.floor(counter / 3) % 2 === 0 ? invoice : address
 
   return (
     <Container>
@@ -61,7 +69,9 @@ export default function ReceiveInvoice() {
         <Title text='Invoice' subtext='Scan or copy to clipboard' />
         <div className='flex flex-col gap-2'>
           <Error error={Boolean(error)} text={error} />
-          <QrCode invoice={invoice} />
+          <div onClick={() => setCounter((c) => c + 1)}>
+            <QrCode value={value} />
+          </div>
         </div>
       </Content>
       <ButtonsOnBottom>

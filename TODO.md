@@ -9,7 +9,6 @@ TODO list:
 - smart reload
 - show blinders on explorer???
 - paying to other Thor
-- build error on Cloudflare
 
 DONE
 
@@ -31,3 +30,5 @@ DONE
 - fee calculation
 - remove `any`
 - broadcast through Boltz
+- build error on Cloudflare (fixed using YARN_VERSION = 1 in env vars)
+- show liquid address after 3 clicks on qrcode

@@ -6,7 +6,6 @@ import { TaprootUtils, constructClaimTransaction, init } from 'boltz-core/dist/l
 import { randomBytes } from 'crypto'
 import { ECPairFactory } from 'ecpair'
 import * as ecc from '@bitcoinerlab/secp256k1'
-import { generateAddress } from './address'
 import { getNetwork } from './network'
 import { Wallet } from '../providers/wallet'
 import { getBoltzApiUrl, getBoltzWsUrl } from './boltz'
@@ -42,6 +41,7 @@ export interface ReverseSwapResponse {
 
 export const reverseSwap = async (
   invoiceAmount: number,
+  destinationAddress: string,
   wallet: Wallet,
   onFinish: (txid: string) => void,
   onInvoice: (invoice: string) => void,
@@ -52,7 +52,6 @@ export const reverseSwap = async (
   const preimage = randomBytes(32)
   const keys = ECPairFactory(ecc).makeRandom()
   const network = getNetwork(wallet.network)
-  const destinationAddress = (await generateAddress(wallet)).confidentialAddress
 
   let claimTx: Transaction
 
