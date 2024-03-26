@@ -6,6 +6,7 @@ import { Mnemonic, NextIndexes, Transactions, Utxos, XPubs } from '../lib/types'
 import { fetchHistory } from '../lib/fetch'
 import { ExplorerName } from '../lib/explorers'
 import { defaultExplorer, defaultGapLimit, defaultNetwork } from '../lib/constants'
+import { ChainSource, WsElectrumChainSource } from '../lib/chainsource'
 
 export interface Wallet {
   explorer: ExplorerName
@@ -49,6 +50,7 @@ const defaultWallet: Wallet = {
 }
 
 interface WalletContextProps {
+  chainSource: ChainSource
   loading: boolean
   reloading: boolean
   increaseIndex: () => void
@@ -61,6 +63,7 @@ interface WalletContextProps {
 }
 
 export const WalletContext = createContext<WalletContextProps>({
+  chainSource: new WsElectrumChainSource(defaultNetwork),
   loading: true,
   reloading: false,
   increaseIndex: () => {},
@@ -78,6 +81,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true)
   const [reloading, setReloading] = useState(false)
   const [wallet, setWallet] = useState(defaultWallet)
+  const [chainSource, setChainSource] = useState<ChainSource>(new WsElectrumChainSource(defaultNetwork))
 
   const mnemonic = useRef('')
 
@@ -128,9 +132,22 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading])
 
+  // when network changes, connect to respective electrum server
+  useEffect(() => {
+    if (wallet.network && chainSource.network !== wallet.network) {
+      chainSource
+        .close()
+        .then(() => {
+          setChainSource(new WsElectrumChainSource(wallet.network))
+        })
+        .catch(console.error)
+    }
+  }, [chainSource, wallet.network])
+
   return (
     <WalletContext.Provider
       value={{
+        chainSource,
         loading,
         reloading,
         increaseIndex,
