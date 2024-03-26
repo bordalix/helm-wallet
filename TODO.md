@@ -8,6 +8,8 @@ TODO list:
 - cleanup code
 - smart reload
 - show blinders on explorer???
+- paying to other Thor
+- build error on Cloudflare
 
 DONE
 
