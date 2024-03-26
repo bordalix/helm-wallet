@@ -49,7 +49,8 @@
     "workbox-range-requests": "^6.4.2",
     "workbox-routing": "^6.4.2",
     "workbox-strategies": "^6.4.2",
-    "workbox-streams": "^6.4.2"
+    "workbox-streams": "^6.4.2",
+    "ws-electrumx-client": "^1.0.5"
   },
   "scripts": {
     "start": "craco start",
