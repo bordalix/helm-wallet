@@ -75,7 +75,15 @@ export default function SendFees() {
         <Title text='Payment fees' subtext={`You pay ${prettyNumber(total ?? 0)} sats`} />
         <div className='flex flex-col gap-2'>
           <Error error={Boolean(error)} text={error} />
-          <Table data={data} />
+          {/forbidden/.test(error) ? (
+            <p className='mt-10'>
+              <span className='font-semibold'>Tip:</span>
+              <br />
+              If the receiving part is using Thor, tell him to click 3 times on the QRCode and try again
+            </p>
+          ) : (
+            <Table data={data} />
+          )}
         </div>
       </Content>
       <ButtonsOnBottom>

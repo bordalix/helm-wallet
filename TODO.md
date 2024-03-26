@@ -11,6 +11,7 @@ TODO list:
 - show blinders on explorer???
 - paying to other Thor
 - use websockets
+- inform user of received liquid tx
 
 DONE
 
