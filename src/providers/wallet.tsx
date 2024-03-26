@@ -5,7 +5,7 @@ import { NetworkName } from '../lib/network'
 import { Mnemonic, NextIndexes, Transactions, Utxos, XPubs } from '../lib/types'
 import { fetchHistory } from '../lib/fetch'
 import { ExplorerName } from '../lib/explorers'
-import { defaultGapLimit } from '../lib/constants'
+import { defaultExplorer, defaultGapLimit, defaultNetwork } from '../lib/constants'
 
 export interface Wallet {
   explorer: ExplorerName
@@ -21,11 +21,11 @@ export interface Wallet {
 }
 
 const defaultWallet: Wallet = {
-  explorer: ExplorerName.Blockstream,
+  explorer: defaultExplorer,
   gapLimit: defaultGapLimit,
   initialized: false,
   mnemonic: '',
-  network: NetworkName.Testnet,
+  network: defaultNetwork,
   nextIndex: {
     [NetworkName.Liquid]: 0,
     [NetworkName.Regtest]: 0,
