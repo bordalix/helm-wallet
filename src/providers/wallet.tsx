@@ -3,10 +3,10 @@ import { readWalletFromStorage, saveMnemonicToStorage, saveWalletToStorage } fro
 import { NavigationContext, Pages } from './navigation'
 import { NetworkName } from '../lib/network'
 import { Mnemonic, NextIndexes, Transactions, Utxos, XPubs } from '../lib/types'
-import { fetchHistory, fetchHistoryWS } from '../lib/fetch'
 import { ExplorerName } from '../lib/explorers'
 import { defaultExplorer, defaultGapLimit, defaultNetwork } from '../lib/constants'
 import { ChainSource, WsElectrumChainSource } from '../lib/chainsource'
+import { reload, restore } from '../lib/restore'
 
 export interface Wallet {
   explorer: ExplorerName
@@ -53,9 +53,11 @@ interface WalletContextProps {
   chainSource: ChainSource
   loading: boolean
   reloading: boolean
+  restoring: boolean
   increaseIndex: () => void
   logout: () => void
   reloadWallet: (w?: Wallet) => void
+  restoreWallet: (w: Wallet) => void
   resetWallet: () => void
   setMnemonic: (m: Mnemonic) => void
   updateWallet: (w: Wallet) => void
@@ -66,9 +68,11 @@ export const WalletContext = createContext<WalletContextProps>({
   chainSource: new WsElectrumChainSource(defaultNetwork),
   loading: true,
   reloading: false,
+  restoring: false,
   increaseIndex: () => {},
   logout: () => {},
   reloadWallet: () => {},
+  restoreWallet: () => {},
   resetWallet: () => {},
   setMnemonic: () => {},
   updateWallet: () => {},
@@ -80,6 +84,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
 
   const [loading, setLoading] = useState(true)
   const [reloading, setReloading] = useState(false)
+  const [restoring, setRestoring] = useState(false)
   const [wallet, setWallet] = useState(defaultWallet)
   const [chainSource, setChainSource] = useState<ChainSource>(new WsElectrumChainSource(defaultNetwork))
 
@@ -104,13 +109,26 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     if (reloading) return
     setReloading(true)
     const clone = w ? { ...w } : { ...wallet }
-    fetchHistoryWS(chainSource, wallet)
-    const { nextIndex, transactions, utxos } = await fetchHistory(clone)
+    // use the next line to use the REST API
+    // const { nextIndex, transactions, utxos } = await fetchHistory(clone)
+    const { nextIndex, transactions, utxos } = await reload(chainSource, clone)
     clone.nextIndex[wallet.network] = nextIndex
     clone.transactions[wallet.network] = transactions
     clone.utxos[wallet.network] = utxos
     updateWallet(clone)
     setReloading(false)
+  }
+
+  const restoreWallet = async (w: Wallet) => {
+    if (restoring) return
+    setRestoring(true)
+    const clone = { ...w }
+    const { nextIndex, transactions, utxos } = await restore(chainSource, clone)
+    clone.nextIndex[wallet.network] = nextIndex
+    clone.transactions[wallet.network] = transactions
+    clone.utxos[wallet.network] = utxos
+    updateWallet(clone)
+    setRestoring(false)
   }
 
   const resetWallet = () => {
@@ -151,9 +169,11 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
         chainSource,
         loading,
         reloading,
+        restoring,
         increaseIndex,
         logout,
         reloadWallet,
+        restoreWallet,
         resetWallet,
         setMnemonic,
         updateWallet,

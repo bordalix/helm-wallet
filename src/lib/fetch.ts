@@ -1,13 +1,11 @@
 import { Wallet } from '../providers/wallet'
 import { generateAddress } from './address'
 import { BlindingKeyPair, unblindOutput } from './blinder'
-import { AddressTxInfo, fetchAddress, fetchAddressTxs, fetchAddressUtxos } from './explorers'
+import { AddressTxInfo, fetchAddress, fetchAddressTxs, fetchAddressUtxos, fetchTxHex } from './explorers'
 import { prettyUnixTimestamp } from './format'
 import { Transaction, Utxo } from './types'
 import * as liquid from 'liquidjs-lib'
 import { defaultGapLimit } from './constants'
-import { ChainSource } from './chainsource'
-import { number } from 'liquidjs-lib/src/script'
 
 export const fetchURL = async (url: string): Promise<any> => {
   const res = await fetch(url)
@@ -18,17 +16,15 @@ export const fetchURL = async (url: string): Promise<any> => {
   return (await res.json()) as any
 }
 
-export const postData = async (url: string, data = {}): Promise<any> => {
-  const res = await fetch(url, {
-    body: JSON.stringify(data),
-    headers: { 'Content-Type': 'application/json' },
-    method: 'POST',
-  })
-  if (!res.ok) {
-    const errorMessage = await res.text()
-    throw new Error(`${res.statusText}: ${errorMessage}`)
-  }
-  return (await res.json()) as any
+// This functions are for the REST API
+//
+// After the migration to websocket, these functionalities
+// are taken care of by the functions at lib/restore
+
+export interface HistoryResponse {
+  nextIndex: number
+  transactions: Transaction[]
+  utxos: Utxo[]
 }
 
 const getTransactionAmount = async (
@@ -41,24 +37,20 @@ const getTransactionAmount = async (
   if (utxo) return utxo.value
   for (const vin of txInfo.vin) {
     if (vin.prevout.scriptpubkey_address === address) {
-      const { value } = await unblindOutput(vin.txid, vin.vout, blindingKeys, wallet)
+      const txHex = await fetchTxHex(vin.txid, wallet)
+      const { value } = await unblindOutput(vin.vout, txHex, blindingKeys)
       return -Number(value)
     }
   }
   for (let i = 0; txInfo.vout[i]; i++) {
     const vout = txInfo.vout[i]
     if (vout.scriptpubkey_address === address) {
-      const { value } = await unblindOutput(txInfo.txid, i, blindingKeys, wallet)
+      const txHex = await fetchTxHex(txInfo.txid, wallet)
+      const { value } = await unblindOutput(i, txHex, blindingKeys)
       return Number(value)
     }
   }
   return 0
-}
-
-export interface HistoryResponse {
-  nextIndex: number
-  transactions: Transaction[]
-  utxos: Utxo[]
 }
 
 export const fetchHistory = async (wallet: Wallet): Promise<HistoryResponse> => {
@@ -86,7 +78,8 @@ export const fetchHistory = async (wallet: Wallet): Promise<HistoryResponse> => 
         })
       }
       for (const utxo of await fetchAddressUtxos(address, wallet)) {
-        const unblinded = await unblindOutput(utxo.txid, utxo.vout, blindingKeys, wallet)
+        const txHex = await fetchTxHex(utxo.txid, wallet)
+        const unblinded = await unblindOutput(utxo.vout, txHex, blindingKeys)
         const script = liquid.address.toOutputScript(address)
         utxos.push({
           ...utxo,
@@ -118,48 +111,4 @@ export const fetchHistory = async (wallet: Wallet): Promise<HistoryResponse> => 
   }
 
   return { nextIndex: lastIndexWithTx + 1, transactions, utxos: lbtcUtxos }
-}
-
-export const fetchHistoryWS = async (chainSource: ChainSource, wallet: Wallet): Promise<void> => {
-  console.log('fetchHistories')
-
-  const nextBlockOfAddresses = async (start: number, num: number) => {
-    console.log('bloco', start, num)
-    const addrs = []
-    for (let i = start; i < start + num; i++) {
-      const { address, blindingKeys, nextIndex, pubkey, script } = await generateAddress(wallet, i)
-      if (!address || !blindingKeys) throw new Error('Could not generate new address')
-      addrs.push({ address, blindingKeys, nextIndex, pubkey, script })
-    }
-    const data = await chainSource.fetchHistories(addrs.map((a) => a.script))
-    const txids: string[] = []
-    data.map((x) => x.map((y) => txids.push(y.tx_hash)))
-    const txs = await chainSource.fetchTransactions(txids)
-    return { addrs, txs }
-  }
-
-  const allAddressesAndTxs = async () => {
-    let start = 0
-    let empty = false
-    let addresses: any[] = []
-    let transactions: any[] = []
-
-    const { addrs, txs } = await nextBlockOfAddresses(start, wallet.nextIndex[wallet.network])
-    addresses = addrs
-    transactions = txs
-
-    start = wallet.nextIndex[wallet.network]
-
-    do {
-      const { addrs, txs } = await nextBlockOfAddresses(start, wallet.gapLimit)
-      addresses = [...addresses, ...addrs]
-      transactions = [...transactions, ...txs]
-      if (txs.length === 0) empty = true
-      else start = start + wallet.gapLimit
-    } while (!empty)
-
-    return { addresses, transactions }
-  }
-
-  console.log(await allAddressesAndTxs())
 }

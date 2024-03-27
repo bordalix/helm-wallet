@@ -35,3 +35,4 @@ DONE
 - broadcast through Boltz
 - build error on Cloudflare (fixed using YARN_VERSION = 1 in env vars)
 - show liquid address after 3 clicks on qrcode
+- change tx_hash to txid

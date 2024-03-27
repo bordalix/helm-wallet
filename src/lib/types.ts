@@ -18,6 +18,7 @@ export type NextIndexes = Record<NetworkName, NextIndex>
 export type Transaction = {
   amount: number
   date: string
+  hex?: string
   txid: string
   unixdate: number
 }
@@ -25,9 +26,12 @@ export type Transactions = Record<NetworkName, Transaction[]>
 
 export type UnblindedOutput = confidential.UnblindOutputResult & { prevout: Output }
 
-export type BlindedUtxo = {
+export type MVUtxo = {
   txid: string
   vout: number
+}
+
+export type BlindedUtxo = MVUtxo & {
   status: {
     confirmed: boolean
     block_height: number
@@ -39,7 +43,7 @@ export type BlindedUtxo = {
   noncecommitment: string
 }
 
-export type Utxo = BlindedUtxo & {
+export type Utxo = MVUtxo & {
   value: number
   asset: string
   address: string

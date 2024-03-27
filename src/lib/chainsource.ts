@@ -1,25 +1,26 @@
 import { ElectrumWS } from 'ws-electrumx-client'
 import { address, crypto } from 'liquidjs-lib'
 import { NetworkName } from './network'
+import { MVUtxo } from './types'
 
-type UnspentElectrum = {
+type ElectrumUnspent = {
   height: number
   tx_pos: number
   tx_hash: string
 }
 
-type Unspent = {
-  txid: string
-  vout: number
-  witnessUtxo: string
+export type ElectrumTransaction = {
+  height: number
+  hex: string
+  tx_hash: string
 }
 
-export type TransactionHistory = {
+type ElectrumHistory = {
   tx_hash: string
   height: number
-}[]
+}
 
-export type BlockHeader = {
+export type ElectrumBlockHeader = {
   version: number
   previousBlockHash: string
   merkleRoot: string
@@ -29,11 +30,13 @@ export type BlockHeader = {
 
 export type ChainSource = {
   network: NetworkName
-  waitForAddressReceivesTx(addr: string): Promise<void>
-  fetchHistories(scripts: Buffer[]): Promise<TransactionHistory[]>
-  fetchBlockHeader(height: number): Promise<BlockHeader>
-  fetchTransactions(txids: string[]): Promise<{ txID: string; hex: string }[]>
-  listUnspents(address: string): Promise<Unspent[]>
+  waitForAddressReceivesTx(addr: string): Promise<string | null>
+  fetchHistories(scripts: Buffer[]): Promise<ElectrumHistory[]>
+  fetchBlockHeader(height: number): Promise<ElectrumBlockHeader>
+  fetchTransactions(txs: ElectrumHistory[]): Promise<ElectrumTransaction[]>
+  fetchSingleTransaction(txid: string): Promise<string>
+  listUnspents(script: Buffer): Promise<ElectrumUnspent[]>
+  listUtxos(script: Buffer): Promise<MVUtxo[]>
   close(): Promise<void>
 }
 
@@ -62,52 +65,61 @@ export class WsElectrumChainSource implements ChainSource {
     this.ws = new ElectrumWS(electrumURL(network))
   }
 
-  async fetchHistories(scripts: Buffer[]): Promise<TransactionHistory[]> {
+  async fetchHistories(scripts: Buffer[]): Promise<ElectrumHistory[]> {
     const scriptsHashes = scripts.map((s) => toScriptHash(s))
-    const responses = await this.ws.batchRequest<TransactionHistory[]>(
+    const responses = await this.ws.batchRequest<ElectrumHistory[][]>(
       ...scriptsHashes.map((s) => ({ method: GetHistoryMethod, params: [s] })),
     )
-    return responses
+    const uniqueResponses: ElectrumHistory[] = []
+    for (const a of responses) {
+      for (const u of a) {
+        const { height, tx_hash } = u
+        if (!uniqueResponses.find((x) => x.tx_hash === tx_hash)) uniqueResponses.push({ tx_hash, height })
+      }
+    }
+    return uniqueResponses
   }
 
-  async fetchBlockHeader(height: number): Promise<BlockHeader> {
+  async fetchBlockHeader(height: number): Promise<ElectrumBlockHeader> {
     const hex = await this.ws.request<string>(GetBlockHeaderMethod, height)
     return deserializeBlockHeader(hex)
   }
 
-  async fetchTransactions(txids: string[]): Promise<{ txID: string; hex: string }[]> {
+  async fetchSingleTransaction(txid: string): Promise<string> {
+    return await this.ws.request<string>(GetTransactionMethod, txid)
+  }
+
+  async fetchTransactions(txs: ElectrumHistory[]): Promise<ElectrumTransaction[]> {
     const responses = await this.ws.batchRequest<string[]>(
-      ...txids.map((txid) => ({
+      ...txs.map(({ tx_hash }) => ({
         method: GetTransactionMethod,
-        params: [txid],
+        params: [tx_hash],
       })),
     )
-    return responses.map((hex, i) => ({ txID: txids[i], hex }))
+    return responses.map((hex, i) => ({ height: txs[i].height, hex, tx_hash: txs[i].tx_hash }))
   }
 
-  async listUnspents(addr: string): Promise<Unspent[]> {
-    const scriptHash = toScriptHash(address.toOutputScript(addr))
-    const unspentsFromElectrum = await this.ws.request<UnspentElectrum[]>(ListUnspentMethod, scriptHash)
-    const txs = await this.fetchTransactions(unspentsFromElectrum.map((u) => u.tx_hash))
-
-    return unspentsFromElectrum.map((u, index) => {
-      return {
-        txid: u.tx_hash,
-        vout: u.tx_pos,
-        // witnessUtxo: Transaction.fromHex(txs[index].hex).outs[u.tx_pos],
-        witnessUtxo: txs[index].hex,
-      }
-    })
+  async listUtxos(script: Buffer): Promise<MVUtxo[]> {
+    const scriptHash = toScriptHash(script)
+    return (await this.ws.request<ElectrumUnspent[]>(ListUnspentMethod, scriptHash)).map(
+      ({ height, tx_hash, tx_pos }) => ({
+        height,
+        txid: tx_hash,
+        vout: tx_pos,
+      }),
+    )
   }
 
-  waitForAddressReceivesTx(addr: string): Promise<void> {
+  async listUnspents(script: Buffer): Promise<ElectrumUnspent[]> {
+    const scriptHash = toScriptHash(script)
+    return await this.ws.request<ElectrumUnspent[]>(ListUnspentMethod, scriptHash)
+  }
+
+  waitForAddressReceivesTx(addr: string): Promise<string | null> {
     return new Promise((resolve, reject) => {
       this.subscribeScriptStatus(address.toOutputScript(addr), (_, status) => {
         if (status !== null) {
-          resolve()
-          // this.unsubscribeScriptStatus(address.toOutputScript(addr)).finally(
-          //   () => resolve(),
-          // )
+          this.unsubscribeScriptStatus(address.toOutputScript(addr)).finally(() => resolve(status))
         }
       }).catch(reject)
     })
@@ -149,7 +161,7 @@ function toScriptHash(script: Buffer): string {
 
 const DYNAFED_HF_MASK = 2147483648
 
-function deserializeBlockHeader(hex: string): BlockHeader {
+function deserializeBlockHeader(hex: string): ElectrumBlockHeader {
   const buffer = Buffer.from(hex, 'hex')
   let offset = 0
 

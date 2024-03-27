@@ -1,7 +1,5 @@
-import { fetchTxHex } from './explorers'
 import zkpInit, { Secp256k1ZKP } from '@vulpemventures/secp256k1-zkp'
 import { UnblindedOutput, Utxo } from './types'
-import { Wallet } from '../providers/wallet'
 import { Blinder, confidential, Pset, Transaction, ZKPGenerator, ZKPValidator } from 'liquidjs-lib'
 
 let zkp: Secp256k1ZKP
@@ -12,15 +10,13 @@ export type BlindingKeyPair = {
 }
 
 export const unblindOutput = async (
-  txid: string,
   vout: number,
+  txHex: string,
   blindingKeys: BlindingKeyPair,
-  wallet: Wallet,
 ): Promise<UnblindedOutput> => {
   if (!zkp) zkp = await zkpInit()
   const confi = new confidential.Confidential(zkp as any)
-  const txhex = await fetchTxHex(txid, wallet)
-  const tx = Transaction.fromHex(txhex)
+  const tx = Transaction.fromHex(txHex)
   const unblinded = confi.unblindOutputWithKey(tx.outs[vout], blindingKeys.privateKey)
   return { ...unblinded, prevout: tx.outs[vout] }
 }

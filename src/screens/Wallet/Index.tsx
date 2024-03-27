@@ -11,19 +11,31 @@ import QRCodeIcon from '../../icons/QRCode'
 import ScanIcon from '../../icons/Scan'
 import Transactions from '../../components/Transactions'
 import { BoltzContext } from '../../providers/boltz'
+import Loading from '../../components/Loading'
 
 export default function Wallet() {
   const { limits, maxAllowedAmount } = useContext(BoltzContext)
   const { navigate } = useContext(NavigationContext)
-  const { wallet } = useContext(WalletContext)
+  const { restoring, wallet } = useContext(WalletContext)
 
   const canSend = maxAllowedAmount(wallet) > limits.minimal
+
+  const Restoring = () => (
+    <>
+      <Loading />
+      <p className='animate-pulse'>
+        Restoring wallet
+        <br />
+        please wait
+      </p>
+    </>
+  )
 
   return (
     <Container>
       <Content>
         <Balance value={getBalance(wallet)} />
-        <Transactions short />
+        {restoring ? <Restoring /> : <Transactions short />}
       </Content>
       <ButtonsOnBottom>
         <Button icon={<ScanIcon />} label='Send' onClick={() => navigate(Pages.SendInvoice)} disabled={!canSend} />
