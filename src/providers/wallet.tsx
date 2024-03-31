@@ -130,6 +130,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     clone.nextIndex[wallet.network] = nextIndex
     clone.transactions[wallet.network] = transactions
     clone.utxos[wallet.network] = utxos
+    clone.lastUpdate = Math.floor(Date.now() / 1000)
     updateWallet(clone)
     setRestoring(false)
   }

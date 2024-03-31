@@ -46,9 +46,9 @@ const electrumURL = (network: NetworkName): string => {
     case 'regtest':
       return 'http://localhost:3001' // TODO
     case 'testnet':
-      return 'wss://blockstream.info/liquidtestnet/electrum-websocket/api'
+      return 'wss://esplora.blockstream.com/liquidtestnet/electrum-websocket/api'
     default:
-      return 'wss://blockstream.info/liquid/electrum-websocket/api'
+      return 'wss://esplora.blockstream.com/liquid/electrum-websocket/api'
   }
 }
 
