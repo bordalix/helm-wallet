@@ -33,16 +33,17 @@ export const prettyAgo = (timestamp: number): string => {
   const delta = Math.floor(now - timestamp)
   if (delta > 86_400) {
     const days = Math.floor(delta / 86_400)
-    return `${days}d`
+    return `${days}d ago`
   }
   if (delta > 3_600) {
     const hours = Math.floor(delta / 3_600)
-    return `${hours}h`
+    return `${hours}h ago`
   }
   if (delta > 60) {
     const minutes = Math.floor(delta / 60)
-    return `${minutes}m`
+    return `${minutes}m ago`
   }
+  if (delta === 0) return 'just now'
   const seconds = delta
-  return `${seconds}s`
+  return `${seconds}s ago`
 }

@@ -25,11 +25,11 @@ const explorers: Explorer[] = [
     name: ExplorerName.Blockstream,
     [NetworkName.Liquid]: {
       webExplorerURL: 'https://blockstream.info/liquid',
-      websocketExplorerURL: 'wss://blockstream.info/liquid/electrum-websocket/api',
+      websocketExplorerURL: 'wss://esplora.blockstream.com/liquid/electrum-websocket/api',
     },
     [NetworkName.Testnet]: {
       webExplorerURL: 'https://blockstream.info/liquidtestnet',
-      websocketExplorerURL: 'wss://blockstream.info/liquidtestnet/electrum-websocket/api',
+      websocketExplorerURL: 'wss://esplora.blockstream.com/liquidtestnet/electrum-websocket/api',
     },
   },
   {

@@ -5,12 +5,12 @@ import ButtonsOnBottom from '../../components/ButtonsOnBottom'
 import { NavigationContext, Pages } from '../../providers/navigation'
 import Content from '../../components/Content'
 import Container from '../../components/Container'
-import TransactionsList from '../../components/Transactions'
+import TransactionsList from '../../components/TransactionsList'
 import { WalletContext } from '../../providers/wallet'
 
 export default function Transactions() {
   const { navigate } = useContext(NavigationContext)
-  const { wallet } = useContext(WalletContext)
+  const { reloading, wallet } = useContext(WalletContext)
 
   const exportCSVFile = () => {
     const transactions = wallet.transactions[wallet.network]
@@ -40,7 +40,7 @@ export default function Transactions() {
     <Container>
       <Content>
         <Title text='Transactions' />
-        <TransactionsList />
+        <TransactionsList loading={reloading} />
       </Content>
       <ButtonsOnBottom>
         <Button onClick={exportCSVFile} label='Export CSV file' />

@@ -8,7 +8,7 @@ import { NavigationContext, Pages } from '../providers/navigation'
 
 const TransactionLine = ({ data }: { data: Transaction }) => {
   const amount = `${data.amount > 0 ? '+' : '-'} ${prettyNumber(Math.abs(data.amount))} sats`
-  const date = data.unixdate ? `${prettyAgo(data.unixdate)} ago` : 'just now'
+  const date = data.unixdate ? prettyAgo(data.unixdate) : 'just now'
   return (
     <div className='border p-2 flex justify-between w-full rounded-md'>
       <p>{amount}</p>
@@ -17,7 +17,7 @@ const TransactionLine = ({ data }: { data: Transaction }) => {
   )
 }
 
-export default function TransactionsList({ short }: { short?: boolean }) {
+export default function TransactionsList({ loading, short }: { loading: boolean; short?: boolean }) {
   const { navigate } = useContext(NavigationContext)
   const { wallet } = useContext(WalletContext)
 
@@ -31,7 +31,10 @@ export default function TransactionsList({ short }: { short?: boolean }) {
 
   return (
     <div className='mt-4'>
-      <Label text={`${short ? 'Last' : 'All'} transactions`} />
+      <div className='flex justify-between'>
+        <Label text={`${short ? 'Last' : 'All'} transactions`} />
+        {loading ? <Label text='Reloading...' pulse /> : <Label text={`Updated ${prettyAgo(wallet.lastUpdate)}`} />}
+      </div>
       <div className='flex flex-col gap-2 h-72 overflow-auto'>
         {showTxs.map((t) => (
           <TransactionLine key={`${t.amount} ${t.txid}`} data={t} />
