@@ -17,9 +17,9 @@ const TransactionLine = ({ data }: { data: Transaction }) => {
   )
 }
 
-export default function TransactionsList({ loading, short }: { loading: boolean; short?: boolean }) {
+export default function TransactionsList({ short }: { short?: boolean }) {
   const { navigate } = useContext(NavigationContext)
-  const { wallet } = useContext(WalletContext)
+  const { reloading, wallet } = useContext(WalletContext)
 
   const transactions = wallet.transactions[wallet.network]
 
@@ -33,7 +33,7 @@ export default function TransactionsList({ loading, short }: { loading: boolean;
     <div className='mt-4'>
       <div className='flex justify-between'>
         <Label text={`${short ? 'Last' : 'All'} transactions`} />
-        {loading ? <Label text='Reloading...' pulse /> : <Label text={`Updated ${prettyAgo(wallet.lastUpdate)}`} />}
+        {reloading ? <Label text='Reloading...' pulse /> : <Label text={`Updated ${prettyAgo(wallet.lastUpdate)}`} />}
       </div>
       <div className='flex flex-col gap-2 h-72 overflow-auto'>
         {showTxs.map((t) => (

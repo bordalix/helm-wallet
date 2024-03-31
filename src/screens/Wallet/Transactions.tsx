@@ -10,7 +10,7 @@ import { WalletContext } from '../../providers/wallet'
 
 export default function Transactions() {
   const { navigate } = useContext(NavigationContext)
-  const { reloading, wallet } = useContext(WalletContext)
+  const { wallet } = useContext(WalletContext)
 
   const exportCSVFile = () => {
     const transactions = wallet.transactions[wallet.network]
@@ -40,7 +40,7 @@ export default function Transactions() {
     <Container>
       <Content>
         <Title text='Transactions' />
-        <TransactionsList loading={reloading} />
+        <TransactionsList />
       </Content>
       <ButtonsOnBottom>
         <Button onClick={exportCSVFile} label='Export CSV file' />

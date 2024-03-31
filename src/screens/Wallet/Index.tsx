@@ -16,7 +16,7 @@ import Loading from '../../components/Loading'
 export default function Wallet() {
   const { limits, maxAllowedAmount } = useContext(BoltzContext)
   const { navigate } = useContext(NavigationContext)
-  const { reloading, restoring, wallet } = useContext(WalletContext)
+  const { restoring, wallet } = useContext(WalletContext)
 
   const canSend = maxAllowedAmount(wallet) > limits.minimal
 
@@ -35,7 +35,7 @@ export default function Wallet() {
     <Container>
       <Content>
         <Balance value={getBalance(wallet)} />
-        {restoring ? <Restoring /> : <TransactionsList short loading={reloading} />}
+        {restoring ? <Restoring /> : <TransactionsList short />}
       </Content>
       <ButtonsOnBottom>
         <Button icon={<ScanIcon />} label='Send' onClick={() => navigate(Pages.SendInvoice)} disabled={!canSend} />
