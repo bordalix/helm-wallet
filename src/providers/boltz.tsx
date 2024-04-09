@@ -85,12 +85,10 @@ export const BoltzProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const maxAllowedAmount = (wallet: Wallet): number => {
-    let amount = getBalance(wallet)
+    const balance = getBalance(wallet)
     const txFees = feeForCoins(wallet.utxos[wallet.network].length)
-    amount -= txFees
-    amount -= sendFees.minerFees
-    amount = Decimal.floor(Decimal.div(amount, Decimal.div(Decimal.add(100, sendFees.percentage), 100))).toNumber()
-    return amount
+    const { boltzFees, minerFees } = expectedFees(balance - txFees)
+    return balance - txFees - boltzFees - minerFees
   }
 
   return (

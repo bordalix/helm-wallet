@@ -115,14 +115,16 @@ export const selectCoins = (amount: number, utxos: Utxo[]): CoinsSelected => {
   let changeAmount = 0,
     coins,
     numAttempts = 10,
+    sats = amount,
     txfee = 0,
     value
 
   do {
-    coins = sortAndSelect(amount - changeAmount, utxos)
+    sats = sats - changeAmount // changeAmount is negative or 0
+    coins = sortAndSelect(sats, utxos)
     value = coins.reduce((prev, curr) => prev + curr.value, 0)
     txfee = feeForCoins(coins.length)
-    changeAmount = value - amount - txfee
+    changeAmount = value - sats - txfee
     numAttempts -= 1
   } while (changeAmount < 0 && numAttempts > 0)
 
