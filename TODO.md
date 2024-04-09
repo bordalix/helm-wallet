@@ -9,9 +9,6 @@ TODO list:
 - smart reload
 - show num of tx when restoring
 - show blinders on explorer???
-- paying to other Thor
-- use websockets
-- inform user of received liquid tx
 
 DONE
 
@@ -36,3 +33,7 @@ DONE
 - build error on Cloudflare (fixed using YARN_VERSION = 1 in env vars)
 - show liquid address after 3 clicks on qrcode
 - change tx_hash to txid
+- paying to other Thor
+- use websockets
+- bug fix with send all
+- inform user of received liquid tx
