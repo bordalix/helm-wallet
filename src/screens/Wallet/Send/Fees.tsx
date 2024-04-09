@@ -17,6 +17,7 @@ import { ECPairFactory } from 'ecpair'
 import * as ecc from '@bitcoinerlab/secp256k1'
 import { getBalance } from '../../../lib/wallet'
 import { feesToSendSats } from '../../../lib/fees'
+import Tip from '../../../components/Tip'
 
 export default function SendFees() {
   const { setMnemonic, wallet } = useContext(WalletContext)
@@ -75,12 +76,8 @@ export default function SendFees() {
         <Title text='Payment fees' subtext={`You pay ${prettyNumber(total ?? 0)} sats`} />
         <div className='flex flex-col gap-2'>
           <Error error={Boolean(error)} text={error} />
-          {/forbidden/.test(error) ? (
-            <p className='mt-10'>
-              <span className='font-semibold'>Tip:</span>
-              <br />
-              If the receiving part is using Thor, tell him to click 3 times on the QRCode and try again
-            </p>
+          {/preimage hash exists already/.test(error) ? (
+            <Tip text='If the receiving part is also using Thor, tell him to click 3 times on the QRCode and try again' />
           ) : (
             <Table data={data} />
           )}
