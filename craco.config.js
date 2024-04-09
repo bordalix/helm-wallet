@@ -1,6 +1,13 @@
 const webpack = require('webpack')
 
 module.exports = {
+  jest: {
+    configure: {
+      globals: {
+        CONFIG: true,
+      },
+    },
+  },
   webpack: {
     plugins: {
       add: [
