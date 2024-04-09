@@ -8,6 +8,8 @@ import { defaultExplorer, defaultGapLimit, defaultNetwork } from '../lib/constan
 import { ChainSource, WsElectrumChainSource } from '../lib/chainsource'
 import { reload, restore } from '../lib/restore'
 
+let chainSource = new WsElectrumChainSource(defaultNetwork)
+
 export interface Wallet {
   explorer: ExplorerName
   gapLimit: number
@@ -67,7 +69,7 @@ interface WalletContextProps {
 }
 
 export const WalletContext = createContext<WalletContextProps>({
-  chainSource: new WsElectrumChainSource(defaultNetwork),
+  chainSource,
   loading: true,
   reloading: false,
   restoring: false,
@@ -88,7 +90,6 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const [reloading, setReloading] = useState(false)
   const [restoring, setRestoring] = useState(false)
   const [wallet, setWallet] = useState(defaultWallet)
-  const [chainSource, setChainSource] = useState<ChainSource>(new WsElectrumChainSource(defaultNetwork))
 
   const mnemonic = useRef('')
 
@@ -161,7 +162,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
       chainSource
         .close()
         .then(() => {
-          setChainSource(new WsElectrumChainSource(wallet.network))
+          chainSource = new WsElectrumChainSource(wallet.network)
         })
         .catch(console.error)
     }
