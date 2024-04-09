@@ -113,11 +113,14 @@ export interface CoinsSelected {
 export const selectCoins = (amount: number, utxos: Utxo[]): CoinsSelected => {
   // find best coins combo to pay this amount
   let changeAmount = 0,
-    coins,
+    coins = utxos,
     numAttempts = 10,
     sats = amount,
-    txfee = 0,
-    value
+    txfee = feeForCoins(utxos.length),
+    value = 0
+
+  const balance = coins.reduce((prev, curr) => prev + curr.value, 0)
+  if (balance === sats + txfee) return { amount, changeAmount, coins, txfee }
 
   do {
     sats = sats - changeAmount // changeAmount is negative or 0
