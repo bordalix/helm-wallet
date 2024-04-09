@@ -1,5 +1,3 @@
-import TipIcon from '../icons/Tip'
-
 interface TipProps {
   text: string
 }
