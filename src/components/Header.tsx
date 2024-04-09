@@ -8,7 +8,9 @@ import { NetworkName } from '../lib/network'
 
 const Testnet = () => (
   <div className='flex items-center'>
-    <p className='border px-0.5 rounded-md uppercase text-gray-500 text-xxs'>Testnet</p>
+    <p className='bg-gray-100 border border-gray-100 px-1 rounded-md uppercase text-gray-800 text-xxs font-semibold'>
+      Testnet
+    </p>
   </div>
 )
 
