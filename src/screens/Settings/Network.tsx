@@ -10,11 +10,10 @@ import { WalletContext } from '../../providers/wallet'
 
 export default function Network() {
   const { toggleShowConfig } = useContext(ConfigContext)
-  const { wallet, reloadWallet, updateWallet } = useContext(WalletContext)
+  const { changeNetwork, wallet } = useContext(WalletContext)
 
   const handleChange = (e: any) => {
-    updateWallet({ ...wallet, network: e.target.value })
-    reloadWallet({ ...wallet, network: e.target.value })
+    changeNetwork(e.target.value)
   }
 
   return (

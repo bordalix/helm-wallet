@@ -55,6 +55,7 @@ const defaultWallet: Wallet = {
 
 interface WalletContextProps {
   chainSource: ChainSource
+  changeNetwork: (n: NetworkName) => void
   loading: boolean
   reloading: boolean
   restoring: boolean
@@ -70,6 +71,7 @@ interface WalletContextProps {
 
 export const WalletContext = createContext<WalletContextProps>({
   chainSource,
+  changeNetwork: () => {},
   loading: true,
   reloading: false,
   restoring: false,
@@ -98,6 +100,16 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     setWallet({ ...wallet, mnemonic: m })
   }
 
+  const changeNetwork = async (networkName: NetworkName) => {
+    const clone = { ...wallet, network: networkName }
+    updateWallet(clone)
+    if (clone.network !== chainSource.network) {
+      await chainSource.close()
+      chainSource = new WsElectrumChainSource(clone.network)
+    }
+    restoreWallet(clone)
+  }
+
   const increaseIndex = () => {
     const clone = { ...wallet }
     const currentValue = clone.nextIndex[wallet.network]
@@ -115,9 +127,9 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     // use the next line to use the REST API
     // const { nextIndex, transactions, utxos } = await fetchHistory(clone)
     const { nextIndex, transactions, utxos } = await reload(chainSource, clone)
-    clone.nextIndex[wallet.network] = nextIndex
-    clone.transactions[wallet.network] = transactions
-    clone.utxos[wallet.network] = utxos
+    clone.nextIndex[clone.network] = nextIndex
+    clone.transactions[clone.network] = transactions
+    clone.utxos[clone.network] = utxos
     clone.lastUpdate = Math.floor(Date.now() / 1000)
     updateWallet(clone)
     setReloading(false)
@@ -128,9 +140,9 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     setRestoring(true)
     const clone = { ...w }
     const { nextIndex, transactions, utxos } = await restore(chainSource, clone)
-    clone.nextIndex[wallet.network] = nextIndex
-    clone.transactions[wallet.network] = transactions
-    clone.utxos[wallet.network] = utxos
+    clone.nextIndex[clone.network] = nextIndex
+    clone.transactions[clone.network] = transactions
+    clone.utxos[clone.network] = utxos
     clone.lastUpdate = Math.floor(Date.now() / 1000)
     updateWallet(clone)
     setRestoring(false)
@@ -156,22 +168,11 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading])
 
-  // when network changes, connect to respective electrum server
-  useEffect(() => {
-    if (wallet.network && chainSource.network !== wallet.network) {
-      chainSource
-        .close()
-        .then(() => {
-          chainSource = new WsElectrumChainSource(wallet.network)
-        })
-        .catch(console.error)
-    }
-  }, [chainSource, wallet.network])
-
   return (
     <WalletContext.Provider
       value={{
         chainSource,
+        changeNetwork,
         loading,
         reloading,
         restoring,

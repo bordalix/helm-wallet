@@ -39,6 +39,7 @@ export default function SendInvoice() {
         navigate(Pages.SendAmount)
       }
     } catch (e) {
+      console.error(e)
       setError('Invalid invoice')
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
