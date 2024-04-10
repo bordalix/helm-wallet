@@ -89,7 +89,7 @@ export default function Settings() {
 
   const validOptions = (): Option[] => {
     if (wallet.initialized) return options
-    return options.filter((o) => o.option !== 'logout')
+    return options.filter((o) => o.option !== Options.Logout && o.option !== Options.Backup)
   }
 
   return (
