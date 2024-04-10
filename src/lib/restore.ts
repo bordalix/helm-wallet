@@ -7,22 +7,23 @@ import * as liquid from 'liquidjs-lib'
 import { ChainSource } from './chainsource'
 
 const getOutputAmount = async (address: NewAddress, txHex: string, chainSource: ChainSource) => {
+  let amount = 0
   const tx = liquid.Transaction.fromHex(txHex)
   for (const vin of tx.ins) {
     const witnessPubkey = vin.witness[1] ? vin.witness[1].toString('hex') : undefined
     if (witnessPubkey === address.pubkey.toString('hex')) {
       const hex = await chainSource.fetchSingleTransaction(vin.hash.reverse().toString('hex'))
       const { value } = await unblindOutput(vin.index, hex, address.blindingKeys)
-      return -Number(value)
+      amount -= Number(value)
     }
   }
   for (const [idx, vout] of tx.outs.entries()) {
     if (vout.script.toString('hex') === address.script.toString('hex')) {
       const { value } = await unblindOutput(idx, txHex, address.blindingKeys)
-      return Number(value)
+      amount += Number(value)
     }
   }
-  return 0
+  return amount
 }
 
 export const reload = async (chainSource: ChainSource, wallet: Wallet) => {

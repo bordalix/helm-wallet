@@ -18,6 +18,7 @@ import * as ecc from '@bitcoinerlab/secp256k1'
 import { getBalance } from '../../../lib/wallet'
 import { feesToSendSats } from '../../../lib/fees'
 import Tip from '../../../components/Tip'
+import { getLiquidAddress } from '../../../lib/reverseSwap'
 
 export default function SendFees() {
   const { setMnemonic, wallet } = useContext(WalletContext)
@@ -27,22 +28,30 @@ export default function SendFees() {
   const [boltzFees, setBoltzFees] = useState(0)
   const [error, setError] = useState('')
 
-  const { invoice, satoshis, total, txFees } = sendInfo
+  const { invoice, magicHint, satoshis, total, txFees } = sendInfo
   const keys = ECPairFactory(ecc).makeRandom()
   const refundPublicKey = keys.publicKey.toString('hex')
 
   useEffect(() => {
     if (invoice && wallet.mnemonic && satoshis) {
-      submarineSwap(invoice, refundPublicKey, wallet.network)
-        .then((swapResponse) => {
-          const { expectedAmount } = swapResponse
-          const txFees = feesToSendSats(expectedAmount, wallet)
-          setBoltzFees(expectedAmount - satoshis)
-          setSendInfo({ ...sendInfo, keys, swapResponse, txFees, total: expectedAmount + txFees })
+      if (magicHint) {
+        const txFees = feesToSendSats(satoshis, wallet)
+        setBoltzFees(0)
+        getLiquidAddress(invoice, magicHint, wallet).then((address) => {
+          setSendInfo({ ...sendInfo, address, keys, txFees, total: satoshis + txFees })
         })
-        .catch((error: any) => {
-          setError(extractError(error))
-        })
+      } else {
+        submarineSwap(invoice, refundPublicKey, wallet.network)
+          .then((swapResponse) => {
+            const { expectedAmount } = swapResponse
+            const txFees = feesToSendSats(expectedAmount, wallet)
+            setBoltzFees(expectedAmount - satoshis)
+            setSendInfo({ ...sendInfo, keys, swapResponse, txFees, total: expectedAmount + txFees })
+          })
+          .catch((error: any) => {
+            setError(extractError(error))
+          })
+      }
     }
   }, [invoice, wallet.mnemonic])
 

@@ -10,6 +10,7 @@ import { getNetwork } from './network'
 import { Wallet } from '../providers/wallet'
 import { getBoltzApiUrl, getBoltzWsUrl } from './boltz'
 import { satsVbyte } from './fees'
+import { MagicHint } from './lightning'
 
 /**
  * Reverse swap flow:
@@ -59,12 +60,13 @@ export const reverseSwap = async (
   // Create a Submarine Swap
   const createdResponse = (
     await axios.post(`${getBoltzApiUrl(wallet.network)}/v2/swap/reverse`, {
-      invoiceAmount,
-      to: 'L-BTC',
-      from: 'BTC',
-      claimPublicKey: keys.publicKey.toString('hex'),
-      preimageHash: crypto.sha256(preimage).toString('hex'),
+      address: destinationAddress,
       addressSignature: signature.toString('hex'),
+      claimPublicKey: keys.publicKey.toString('hex'),
+      from: 'BTC',
+      invoiceAmount,
+      preimageHash: crypto.sha256(preimage).toString('hex'),
+      to: 'L-BTC',
     })
   ).data as ReverseSwapResponse
 
@@ -200,4 +202,20 @@ export const reverseSwap = async (
       }
     }
   }
+}
+
+export const getLiquidAddress = async (invoice: string, magicHint: MagicHint, wallet: Wallet): Promise<string> => {
+  const bip21Data = (await axios.get(`${getBoltzApiUrl(wallet.network)}/v2/swap/reverse/${invoice}/bip21`)).data
+  const bip21Split = bip21Data.bip21.split(':')
+  const bip21Address = bip21Split[1].split('?')[0]
+
+  if (
+    !ECPairFactory(ecc)
+      .fromPublicKey(Buffer.from(magicHint.pubkey, 'hex'))
+      .verifySchnorr(crypto.sha256(Buffer.from(bip21Address, 'utf-8')), Buffer.from(bip21Data.signature, 'hex'))
+  ) {
+    throw 'BOLTZ IS TRYING TO CHEAT'
+  }
+
+  return bip21Address
 }
