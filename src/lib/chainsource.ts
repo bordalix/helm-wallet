@@ -15,7 +15,7 @@ export type ElectrumTransaction = {
   tx_hash: string
 }
 
-type ElectrumHistory = {
+export type ElectrumHistory = {
   tx_hash: string
   height: number
 }
@@ -119,7 +119,8 @@ export class WsElectrumChainSource implements ChainSource {
     return new Promise((resolve, reject) => {
       this.subscribeScriptStatus(address.toOutputScript(addr), (_, status) => {
         if (status !== null) {
-          this.unsubscribeScriptStatus(address.toOutputScript(addr)).finally(() => resolve(status))
+          // this.unsubscribeScriptStatus(address.toOutputScript(addr)) // TODO
+          resolve(status)
         }
       }).catch(reject)
     })

@@ -37,7 +37,7 @@ export default function SendFees() {
         const txFees = feesToSendSats(satoshis, wallet)
         setBoltzFees(0)
         getLiquidAddress(invoice, magicHint, wallet).then((address) => {
-          setSendInfo({ ...sendInfo, address, keys, txFees, total: satoshis + txFees })
+          setSendInfo({ ...sendInfo, address, keys, txFees, total: satoshis })
         })
       } else {
         submarineSwap(invoice, refundPublicKey, wallet.network)
@@ -45,7 +45,7 @@ export default function SendFees() {
             const { expectedAmount } = swapResponse
             const txFees = feesToSendSats(expectedAmount, wallet)
             setBoltzFees(expectedAmount - satoshis)
-            setSendInfo({ ...sendInfo, keys, swapResponse, txFees, total: expectedAmount + txFees })
+            setSendInfo({ ...sendInfo, keys, swapResponse, txFees, total: expectedAmount })
           })
           .catch((error: any) => {
             setError(extractError(error))
@@ -73,7 +73,7 @@ export default function SendFees() {
     ['Invoice', prettyNumber(satoshis)],
     ['Boltz fees', prettyNumber(boltzFees)],
     ['Transaction fees', prettyNumber(txFees ?? 0)],
-    ['Total', prettyNumber(total ?? 0)],
+    ['Total', prettyNumber((total ?? 0) + (txFees ?? 0))],
   ]
 
   if (!wallet.mnemonic) return <NeedsPassword onMnemonic={setMnemonic} />

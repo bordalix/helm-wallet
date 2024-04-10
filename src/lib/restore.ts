@@ -29,11 +29,11 @@ const getOutputAmount = async (address: NewAddress, txHex: string, chainSource: 
 export const reload = async (chainSource: ChainSource, wallet: Wallet) => {
   const transactions: Transaction[] = []
   const utxos: Utxo[] = []
-  const nextIndex = wallet.nextIndex[wallet.network]
+  let nextIndex = wallet.nextIndex[wallet.network]
 
   // generate all used addresses
   const addresses = []
-  for (let i = 0; i < nextIndex; i++) {
+  for (let i = 0; i < nextIndex + 1; i++) {
     const a = await generateAddress(wallet, i)
     if (!a.address || !a.blindingKeys) throw new Error('Could not generate new address')
     addresses.push(a)
@@ -90,6 +90,10 @@ export const reload = async (chainSource: ChainSource, wallet: Wallet) => {
       })
     }
   }
+
+  // update nextIndex in case an increaseIndex() has failed
+  const lastIndex = utxos.reduce((prev, curr) => (curr.nextIndex > prev ? curr.nextIndex : prev), 0)
+  nextIndex = lastIndex >= nextIndex ? lastIndex + 1 : nextIndex
 
   return { nextIndex, transactions, utxos }
 }

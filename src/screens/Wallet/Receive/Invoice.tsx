@@ -14,11 +14,12 @@ import { reverseSwap } from '../../../lib/reverseSwap'
 import { copyToClipboard } from '../../../lib/clipboard'
 import { inOneMinute, someSeconds } from '../../../lib/constants'
 import { generateAddress } from '../../../lib/address'
+import { ElectrumHistory } from '../../../lib/chainsource'
 
 export default function ReceiveInvoice() {
   const { recvInfo, setRecvInfo } = useContext(FlowContext)
   const { navigate } = useContext(NavigationContext)
-  const { increaseIndex, reloadWallet, wallet } = useContext(WalletContext)
+  const { chainSource, increaseIndex, reloadWallet, wallet } = useContext(WalletContext)
 
   const label = 'Copy to clipboard'
   const [buttonLabel, setButtonLabel] = useState(label)
@@ -51,6 +52,12 @@ export default function ReceiveInvoice() {
       try {
         generateAddress(wallet).then((addr) => {
           reverseSwap(Number(recvInfo.amount), addr.confidentialAddress, wallet, onFinish, setInvoice)
+          chainSource.waitForAddressReceivesTx(addr.address).then(() => {
+            chainSource.fetchHistories([addr.script]).then((histories: ElectrumHistory[]) => {
+              const newTx = histories.find((tx) => tx.height <= 0)
+              if (newTx) onFinish(newTx.tx_hash ?? '')
+            })
+          })
         })
       } catch (error) {
         setError(extractError(error))

@@ -149,6 +149,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const resetWallet = () => {
+    logout()
     updateWallet(defaultWallet)
     saveMnemonicToStorage('', 'password')
     navigate(Pages.Init)
