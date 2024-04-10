@@ -17,7 +17,6 @@ import { ECPairFactory } from 'ecpair'
 import * as ecc from '@bitcoinerlab/secp256k1'
 import { getBalance } from '../../../lib/wallet'
 import { feesToSendSats } from '../../../lib/fees'
-import Tip from '../../../components/Tip'
 import { getLiquidAddress } from '../../../lib/reverseSwap'
 
 export default function SendFees() {
@@ -85,11 +84,7 @@ export default function SendFees() {
         <Title text='Payment fees' subtext={`You pay ${prettyNumber(total ?? 0)} sats`} />
         <div className='flex flex-col gap-2'>
           <Error error={Boolean(error)} text={error} />
-          {/preimage hash exists already/.test(error) ? (
-            <Tip text='If the receiving part is also using Thor, tell him to click 3 times on the QRCode and try again' />
-          ) : (
-            <Table data={data} />
-          )}
+          <Table data={data} />
         </div>
       </Content>
       <ButtonsOnBottom>
