@@ -89,7 +89,8 @@ export default function Settings() {
 
   const validOptions = (): Option[] => {
     if (wallet.initialized) return options
-    return options.filter((o) => o.option !== Options.Logout && o.option !== Options.Backup)
+    const hiddenOptions = [Options.Backup, Options.Logout, Options.Password, Options.Reload, Options.Reset]
+    return options.filter((o) => !hiddenOptions.includes(o.option))
   }
 
   return (

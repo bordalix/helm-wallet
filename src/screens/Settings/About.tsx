@@ -40,11 +40,13 @@ export default function About() {
           <p className='underline cursor-pointer'>
             <a href='https://github.com/bordalix/thor'>Github</a>
           </p>
-          <p>
-            To send all your funds,
-            <br />
-            create an invoice of <span className='font-semibold'>{prettyNumber(maxAllowedAmount(wallet))}</span> sats
-          </p>
+          {wallet.initialized ? (
+            <p>
+              To send all your funds,
+              <br />
+              create an invoice of <span className='font-semibold'>{prettyNumber(maxAllowedAmount(wallet))}</span> sats
+            </p>
+          ) : null}
         </div>
       </Content>
       <ButtonsOnBottom>
