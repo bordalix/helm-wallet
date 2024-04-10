@@ -52,6 +52,7 @@ export const reverseSwap = async (
   const preimage = randomBytes(32)
   const keys = ECPairFactory(ecc).makeRandom()
   const network = getNetwork(wallet.network)
+  const signature = keys.signSchnorr(crypto.sha256(Buffer.from(destinationAddress, 'utf-8')))
 
   let claimTx: Transaction
 
@@ -63,6 +64,7 @@ export const reverseSwap = async (
       from: 'BTC',
       claimPublicKey: keys.publicKey.toString('hex'),
       preimageHash: crypto.sha256(preimage).toString('hex'),
+      addressSignature: signature.toString('hex'),
     })
   ).data as ReverseSwapResponse
 
