@@ -6,7 +6,7 @@ import { Mnemonic, NextIndexes, Transactions, Utxos, XPubs } from '../lib/types'
 import { ExplorerName } from '../lib/explorers'
 import { defaultExplorer, defaultGapLimit, defaultNetwork } from '../lib/constants'
 import { ChainSource, WsElectrumChainSource } from '../lib/chainsource'
-import { reload, restore } from '../lib/restore'
+import { getHistories, restore } from '../lib/restore'
 
 let chainSource = new WsElectrumChainSource(defaultNetwork)
 
@@ -58,7 +58,7 @@ interface WalletContextProps {
   changeNetwork: (n: NetworkName) => void
   loading: boolean
   reloading: boolean
-  restoring: boolean
+  restoring: number
   increaseIndex: () => void
   logout: () => void
   reloadWallet: (w?: Wallet) => void
@@ -74,7 +74,7 @@ export const WalletContext = createContext<WalletContextProps>({
   changeNetwork: () => {},
   loading: true,
   reloading: false,
-  restoring: false,
+  restoring: 0,
   increaseIndex: () => {},
   logout: () => {},
   reloadWallet: () => {},
@@ -90,7 +90,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
 
   const [loading, setLoading] = useState(true)
   const [reloading, setReloading] = useState(false)
-  const [restoring, setRestoring] = useState(false)
+  const [restoring, setRestoring] = useState(0)
   const [wallet, setWallet] = useState(defaultWallet)
 
   const mnemonic = useRef('')
@@ -126,7 +126,8 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     const clone = w ? { ...w } : { ...wallet }
     // use the next line to use the REST API
     // const { nextIndex, transactions, utxos } = await fetchHistory(clone)
-    const { nextIndex, transactions, utxos } = await reload(chainSource, clone)
+    const { histories } = await getHistories(chainSource, clone)
+    const { nextIndex, transactions, utxos } = await restore(chainSource, histories)
     clone.nextIndex[clone.network] = nextIndex
     clone.transactions[clone.network] = transactions
     clone.utxos[clone.network] = utxos
@@ -137,15 +138,18 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
 
   const restoreWallet = async (w: Wallet) => {
     if (restoring) return
-    setRestoring(true)
+    setRestoring(-1)
     const clone = { ...w }
-    const { nextIndex, transactions, utxos } = await restore(chainSource, clone)
+    const { histories, numTxs } = await getHistories(chainSource, clone)
+    setRestoring(numTxs)
+    const update = () => setRestoring((r) => r - 1)
+    const { nextIndex, transactions, utxos } = await restore(chainSource, histories, update)
     clone.nextIndex[clone.network] = nextIndex
     clone.transactions[clone.network] = transactions
     clone.utxos[clone.network] = utxos
     clone.lastUpdate = Math.floor(Date.now() / 1000)
     updateWallet(clone)
-    setRestoring(false)
+    setRestoring(0)
   }
 
   const resetWallet = () => {

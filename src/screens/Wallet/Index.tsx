@@ -20,14 +20,18 @@ export default function Wallet() {
 
   const canSend = maxAllowedAmount(wallet) > limits.minimal
 
+  const X = () => (
+    <p className='animate-pulse'>
+      Restoring wallet
+      <br />
+      {restoring > 0 ? `${restoring} transaction${restoring > 1 ? 's' : ''} to go` : 'please wait'}
+    </p>
+  )
+
   const Restoring = () => (
     <>
       <Loading />
-      <p className='animate-pulse'>
-        Restoring wallet
-        <br />
-        please wait
-      </p>
+      <X />
     </>
   )
 

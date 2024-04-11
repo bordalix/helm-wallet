@@ -90,6 +90,7 @@ export class WsElectrumChainSource implements ChainSource {
   }
 
   async fetchTransactions(txs: ElectrumHistory[]): Promise<ElectrumTransaction[]> {
+    if (txs.length === 0) return []
     const responses = await this.ws.batchRequest<string[]>(
       ...txs.map(({ tx_hash }) => ({
         method: GetTransactionMethod,
