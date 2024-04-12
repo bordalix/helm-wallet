@@ -6,8 +6,6 @@ TODO list:
 - [ ] tests
 - [ ] documentation
 - [ ] cleanup code
-- [ ] smart reload
-- [ ] show num of tx when restoring
 - [ ] show blinders on explorer???
 
 DONE
@@ -37,3 +35,5 @@ DONE
 - [x] use websockets
 - [x] bug fix with send all
 - [x] inform user of received liquid tx
+- [x] smart reload
+- [x] show num of tx when restoring
