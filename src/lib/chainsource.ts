@@ -2,6 +2,7 @@ import { ElectrumWS } from 'ws-electrumx-client'
 import { address, crypto } from 'liquidjs-lib'
 import { NetworkName } from './network'
 import { MVUtxo } from './types'
+import { ExplorerName, getWebSocketExplorerURL } from './explorers'
 
 type ElectrumUnspent = {
   height: number
@@ -29,6 +30,7 @@ export type ElectrumBlockHeader = {
 }
 
 export type ChainSource = {
+  explorer: ExplorerName
   network: NetworkName
   waitForAddressReceivesTx(addr: string): Promise<string | null>
   fetchHistories(scripts: Buffer[]): Promise<ElectrumHistory[]>
@@ -40,18 +42,6 @@ export type ChainSource = {
   close(): Promise<void>
 }
 
-// returns electrum url based on network
-const electrumURL = (network: NetworkName): string => {
-  switch (network) {
-    case 'regtest':
-      return 'http://localhost:3001' // TODO
-    case 'testnet':
-      return 'wss://esplora.blockstream.com/liquidtestnet/electrum-websocket/api'
-    default:
-      return 'wss://esplora.blockstream.com/liquid/electrum-websocket/api'
-  }
-}
-
 const GetTransactionMethod = 'blockchain.transaction.get'
 const GetHistoryMethod = 'blockchain.scripthash.get_history'
 const GetBlockHeaderMethod = 'blockchain.block.header'
@@ -61,8 +51,10 @@ const SubscribeStatusMethod = 'blockchain.scripthash' // ElectrumWS add .subscri
 export class WsElectrumChainSource implements ChainSource {
   private ws: ElectrumWS
 
-  constructor(public network: NetworkName) {
-    this.ws = new ElectrumWS(electrumURL(network))
+  constructor(public explorer: ExplorerName, public network: NetworkName) {
+    const wsUrl = getWebSocketExplorerURL(explorer, network)
+    if (!wsUrl) throw new Error('Undefined ws url')
+    this.ws = new ElectrumWS(wsUrl)
   }
 
   async fetchHistories(scripts: Buffer[]): Promise<ElectrumHistory[]> {

@@ -11,10 +11,10 @@ import { WalletContext } from '../../providers/wallet'
 
 export default function Explorer() {
   const { toggleShowConfig } = useContext(ConfigContext)
-  const { wallet, updateWallet } = useContext(WalletContext)
+  const { changeExplorer, wallet } = useContext(WalletContext)
 
   const handleChange = (e: any) => {
-    updateWallet({ ...wallet, explorer: e.target.value })
+    changeExplorer(e.target.value)
   }
 
   return (

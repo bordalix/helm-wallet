@@ -1,5 +1,5 @@
 // @ts-ignore
-import bolt11 from 'light-bolt11-decoder'
+import bolt11 from 'bolt11'
 
 export interface MagicHint {
   cltv_expiry_delta: number
@@ -18,20 +18,20 @@ export interface Invoice {
 
 const findTag = (decoded: any, tag: string) => {
   if (decoded[tag]) return decoded[tag]
-  return decoded.sections.find((a: any) => a.name === tag)?.value
+  return decoded.tags.find((a: any) => a.tagName === tag)?.data
 }
 
 export const decodeInvoice = (invoice: string): Invoice => {
   const decoded = bolt11.decode(invoice)
-  const milisatoshis = findTag(decoded, 'amount')
-  const paymentHash = findTag(decoded, 'payment_hash')
-  const routeHint = findTag(decoded, 'route_hint') ?? []
-  const magicHint = routeHint.find((x: any) => x.short_channel_id === '0846c900051c0000')
+  console.log('decoded', decoded)
+  let satoshis = findTag(decoded, 'satoshis')
+  if (!satoshis) satoshis = Math.floor(Number(findTag(decoded, 'milisatoshis') ?? 0) / 1000)
+  const routeInfo = findTag(decoded, 'routing_info') ?? []
   return {
     invoice,
-    paymentHash,
+    paymentHash: findTag(decoded, 'payment_hash'),
     note: findTag(decoded, 'description'),
-    magicHint,
-    satoshis: Math.floor(milisatoshis / 1000),
+    magicHint: routeInfo.find((x: any) => x.short_channel_id === '0846c900051c0000'),
+    satoshis,
   }
 }

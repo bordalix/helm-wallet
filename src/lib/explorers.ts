@@ -9,8 +9,8 @@ export enum ExplorerName {
 }
 
 export interface ExplorerURLs {
-  webExplorerURL: string
-  websocketExplorerURL: string // ws:// or wss:// endpoint
+  restApiExplorerURL: string
+  webSocketExplorerURL: string // ws:// or wss:// endpoint
 }
 
 export interface Explorer {
@@ -24,30 +24,30 @@ const explorers: Explorer[] = [
   {
     name: ExplorerName.Blockstream,
     [NetworkName.Liquid]: {
-      webExplorerURL: 'https://blockstream.info/liquid',
-      websocketExplorerURL: 'wss://esplora.blockstream.com/liquid/electrum-websocket/api',
+      restApiExplorerURL: 'https://blockstream.info/liquid',
+      webSocketExplorerURL: 'wss://esplora.blockstream.com/liquid/electrum-websocket/api',
     },
     [NetworkName.Testnet]: {
-      webExplorerURL: 'https://blockstream.info/liquidtestnet',
-      websocketExplorerURL: 'wss://esplora.blockstream.com/liquidtestnet/electrum-websocket/api',
+      restApiExplorerURL: 'https://blockstream.info/liquidtestnet',
+      webSocketExplorerURL: 'wss://esplora.blockstream.com/liquidtestnet/electrum-websocket/api',
     },
   },
   {
     name: ExplorerName.Mempool,
     [NetworkName.Liquid]: {
-      webExplorerURL: 'https://liquid.network',
-      websocketExplorerURL: 'wss://esplora.blockstream.com/liquid/electrum-websocket/api',
+      restApiExplorerURL: 'https://liquid.network',
+      webSocketExplorerURL: 'wss://esplora.blockstream.com/liquid/electrum-websocket/api',
     },
     [NetworkName.Testnet]: {
-      webExplorerURL: 'https://liquid.network/liquidtestnet',
-      websocketExplorerURL: 'wss://esplora.blockstream.com/liquidtestnet/electrum-websocket/api',
+      restApiExplorerURL: 'https://liquid.network/liquidtestnet',
+      webSocketExplorerURL: 'wss://blockstream.info/liquidtestnet/electrum-websocket/api',
     },
   },
   {
     name: ExplorerName.Nigiri,
     [NetworkName.Regtest]: {
-      webExplorerURL: 'http://localhost:5001',
-      websocketExplorerURL: 'ws://127.0.0.1:1234',
+      restApiExplorerURL: 'http://localhost:5001',
+      webSocketExplorerURL: 'ws://127.0.0.1:1234',
     },
   },
 ]
@@ -55,14 +55,22 @@ const explorers: Explorer[] = [
 export const getExplorerNames = (network: NetworkName) =>
   explorers.filter((e: Explorer) => e[network]).map((e) => e.name)
 
-const getExplorerURL = ({ explorer, network }: Wallet) => {
+const getRestApiExplorerURL = ({ explorer, network }: Wallet) => {
   const exp = explorers.find((e) => e.name === explorer)
-  if (exp?.[network]) return exp[network]?.webExplorerURL
+  if (exp?.[network]) return exp[network]?.restApiExplorerURL
+}
+
+export const getWebSocketExplorerURL = (explorer: ExplorerName, network: NetworkName): string | undefined => {
+  const exp = explorers.find((e) => e.name === explorer)
+  return exp?.[network]?.webSocketExplorerURL
 }
 
 export const getTxIdURL = (txid: string, wallet: Wallet) => {
   // stupid bug from mempool
-  const url = getExplorerURL(wallet)?.replace('https://liquid.network/liquidtestnet', 'https://liquid.network/testnet')
+  const url = getRestApiExplorerURL(wallet)?.replace(
+    'https://liquid.network/liquidtestnet',
+    'https://liquid.network/testnet',
+  )
   return `${url}/tx/${txid}`
 }
 
@@ -81,7 +89,7 @@ export interface AddressInfo {
 }
 
 export const fetchAddress = async (address: string, wallet: Wallet): Promise<AddressInfo> => {
-  const url = `${getExplorerURL(wallet)}/api/address/${address}`
+  const url = `${getRestApiExplorerURL(wallet)}/api/address/${address}`
   const response = await fetch(url)
   return await response.json()
 }
@@ -104,20 +112,20 @@ export interface AddressTxInfo {
 }
 
 export const fetchAddressTxs = async (address: string, wallet: Wallet): Promise<AddressTxInfo[]> => {
-  const explorerURL = getExplorerURL(wallet)
+  const explorerURL = getRestApiExplorerURL(wallet)
   const url = `${explorerURL}/api/address/${address}/txs`
   const response = await fetch(url)
   return await response.json()
 }
 
 export const fetchAddressUtxos = async (address: string, wallet: Wallet): Promise<BlindedUtxo[]> => {
-  const url = `${getExplorerURL(wallet)}/api/address/${address}/utxo`
+  const url = `${getRestApiExplorerURL(wallet)}/api/address/${address}/utxo`
   const response = await fetch(url)
   return await response.json()
 }
 
 export const fetchTxHex = async (txid: string, wallet: Wallet): Promise<string> => {
-  const url = `${getExplorerURL(wallet)}/api/tx/${txid}/hex`
+  const url = `${getRestApiExplorerURL(wallet)}/api/tx/${txid}/hex`
   const response = await fetch(url)
   return await response.text()
 }

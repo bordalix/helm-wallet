@@ -33,6 +33,7 @@ export default function SendFees() {
 
   useEffect(() => {
     if (invoice && wallet.mnemonic && satoshis) {
+      console.log('magicHint', magicHint)
       if (magicHint) {
         const txFees = feesToSendSats(satoshis, wallet)
         setBoltzFees(0)

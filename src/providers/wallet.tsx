@@ -8,7 +8,7 @@ import { defaultExplorer, defaultGapLimit, defaultNetwork } from '../lib/constan
 import { ChainSource, WsElectrumChainSource } from '../lib/chainsource'
 import { getHistories, restore } from '../lib/restore'
 
-let chainSource = new WsElectrumChainSource(defaultNetwork)
+let chainSource = new WsElectrumChainSource(defaultExplorer, defaultNetwork)
 
 export interface Wallet {
   explorer: ExplorerName
@@ -55,6 +55,7 @@ const defaultWallet: Wallet = {
 
 interface WalletContextProps {
   chainSource: ChainSource
+  changeExplorer: (e: ExplorerName) => void
   changeNetwork: (n: NetworkName) => void
   loading: boolean
   reloading: boolean
@@ -71,6 +72,7 @@ interface WalletContextProps {
 
 export const WalletContext = createContext<WalletContextProps>({
   chainSource,
+  changeExplorer: () => {},
   changeNetwork: () => {},
   loading: true,
   reloading: false,
@@ -100,12 +102,22 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     setWallet({ ...wallet, mnemonic: m })
   }
 
+  const changeExplorer = async (explorer: ExplorerName) => {
+    const clone = { ...wallet, explorer }
+    updateWallet(clone)
+    if (clone.explorer !== chainSource.explorer) {
+      await chainSource.close()
+      chainSource = new WsElectrumChainSource(clone.explorer, clone.network)
+    }
+    restoreWallet(clone)
+  }
+
   const changeNetwork = async (networkName: NetworkName) => {
     const clone = { ...wallet, network: networkName }
     updateWallet(clone)
     if (clone.network !== chainSource.network) {
       await chainSource.close()
-      chainSource = new WsElectrumChainSource(clone.network)
+      chainSource = new WsElectrumChainSource(clone.explorer, clone.network)
     }
     restoreWallet(clone)
   }
@@ -177,6 +189,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     <WalletContext.Provider
       value={{
         chainSource,
+        changeExplorer,
         changeNetwork,
         loading,
         reloading,
