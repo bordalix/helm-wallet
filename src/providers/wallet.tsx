@@ -178,10 +178,11 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!loading) return
-    const _wallet = readWalletFromStorage()
-    updateWallet(_wallet ?? defaultWallet)
+    const wallet = readWalletFromStorage()
+    updateWallet(wallet ?? defaultWallet)
+    if (wallet?.initialized) reloadWallet(wallet)
     setLoading(false)
-    navigate(_wallet?.initialized ? Pages.Wallet : Pages.Init)
+    navigate(wallet?.initialized ? Pages.Wallet : Pages.Init)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading])
 
