@@ -38,7 +38,7 @@ export default function About() {
             to fetch information from the chain
           </p>
           <p className='underline cursor-pointer'>
-            <a href='https://github.com/bordalix/thor'>Github</a>
+            <a href='https://github.com/bordalix/helm'>Github</a>
           </p>
           {wallet.initialized ? (
             <p>

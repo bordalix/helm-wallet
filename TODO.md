@@ -31,7 +31,7 @@ DONE
 - [x] build error on Cloudflare (fixed using YARN_VERSION = 1 in env vars)
 - [x] show liquid address after 3 clicks on qrcode
 - [x] change tx_hash to txid
-- [x] paying to other Thor
+- [x] paying to other Helm
 - [x] use websockets
 - [x] bug fix with send all
 - [x] inform user of received liquid tx

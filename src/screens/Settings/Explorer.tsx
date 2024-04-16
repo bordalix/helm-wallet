@@ -26,7 +26,7 @@ export default function Explorer() {
             <option key={e}>{e}</option>
           ))}
         </Select>
-        <p className='mt-10'>Thor uses the explorer to query the chain</p>
+        <p className='mt-10'>Helm uses the explorer to query the chain</p>
       </Content>
       <ButtonsOnBottom>
         <Button onClick={toggleShowConfig} label='Back to wallet' secondary />

@@ -27,7 +27,7 @@ export default function Network() {
             </option>
           ))}
         </Select>
-        <p className='mt-10'>You can use Thor in testnet</p>
+        <p className='mt-10'>You can use Helm in testnet</p>
       </Content>
       <ButtonsOnBottom>
         <Button onClick={toggleShowConfig} label='Back to wallet' secondary />

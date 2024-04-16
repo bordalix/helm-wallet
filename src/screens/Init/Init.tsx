@@ -11,7 +11,7 @@ export default function Init() {
   return (
     <Container>
       <div className='mt-24'>
-        <Title text='Thor wallet' subtext='The lightning wallet even your grandma can use' />
+        <Title text='Helm wallet' subtext='The lightning wallet even your grandma can use' />
       </div>
       <ButtonsOnBottom>
         <Button onClick={() => navigate(Pages.InitNew)} label='New wallet' />
