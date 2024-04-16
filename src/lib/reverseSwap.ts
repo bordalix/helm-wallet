@@ -71,10 +71,6 @@ export const reverseSwap = async (
   ).data as ReverseSwapResponse
 
   onInvoice(createdResponse.invoice)
-  console.log('Created swap')
-  console.log(createdResponse)
-  console.log()
-
   // Create a WebSocket and subscribe to updates for the created swap
   const webSocket = new WebSocket(getBoltzWsUrl(wallet.network))
   webSocket.onopen = () => {
@@ -92,13 +88,6 @@ export const reverseSwap = async (
     if (msg.event !== 'update') {
       return
     }
-
-    console.log()
-    console.log('-----')
-    console.log('Got WebSocket update')
-    console.log(JSON.stringify(msg.args[0], undefined, 2))
-    console.log('-----')
-    console.log()
 
     switch (msg.args[0].status) {
       // "swap.created" means Boltz is waiting for the invoice to be paid
