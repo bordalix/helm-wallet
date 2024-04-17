@@ -78,21 +78,10 @@ export const finalizeSubmarineSwap = (sendInfo: SendInfo, wallet: Wallet, onTxid
   }
 
   webSocket.onmessage = async (rawMsg) => {
-    let msg
-
-    try {
-      msg = JSON.parse(rawMsg.data)
-    } catch (_) {
-      return
-    }
-
+    const msg = JSON.parse(rawMsg.data)
     if (msg.event !== 'update') {
       return
     }
-
-    console.log('Got WebSocket update')
-    console.log(msg)
-    console.log()
 
     switch (msg.args[0].status) {
       // "invoice.set" means Boltz is waiting for an onchain transaction to be sent
