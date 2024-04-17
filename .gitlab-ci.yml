@@ -1,7 +1,3 @@
-stages:
-  - build
-  - pages
-
 build:
   image: node:latest
   stage: build
