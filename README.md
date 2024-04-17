@@ -23,16 +23,16 @@ The lightning wallet even your grandma can use.
 
 To avoid censorship, this app will be available in different places:
 
-- https://helm-wallet.pages.dev
-- https://helm-wallet.github.io
+- [https://helm-wallet.pages.dev](https://helm-wallet.pages.dev)
+- [https://bordalix.gitlab.io/helm-wallet/](https://bordalix.gitlab.io/helm-wallet/)
 
 You can also clone the code and run it on your own machine.
 
 Again, the code is available from several sources, to avoid censorship:
 
-- [Github](https://github.com)
-- [Gitlab](https://gitlab.com)
-- [Bitbucket](https://bitbucket.com)
+- [https://github.com/bordalix/helm-wallet](https://github.com/bordalix/helm-wallet)
+- [https://gitlab.com/bordalix/helm-wallet](https://gitlab.com/bordalix/helm-wallet)
+- [https://bitbucket.org/bordalix/helm-wallet](https://bitbucket.org/bordalix/helm-wallet)
 
 ## Development
 
