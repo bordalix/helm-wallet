@@ -1,8 +1,42 @@
-# Getting Started with Create React App
+# Helm wallet
+
+The lightning wallet even your grandma can use.
+
+## Goals
+
+- [x] To make a self-custodial wallet where one can send and receive Lightning payments without the hustle of liquidity or channels management;
+- [x] To make a very clear and simple UX (2 options top per screen) without compromising functionalities;
+- [x] To make a web based Lightning wallet to escape App Stores censorship;
+
+## Design
+
+- It's a Liquid wallet that uses [Boltz](https://boltz.exchange) to swap between L-BTC and Lightning
+- On the UI side, I do love brutalism
+
+## Drawbacks
+
+- The minimum cost for sending a payment is around 200 sats;
+- The average cost for sending a payment is around 400 sats plus 0.1% of the amount to send
+- Some transactions could take up to 1 minute to complete
+
+## Availability
+
+To avoid censorship, this app will be available in different places:
+
+- https://helm-wallet.pages.dev
+- https://helm-wallet.github.io
+
+You can also clone the code and run it on your own machine.
+
+Again, the code is available from several sources, to avoid censorship:
+
+- [Github](https://github.com)
+- [Gitlab](https://gitlab.com)
+- [Bitbucket](https://bitbucket.com)
+
+## Development
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
 
 In the project directory, you can run:
 
