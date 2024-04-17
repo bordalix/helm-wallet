@@ -1,0 +1,12 @@
+image: node:latest
+
+cache:
+  paths:
+    - node_modules/
+
+deploy:
+  stage: deploy
+  script:
+    - yarn
+    - yarn build
+  environment: production
