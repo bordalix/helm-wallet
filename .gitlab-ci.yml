@@ -1,8 +1,6 @@
 build:
   image: node:latest
   stage: build
-  variables:
-    PUBLIC_URL: https://bordalix.gitlab.io/helm-wallet/
   script:
     - yarn install
     - yarn build
