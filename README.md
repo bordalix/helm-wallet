@@ -17,7 +17,8 @@ The lightning wallet even your grandma can use.
 
 - The minimum cost for sending a payment is around 200 sats;
 - The average cost for sending a payment is around 400 sats plus 0.1% of the amount to send;
-- Some transactions could take up to 1 minute to complete.
+- The average cost for receiving a payment is around 400 sats plus 0.1% of the amount to receive;
+- Transactions between Helm wallets pay less fees but can take up to 1 minute to complete.
 
 ## Availability
 
