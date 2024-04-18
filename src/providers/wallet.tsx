@@ -109,7 +109,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
       await chainSource.close()
       chainSource = new WsElectrumChainSource(clone.explorer, clone.network)
     }
-    restoreWallet(clone)
+    reloadWallet(clone)
   }
 
   const changeNetwork = async (networkName: NetworkName) => {
