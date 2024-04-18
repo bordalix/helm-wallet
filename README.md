@@ -55,6 +55,8 @@ See the section about [running tests](https://facebook.github.io/create-react-ap
 
 ### `yarn build`
 
+⚠️ You need yarn v1, for some reason it doesn't work with yarn v2 (under investigation) ⚠️
+
 Builds the app for production to the `build` folder.\
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
