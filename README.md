@@ -10,7 +10,7 @@ The lightning wallet even your grandma can use.
 
 ## Design
 
-- It's a Lightning wallet that uses [Boltz](https://boltz.exchange) to swap between L-BTC and Lightning;
+- It's a Lightning wallet that uses Liquid and [Boltz](https://boltz.exchange) to swap between L-BTC and Lightning;
 - On the UI side, I do love brutalism.
 
 ## Drawbacks
