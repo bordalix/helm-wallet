@@ -10,7 +10,7 @@ export default function Init() {
 
   return (
     <Container>
-      <div className='mt-24'>
+      <div className='mt-24 max-w-64 md:max-w-full mx-auto'>
         <Title text='Helm wallet' subtext='The lightning wallet even your grandma can use' />
       </div>
       <ButtonsOnBottom>

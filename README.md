@@ -6,18 +6,18 @@ The lightning wallet even your grandma can use.
 
 - [x] To make a self-custodial wallet where one can send and receive Lightning payments without the hustle of liquidity or channels management;
 - [x] To make a very clear and simple UX (2 options top per screen) without compromising functionalities;
-- [x] To make a web based Lightning wallet to escape App Stores censorship;
+- [x] To make a web based Lightning wallet to escape App Stores censorship.
 
 ## Design
 
-- It's a Liquid wallet that uses [Boltz](https://boltz.exchange) to swap between L-BTC and Lightning
-- On the UI side, I do love brutalism
+- It's a Liquid wallet that uses [Boltz](https://boltz.exchange) to swap between L-BTC and Lightning;
+- On the UI side, I do love brutalism.
 
 ## Drawbacks
 
 - The minimum cost for sending a payment is around 200 sats;
-- The average cost for sending a payment is around 400 sats plus 0.1% of the amount to send
-- Some transactions could take up to 1 minute to complete
+- The average cost for sending a payment is around 400 sats plus 0.1% of the amount to send;
+- Some transactions could take up to 1 minute to complete.
 
 ## Availability
 
