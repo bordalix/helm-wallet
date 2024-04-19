@@ -10,30 +10,33 @@ The lightning wallet even your grandma can use.
 
 ## Design
 
-- It's a Lightning wallet that uses Liquid and [Boltz](https://boltz.exchange) to swap between L-BTC and Lightning;
+- It's a Liquid wallet that uses [Boltz](https://boltz.exchange) to disguise itself as a Lightning wallet that even your grandma can use;
 - On the UI side, I do love brutalism.
 
 ## Drawbacks
 
+Since all transactions go onchain, there are fees to be paid:
+
 - The minimum cost for sending a payment is around 200 sats;
-- The average cost for sending a payment is around 400 sats plus 0.1% of the amount to send;
-- The average cost for receiving a payment is around 400 sats plus 0.1% of the amount to receive;
-- Transactions between Helm wallets pay less fees but can take up to 1 minute to complete.
+- The average cost for sending **or receiving** a payment is around 400 sats plus 0.1% of the amount;
+- Transactions between Helm wallets only pay transaction fees but can take up to 1 minute to complete.
 
 ## Availability
 
-To avoid censorship, this app will be available in different places:
+To minimize censorship, this app will be available in different places:
 
 - [https://helm-wallet.pages.dev](https://helm-wallet.pages.dev)
 - [https://bordalix.gitlab.io/helm-wallet/](https://bordalix.gitlab.io/helm-wallet/)
 
 You can also clone the code and run it on your own machine.
 
-Again, the code is available from several sources, to avoid censorship:
+To minimize censorship, the code is available from several sources:
 
 - [https://github.com/bordalix/helm-wallet](https://github.com/bordalix/helm-wallet)
 - [https://gitlab.com/bordalix/helm-wallet](https://gitlab.com/bordalix/helm-wallet)
 - [https://bitbucket.org/bordalix/helm-wallet](https://bitbucket.org/bordalix/helm-wallet)
+
+As soon as the code is stable, I'll also put it on bittorrent and ipfs.
 
 ## Development
 
