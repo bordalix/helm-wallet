@@ -119,7 +119,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
       await chainSource.close()
       chainSource = new WsElectrumChainSource(clone.explorer, clone.network)
     }
-    restoreWallet(clone)
+    if (wallet.initialized) restoreWallet(clone)
   }
 
   const increaseIndex = () => {
