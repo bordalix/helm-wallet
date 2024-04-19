@@ -102,23 +102,22 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     setWallet({ ...wallet, mnemonic: m })
   }
 
+  const changeChainSource = async (w: Wallet) => {
+    await chainSource.close()
+    chainSource = new WsElectrumChainSource(w.explorer, w.network)
+  }
+
   const changeExplorer = async (explorer: ExplorerName) => {
     const clone = { ...wallet, explorer }
     updateWallet(clone)
-    if (clone.explorer !== chainSource.explorer) {
-      await chainSource.close()
-      chainSource = new WsElectrumChainSource(clone.explorer, clone.network)
-    }
+    if (clone.explorer !== chainSource.explorer) await changeChainSource(clone)
     reloadWallet(clone)
   }
 
   const changeNetwork = async (networkName: NetworkName) => {
     const clone = { ...wallet, network: networkName }
     updateWallet(clone)
-    if (clone.network !== chainSource.network) {
-      await chainSource.close()
-      chainSource = new WsElectrumChainSource(clone.explorer, clone.network)
-    }
+    if (clone.network !== chainSource.network) await changeChainSource(clone)
     if (wallet.initialized) restoreWallet(clone)
   }
 
@@ -177,12 +176,18 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   }
 
   useEffect(() => {
-    if (!loading) return
-    const wallet = readWalletFromStorage()
-    updateWallet(wallet ?? defaultWallet)
-    if (wallet?.initialized) reloadWallet(wallet)
-    setLoading(false)
-    navigate(wallet?.initialized ? Pages.Wallet : Pages.Init)
+    const getWalletFromStorage = async () => {
+      if (!loading) return
+      const wallet = readWalletFromStorage() ?? defaultWallet
+      updateWallet(wallet)
+      if (wallet.explorer !== chainSource.explorer || wallet.network !== chainSource.network) {
+        await changeChainSource(wallet)
+      }
+      if (wallet.initialized) reloadWallet(wallet)
+      setLoading(false)
+      navigate(wallet.initialized ? Pages.Wallet : Pages.Init)
+    }
+    getWalletFromStorage()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading])
 
