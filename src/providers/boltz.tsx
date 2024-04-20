@@ -42,6 +42,7 @@ interface BoltzContextProps {
   limits: BoltzLimits
   expectedFees: (sats: Satoshis, flow?: string) => ExpectedFees
   maxAllowedAmount: (w: Wallet) => number
+  maxLiquidAmount: (w: Wallet) => number
 }
 
 export const BoltzContext = createContext<BoltzContextProps>({
@@ -49,6 +50,7 @@ export const BoltzContext = createContext<BoltzContextProps>({
   limits: defaultBoltzLimits,
   expectedFees: () => defaultExpectedFees,
   maxAllowedAmount: () => 0,
+  maxLiquidAmount: () => 0,
 })
 
 export const BoltzProvider = ({ children }: { children: ReactNode }) => {
@@ -84,14 +86,26 @@ export const BoltzProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
-  const maxAllowedAmount = (wallet: Wallet): number => {
+  const maxAmount = (wallet: Wallet) => {
     const balance = getBalance(wallet)
     const txFees = feeForCoins(wallet.utxos[wallet.network].length)
     const { boltzFees, minerFees } = expectedFees(balance - txFees)
+    return { balance, txFees, boltzFees, minerFees }
+  }
+
+  const maxAllowedAmount = (wallet: Wallet): number => {
+    const { balance, txFees, boltzFees, minerFees } = maxAmount(wallet)
     return balance - txFees - boltzFees - minerFees
   }
 
+  const maxLiquidAmount = (wallet: Wallet): number => {
+    const { balance, txFees } = maxAmount(wallet)
+    return balance - txFees
+  }
+
   return (
-    <BoltzContext.Provider value={{ expectedFees, maxAllowedAmount, error, limits }}>{children}</BoltzContext.Provider>
+    <BoltzContext.Provider value={{ expectedFees, maxAllowedAmount, maxLiquidAmount, error, limits }}>
+      {children}
+    </BoltzContext.Provider>
   )
 }
