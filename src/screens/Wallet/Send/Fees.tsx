@@ -68,12 +68,13 @@ export default function SendFees() {
   const handlePay = () => navigate(Pages.SendPayment)
 
   const label = error ? 'Something went wrong' : 'Pay'
+  const prettyTotal = prettyNumber((total ?? 0) + (txFees ?? 0))
 
   const data = [
     ['Invoice', prettyNumber(satoshis)],
     ['Boltz fees', prettyNumber(boltzFees)],
     ['Transaction fees', prettyNumber(txFees ?? 0)],
-    ['Total', prettyNumber((total ?? 0) + (txFees ?? 0))],
+    ['Total', prettyTotal],
   ]
 
   if (!wallet.mnemonic) return <NeedsPassword onMnemonic={setMnemonic} />
@@ -81,7 +82,7 @@ export default function SendFees() {
   return (
     <Container>
       <Content>
-        <Title text='Payment fees' subtext={`You pay ${prettyNumber(total ?? 0)} sats`} />
+        <Title text='Payment fees' subtext={`You pay ${prettyTotal} sats`} />
         <div className='flex flex-col gap-2'>
           <Error error={Boolean(error)} text={error} />
           <Table data={data} />
