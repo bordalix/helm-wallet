@@ -15,15 +15,16 @@ The lightning wallet even your grandma can use.
 
 ## Drawbacks
 
-Since all transactions go onchain, there are fees to be paid:
+Since all transactions must go on chain and [Boltz](https://boltz.exchange) must earn something for the service they provide, there are fees to be paid:
 
 - The minimum cost for sending a payment is around 200 sats;
 - The average cost for sending **or receiving** a payment is around 400 sats plus 0.1% of the amount;
-- Transactions between Helm wallets only pay transaction fees but can take up to 1 minute to complete.
+- Transactions between Helm wallets don’t pay Boltz fees but can take up to 1 minute to complete;
+- Amounts are limited between 1.000 and 25.000.000 sats.
 
 ## Availability
 
-To minimize censorship, this app will be available in different places:
+To minimize censorship, this app is available in different urls:
 
 - [https://helm-wallet.pages.dev](https://helm-wallet.pages.dev)
 - [https://bordalix.gitlab.io/helm-wallet/](https://bordalix.gitlab.io/helm-wallet/)
