@@ -24,7 +24,7 @@ export default function Theme() {
           <option value={Themes.Dark}>{Themes.Dark}</option>
           <option value={Themes.Light}>{Themes.Light}</option>
         </Select>
-        <p className='mt-10'>Dark theme is easy on the eyes</p>
+        <p className='mt-10'>Dark theme is easier on the eyes</p>
       </Content>
       <ButtonsOnBottom>
         <Button onClick={toggleShowConfig} label='Back to wallet' secondary />
