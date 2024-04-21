@@ -47,7 +47,7 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
   }
 
   return (
-    <fieldset className='text-left text-gray-800 dark:text-gray-100 mx-auto mt-4'>
+    <fieldset className='text-left text-gray-800 dark:text-gray-100 w-full mt-4'>
       {label ? <Label text={label} /> : null}
       <div className='flex items-center h-12 rounded-l-md bg-gray-100 dark:bg-gray-800'>
         {isMobile ? (

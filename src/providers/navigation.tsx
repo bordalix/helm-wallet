@@ -9,6 +9,7 @@ export enum Pages {
   ReceiveFees,
   ReceiveInvoice,
   ReceiveSuccess,
+  SendAmount,
   SendInvoice,
   SendDetails,
   SendFees,

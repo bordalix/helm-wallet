@@ -11,12 +11,13 @@ import Content from '../../../components/Content'
 import Title from '../../../components/Title'
 import Container from '../../../components/Container'
 import { pasteFromClipboard } from '../../../lib/clipboard'
+import { isValidLnUrl } from '../../../lib/lnurl'
 
 export default function SendInvoice() {
   const { navigate } = useContext(NavigationContext)
   const { setSendInfo } = useContext(FlowContext)
 
-  const defaultLabel = 'Paste invoice'
+  const defaultLabel = 'Paste invoice or LNURL'
   const [buttonLabel, setButtonLabel] = useState(defaultLabel)
   const [cameraAllowed, setCameraAllowed] = useState(false)
   const [error, setError] = useState('')
@@ -33,16 +34,18 @@ export default function SendInvoice() {
 
   useEffect(() => {
     if (!invoice) return
-    if (invoice.match(/^LNURL/)) {
-      return setError('LNURL not supported, please add amount to invoice')
-    }
-    setError('')
-    try {
-      setSendInfo(decodeInvoice(invoice.replace('lightning:', '')))
-      navigate(Pages.SendDetails)
-    } catch (e) {
-      console.error(e)
-      setError('Invalid invoice')
+    if (isValidLnUrl(invoice)) {
+      setSendInfo({ lnurl: invoice })
+      navigate(Pages.SendAmount)
+    } else {
+      setError('')
+      try {
+        setSendInfo(decodeInvoice(invoice.replace('lightning:', '')))
+        navigate(Pages.SendDetails)
+      } catch (e) {
+        console.error(e)
+        setError('Invalid invoice')
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [invoice])

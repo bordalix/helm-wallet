@@ -21,6 +21,7 @@ import OuterContainer from './components/OuterContainer'
 import ReceiveFees from './screens/Wallet/Receive/Fees'
 import SendSuccess from './screens/Wallet/Send/Success'
 import Transactions from './screens/Wallet/Transactions'
+import SendAmount from './screens/Wallet/Send/Amount'
 
 export default function App() {
   const { loading, showConfig } = useContext(ConfigContext)
@@ -41,6 +42,7 @@ export default function App() {
         {screen === Pages.ReceiveFees && <ReceiveFees />}
         {screen === Pages.ReceiveInvoice && <ReceiveInvoice />}
         {screen === Pages.ReceiveSuccess && <ReceiveSuccess />}
+        {screen === Pages.SendAmount && <SendAmount />}
         {screen === Pages.SendInvoice && <SendInvoice />}
         {screen === Pages.SendDetails && <SendDetails />}
         {screen === Pages.SendFees && <SendFees />}
