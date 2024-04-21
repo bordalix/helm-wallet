@@ -13,7 +13,7 @@ import { WalletContext } from '../../../providers/wallet'
 import { reverseSwap } from '../../../lib/reverseSwap'
 import { copyToClipboard } from '../../../lib/clipboard'
 import { inOneMinute, someSeconds } from '../../../lib/constants'
-import { generateAddress } from '../../../lib/address'
+import { NewAddress, generateAddress } from '../../../lib/address'
 import { ElectrumHistory } from '../../../lib/chainsource'
 
 export default function ReceiveInvoice() {
@@ -22,7 +22,9 @@ export default function ReceiveInvoice() {
   const { chainSource, increaseIndex, reloadWallet, wallet } = useContext(WalletContext)
 
   const label = 'Copy to clipboard'
+  const [address, setAddress] = useState<NewAddress>()
   const [buttonLabel, setButtonLabel] = useState(label)
+  const [clickCounter, setClickCounter] = useState(0)
   const [error, setError] = useState('')
   const [invoice, setInvoice] = useState('')
 
@@ -42,7 +44,7 @@ export default function ReceiveInvoice() {
   }
 
   const handleCopy = async () => {
-    await copyToClipboard(invoice)
+    await copyToClipboard(qrValue ?? '')
     setButtonLabel('Copied')
     setTimeout(() => setButtonLabel(label), 2000)
   }
@@ -51,6 +53,7 @@ export default function ReceiveInvoice() {
     if (!invoice) {
       try {
         generateAddress(wallet).then((addr) => {
+          setAddress(addr)
           reverseSwap(Number(recvInfo.amount), addr.confidentialAddress, wallet, onFinish, setInvoice)
           chainSource.waitForAddressReceivesTx(addr.address).then(() => {
             chainSource.fetchHistories([addr.script]).then((histories: ElectrumHistory[]) => {
@@ -65,13 +68,17 @@ export default function ReceiveInvoice() {
     }
   }, [invoice])
 
+  const qrValue = Math.floor(clickCounter / 3) % 2 === 0 ? invoice : address?.confidentialAddress
+
   return (
     <Container>
       <Content>
         <Title text='Invoice' subtext='Scan or copy to clipboard' />
         <div className='flex flex-col gap-2'>
           <Error error={Boolean(error)} text={error} />
-          <QrCode value={invoice} />
+          <div onClick={() => setClickCounter((c) => c + 1)}>
+            <QrCode value={qrValue ?? ''} />
+          </div>
         </div>
       </Content>
       <ButtonsOnBottom>

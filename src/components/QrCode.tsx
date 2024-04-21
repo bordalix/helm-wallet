@@ -7,7 +7,7 @@ interface QrCodeProps {
 
 export default function QrCode({ value }: QrCodeProps) {
   return (
-    <div className='w-[300px] mx-auto'>
+    <div className='w-[300px] mx-auto select-none'>
       {value ? (
         <div className='bg-white p-[10px]'>
           <QRCode size={280} value={value} fgColor='#000000' />

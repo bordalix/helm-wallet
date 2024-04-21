@@ -1,5 +1,4 @@
 import { formatInvoice, prettyNumber } from '../lib/format'
-import { decodeInvoice } from '../lib/lightning'
 
 export const Item = ({ title, body }: { title: string; body: string }) => {
   return (
@@ -10,20 +9,22 @@ export const Item = ({ title, body }: { title: string; body: string }) => {
   )
 }
 
-interface InvoiceDetailsProps {
+export interface PaymentDetailsProps {
+  address?: string
   invoice?: string
+  note?: string
+  satoshis: number
 }
 
-export default function InvoiceDetails({ invoice }: InvoiceDetailsProps) {
-  if (!invoice) throw new Error('Missing invoice')
-
-  const { note, satoshis } = decodeInvoice(invoice)
-
+export default function PaymentDetails({ details }: { details?: PaymentDetailsProps }) {
+  if (!details) return <></>
+  const { address, invoice, note, satoshis } = details
   return (
     <div>
       <Item title='Amount' body={`${prettyNumber(satoshis)} sats`} />
       {note ? <Item title='Note' body={note} /> : null}
-      <Item title='Invoice' body={formatInvoice(invoice)} />
+      {invoice ? <Item title='Invoice' body={formatInvoice(invoice)} /> : null}
+      {address ? <Item title='Address' body={formatInvoice(address)} /> : null}
     </div>
   )
 }

@@ -35,14 +35,20 @@ export default function SendAmount() {
   }
 
   const handleProceed = async () => {
-    if (!sendInfo.lnurl) return
-    try {
-      const invoice = await fetchLnUrl(sendInfo.lnurl, amount)
-      setSendInfo(decodeInvoice(invoice))
+    if (!sendInfo.lnurl && !sendInfo.address) return
+    if (sendInfo.address) {
+      setSendInfo({ ...sendInfo, satoshis: amount })
       navigate(Pages.SendDetails)
-    } catch (err: any) {
-      if (err.status === 404) setError(`Not found ${sendInfo.lnurl}`)
-      else setError(extractError(err))
+    }
+    if (sendInfo.lnurl) {
+      try {
+        const invoice = await fetchLnUrl(sendInfo.lnurl, amount)
+        setSendInfo(decodeInvoice(invoice))
+        navigate(Pages.SendDetails)
+      } catch (err: any) {
+        if (err.status === 404) setError(`Not found ${sendInfo.lnurl}`)
+        else setError(extractError(err))
+      }
     }
   }
 

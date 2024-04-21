@@ -27,19 +27,27 @@ export default function SendFees() {
   const [boltzFees, setBoltzFees] = useState(0)
   const [error, setError] = useState('')
 
-  const { invoice, magicHint, satoshis, total, txFees } = sendInfo
+  const { address, invoice, magicHint, satoshis, total, txFees } = sendInfo
   const keys = ECPairFactory(ecc).makeRandom()
   const refundPublicKey = keys.publicKey.toString('hex')
 
   useEffect(() => {
-    if (invoice && wallet.mnemonic && satoshis) {
-      if (magicHint) {
+    if (wallet.mnemonic && satoshis) {
+      if (address) {
         const txFees = feesToSendSats(satoshis, wallet)
         setBoltzFees(0)
-        getLiquidAddress(invoice, magicHint, wallet).then((address) => {
-          setSendInfo({ ...sendInfo, address, keys, txFees, total: satoshis })
-        })
-      } else {
+        setSendInfo({ ...sendInfo, address, keys, txFees, total: satoshis })
+        return
+      }
+      if (invoice) {
+        if (magicHint) {
+          const txFees = feesToSendSats(satoshis, wallet)
+          setBoltzFees(0)
+          getLiquidAddress(invoice, magicHint, wallet).then((address) => {
+            setSendInfo({ ...sendInfo, address, keys, txFees, total: satoshis })
+          })
+          return
+        }
         submarineSwap(invoice, refundPublicKey, wallet.network)
           .then((swapResponse) => {
             const { expectedAmount } = swapResponse
@@ -52,7 +60,7 @@ export default function SendFees() {
           })
       }
     }
-  }, [invoice, wallet.mnemonic])
+  }, [address, invoice, wallet.mnemonic])
 
   useEffect(() => {
     if (sendInfo.total) {
@@ -71,7 +79,7 @@ export default function SendFees() {
   const prettyTotal = prettyNumber((total ?? 0) + (txFees ?? 0))
 
   const data = [
-    ['Invoice', prettyNumber(satoshis)],
+    ['Amount', prettyNumber(satoshis)],
     ['Boltz fees', prettyNumber(boltzFees)],
     ['Transaction fees', prettyNumber(txFees ?? 0)],
     ['Total', prettyTotal],
