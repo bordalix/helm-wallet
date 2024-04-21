@@ -12,6 +12,7 @@ import { prettyNumber } from '../../../lib/format'
 import { fetchLnUrl } from '../../../lib/lnurl'
 import Error from '../../../components/Error'
 import { extractError } from '../../../lib/error'
+import { decodeInvoice } from '../../../lib/lightning'
 
 enum ButtonLabel {
   Low = 'Amount too low',
@@ -37,10 +38,10 @@ export default function SendAmount() {
     if (!sendInfo.lnurl) return
     try {
       const invoice = await fetchLnUrl(sendInfo.lnurl, amount)
-      setSendInfo({ invoice, amount })
+      setSendInfo(decodeInvoice(invoice))
       navigate(Pages.SendDetails)
     } catch (err: any) {
-      if (err.status === 404) setError(`Error trying to fetch invoice for ${sendInfo.lnurl}`)
+      if (err.status === 404) setError(`Not found ${sendInfo.lnurl}`)
       else setError(extractError(err))
     }
   }
@@ -60,8 +61,8 @@ export default function SendAmount() {
       <Content>
         <Title text='Send' subtext={`Min: ${prettyNumber(minimal)} · Max: ${prettyNumber(maximal)} sats`} />
         <div className='flex flex-col gap-2'>
-          <InputAmount label='Amount' onChange={setAmount} />
           <Error error={Boolean(error)} text={error} />
+          <InputAmount label='Amount' onChange={setAmount} />
         </div>
       </Content>
       <ButtonsOnBottom>

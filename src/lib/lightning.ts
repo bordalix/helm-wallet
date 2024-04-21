@@ -21,6 +21,15 @@ const findTag = (decoded: any, tag: string) => {
   return decoded.tags.find((a: any) => a.tagName === tag)?.data
 }
 
+const extractNote = (data: string): string => {
+  if (!/^\[/.test(data)) return data
+  try {
+    return JSON.parse(data)[0][1]
+  } catch {
+    return ''
+  }
+}
+
 export const decodeInvoice = (invoice: string): Invoice => {
   const decoded = bolt11.decode(invoice.replace('lightning:', ''))
   let satoshis = findTag(decoded, 'satoshis')
@@ -29,7 +38,7 @@ export const decodeInvoice = (invoice: string): Invoice => {
   return {
     invoice,
     paymentHash: findTag(decoded, 'payment_hash'),
-    note: findTag(decoded, 'description'),
+    note: extractNote(findTag(decoded, 'description')),
     magicHint: routeInfo.find((x: any) => x.short_channel_id === '0846c900051c0000'),
     satoshis,
   }

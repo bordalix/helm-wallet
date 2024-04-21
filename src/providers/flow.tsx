@@ -15,7 +15,6 @@ export interface RecvInfo {
 }
 
 export type SendInfoLightning = Invoice & {
-  amount?: number
   lnurl?: string
   keys?: ECPairInterface
   swapResponse?: SubmarineSwapResponse

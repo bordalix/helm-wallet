@@ -20,7 +20,6 @@ const checkResponse = <T = any>(response: Response): Promise<T> => {
 }
 
 const checkLnUrlResponse = (amount: number, data: LnUrlResponse) => {
-  console.log('amount check: (x, min, max)', amount, data.minSendable, data.maxSendable)
   if (amount < data.minSendable || amount > data.maxSendable) {
     throw new Error('Amount not in LNURL range.')
   }
@@ -28,9 +27,7 @@ const checkLnUrlResponse = (amount: number, data: LnUrlResponse) => {
 }
 
 const fetchLnUrlInvoice = async (amount: number, data: LnUrlResponse) => {
-  console.log('fetching invoice', `${data.callback}?amount=${amount}`)
   const res = await fetch(`${data.callback}?amount=${amount}`).then(checkResponse<LnUrlCallbackResponse>)
-  console.log('fetched invoice', res)
   return res.pr
 }
 
@@ -69,8 +66,7 @@ export const getCallbackUrl = (lnurl: string) => {
 export const fetchLnUrl = (lnurl: string, sats: number): Promise<string> => {
   return new Promise<string>((resolve, reject) => {
     const url = getCallbackUrl(lnurl)
-    const amount = Math.round(sats * 1000)
-    console.log('fetching lnurl:', url)
+    const amount = Math.round(sats * 1000) // milisatoshis
     fetch(url)
       .then(checkResponse<LnUrlResponse>)
       .then((data) => checkLnUrlResponse(amount, data))

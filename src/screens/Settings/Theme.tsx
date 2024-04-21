@@ -14,8 +14,6 @@ export default function Theme() {
     updateConfig({ ...config, theme: e.target.value })
   }
 
-  console.log('config.theme', config.theme)
-
   return (
     <Container>
       <Content>

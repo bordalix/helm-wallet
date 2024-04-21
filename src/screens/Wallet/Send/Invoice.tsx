@@ -40,7 +40,7 @@ export default function SendInvoice() {
     } else {
       setError('')
       try {
-        setSendInfo(decodeInvoice(invoice.replace('lightning:', '')))
+        setSendInfo(decodeInvoice(invoice))
         navigate(Pages.SendDetails)
       } catch (e) {
         console.error(e)
