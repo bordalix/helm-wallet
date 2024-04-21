@@ -1,12 +1,15 @@
 TODO list:
 
 - [ ] notifications?
-- [ ] copy & paste in mobile
 - [ ] qrcode scanner in firefox
-- [ ] tests
+- [ ] more tests
 - [ ] documentation
-- [ ] cleanup code
 - [ ] show blinders on explorer???
+- [ ] use Tor
+- [ ] support LNURL
+- [ ] show fiat value?
+- [ ] handle lightning: urls
+- [ ] dark mode
 
 DONE
 
@@ -37,3 +40,4 @@ DONE
 - [x] inform user of received liquid tx
 - [x] smart reload
 - [x] show num of tx when restoring
+- [x] copy & paste in mobile

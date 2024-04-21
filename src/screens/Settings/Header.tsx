@@ -16,12 +16,12 @@ export default function Header({ hideBack, setOption }: any) {
         <button
           onClick={() => setOption('menu')}
           aria-label='Back'
-          className={(reloading ? 'animate-pulse ' : '') + 'p-2 rounded-full bg-gray-100'}
+          className={(reloading ? 'animate-pulse ' : '') + 'p-2 rounded-full bg-gray-100 dark:bg-gray-800'}
         >
           <BackIcon />
         </button>
       )}
-      <button onClick={toggleShowConfig} className='p-2 rounded-full bg-gray-800'>
+      <button onClick={toggleShowConfig} className='p-2 rounded-full bg-gray-800 dark:bg-gray-100'>
         <SettingsBlackIcon />
       </button>
     </header>

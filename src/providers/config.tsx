@@ -1,12 +1,18 @@
 import { ReactNode, createContext, useEffect, useState } from 'react'
 import { clearStorage, readConfigFromStorage, saveConfigToStorage } from '../lib/storage'
 
+export enum Themes {
+  Dark = 'Dark',
+  Light = 'Light',
+}
 export interface Config {
   notifications: boolean
+  theme: Themes
 }
 
 const defaultConfig: Config = {
   notifications: false,
+  theme: Themes.Light,
 }
 
 interface ConfigContextProps {
@@ -15,7 +21,7 @@ interface ConfigContextProps {
   resetConfig: () => void
   showConfig: boolean
   toggleShowConfig: () => void
-  updateConfig: (arg0: Config) => void
+  updateConfig: (c: Config) => void
 }
 
 export const ConfigContext = createContext<ConfigContextProps>({
@@ -34,9 +40,18 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
 
   const toggleShowConfig = () => setShowConfig(!showConfig)
 
+  const preferredTheme = () =>
+    window?.matchMedia?.('(prefers-color-scheme: dark)').matches ? Themes.Dark : Themes.Light
+
   const updateConfig = (data: Config) => {
     setConfig(data)
+    updateTheme(data)
     saveConfigToStorage(data)
+  }
+
+  const updateTheme = ({ theme }: Config) => {
+    if (theme === Themes.Dark) document.body.classList.add('dark')
+    else document.body.classList.remove('dark')
   }
 
   const resetConfig = () => {
@@ -46,8 +61,8 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!loading) return
-    const _config = readConfigFromStorage()
-    updateConfig(_config ?? defaultConfig)
+    const config = readConfigFromStorage() ?? { ...defaultConfig, theme: preferredTheme() }
+    updateConfig(config)
     setLoading(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading])

@@ -26,7 +26,7 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
 
   const unit = sats ? UnitLabel.Sats : UnitLabel.BTC
   const className =
-    'w-full p-3 pr-6 text-sm text-right font-semibold rounded-l-md -mr-4 bg-gray-100 focus-visible:outline-none'
+    'w-full p-3 pr-6 text-sm text-right font-semibold rounded-l-md -mr-4 bg-gray-100 dark:bg-gray-800 focus-visible:outline-none'
   const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints // TODO
 
   const clickHandler = (key: string) => {
@@ -47,15 +47,15 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
   }
 
   return (
-    <fieldset className='text-left text-gray-800 mx-auto mt-4'>
+    <fieldset className='text-left text-gray-800 dark:text-gray-100 mx-auto mt-4'>
       {label ? <Label text={label} /> : null}
-      <div className='flex items-center h-12 rounded-l-md bg-gray-100'>
+      <div className='flex items-center h-12 rounded-l-md bg-gray-100 dark:bg-gray-800'>
         {isMobile ? (
           <p className={className}>{amount}</p>
         ) : (
           <input type='text' placeholder='0' onChange={(e) => setAmount(e.target.value)} className={className} />
         )}
-        <div className='w-16 h-full flex items-center rounded-r-md text-sm bg-gray-400 text-gray-100'>
+        <div className='w-16 h-full flex items-center rounded-r-md text-sm bg-gray-400 text-gray-100 dark:text-gray-800'>
           <div className='mx-auto font-semibold'>{unit}</div>
         </div>
       </div>
@@ -63,7 +63,11 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
       {isMobile ? (
         <Columns cols={3}>
           {keys.map((k) => (
-            <p key={k} className='text-center p-3 sm:p-5 bg-gray-100 select-none' onClick={() => clickHandler(k)}>
+            <p
+              key={k}
+              className='text-center p-3 sm:p-5 bg-gray-100 dark:bg-gray-800 select-none'
+              onClick={() => clickHandler(k)}
+            >
               {k}
             </p>
           ))}

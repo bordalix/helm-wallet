@@ -41,7 +41,7 @@ export default function TransactionsList({ short }: { short?: boolean }) {
         ))}
         {short && transactions.length > showMax ? (
           <div
-            className='border bg-gray-100 cursor-pointer p-2 flex justify-end w-full rounded-md'
+            className='border bg-gray-100 dark:bg-gray-800 cursor-pointer p-2 flex justify-end w-full rounded-md'
             onClick={() => navigate(Pages.Transactions)}
           >
             <div className='flex'>

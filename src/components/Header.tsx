@@ -8,7 +8,7 @@ import { NetworkName } from '../lib/network'
 
 const Testnet = () => (
   <div className='flex items-center'>
-    <p className='bg-gray-100 border border-gray-100 px-1 rounded-md uppercase text-gray-800 text-xxs font-semibold'>
+    <p className='bg-gray-100 dark:bg-gray-800 border border-gray-100 dark:border-gray-800 px-1 rounded-md uppercase text-xxs font-semibold'>
       Testnet
     </p>
   </div>
@@ -26,12 +26,12 @@ export default function Header() {
       <button
         onClick={handleClick}
         aria-label='Back to homepage'
-        className={(reloading ? 'animate-pulse ' : '') + 'p-2 rounded-full bg-gray-100'}
+        className={(reloading ? 'animate-pulse ' : '') + 'p-2 rounded-full bg-gray-100 dark:bg-gray-800'}
       >
         <LogoIcon />
       </button>
       {wallet.network === NetworkName.Testnet ? <Testnet /> : null}
-      <button onClick={toggleShowConfig} className='p-2 rounded-full bg-gray-100'>
+      <button onClick={toggleShowConfig} className='p-2 rounded-full bg-gray-100 dark:bg-gray-800'>
         <SettingsIcon />
       </button>
     </header>

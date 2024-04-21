@@ -9,7 +9,8 @@ interface TextareaProps {
 }
 
 export default function Textarea({ children, label, onChange, value }: TextareaProps) {
-  const className = 'bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg w-full  p-2.5'
+  const className =
+    'bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100 text-lg rounded-lg w-full  p-2.5'
   const readOnly = typeof onChange === 'undefined'
 
   return (
