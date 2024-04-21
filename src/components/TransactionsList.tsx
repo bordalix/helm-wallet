@@ -1,16 +1,20 @@
 import { useContext } from 'react'
-import { WalletContext } from '../providers/wallet'
+import { Wallet, WalletContext } from '../providers/wallet'
 import Label from './Label'
 import { Transaction } from '../lib/types'
 import { prettyAgo, prettyNumber } from '../lib/format'
 import ArrowIcon from '../icons/Arrow'
 import { NavigationContext, Pages } from '../providers/navigation'
+import { openInNewTab } from '../lib/explorers'
 
-const TransactionLine = ({ data }: { data: Transaction }) => {
+const TransactionLine = ({ data, wallet }: { data: Transaction; wallet: Wallet }) => {
   const amount = `${data.amount > 0 ? '+' : '-'} ${prettyNumber(Math.abs(data.amount))} sats`
   const date = data.unixdate ? prettyAgo(data.unixdate) : 'just now'
   return (
-    <div className='border p-2 flex justify-between w-full rounded-md'>
+    <div
+      className='border cursor-pointer p-2 flex justify-between w-full rounded-md'
+      onClick={() => openInNewTab(data.txid, wallet)}
+    >
       <p>{amount}</p>
       <p className='mr-2'>{date}</p>
     </div>
@@ -37,7 +41,7 @@ export default function TransactionsList({ short }: { short?: boolean }) {
       </div>
       <div className='flex flex-col gap-2 h-72 overflow-auto'>
         {showTxs.map((t) => (
-          <TransactionLine key={`${t.amount} ${t.txid}`} data={t} />
+          <TransactionLine key={`${t.amount} ${t.txid}`} data={t} wallet={wallet} />
         ))}
         {short && transactions.length > showMax ? (
           <div

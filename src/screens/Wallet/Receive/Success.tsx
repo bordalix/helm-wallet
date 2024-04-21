@@ -6,7 +6,7 @@ import ButtonsOnBottom from '../../../components/ButtonsOnBottom'
 import { NavigationContext, Pages } from '../../../providers/navigation'
 import Content from '../../../components/Content'
 import Container from '../../../components/Container'
-import { getTxIdURL } from '../../../lib/explorers'
+import { openInNewTab } from '../../../lib/explorers'
 import { FlowContext } from '../../../providers/flow'
 import { WalletContext } from '../../../providers/wallet'
 
@@ -17,7 +17,7 @@ export default function ReceiveSuccess() {
 
   const handleExplorer = () => {
     if (!recvInfo.txid) return
-    window.open(getTxIdURL(recvInfo.txid, wallet), '_blank', 'noreferrer')
+    openInNewTab(recvInfo.txid, wallet)
   }
 
   const goBackToWallet = () => navigate(Pages.Wallet)

@@ -74,6 +74,10 @@ export const getTxIdURL = (txid: string, wallet: Wallet) => {
   return `${url}/tx/${txid}`
 }
 
+export const openInNewTab = (txid: string, wallet: Wallet) => {
+  window.open(getTxIdURL(txid, wallet), '_blank', 'noreferrer')
+}
+
 export interface AddressInfo {
   address: string
   chain_stats: {
