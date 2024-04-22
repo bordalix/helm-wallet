@@ -6,6 +6,7 @@
   "dependencies": {
     "@bitcoinerlab/secp256k1": "^1.0.5",
     "@boltz/bitcoin-ops": "^2.0.0",
+    "@noble/curves": "^1.4.0",
     "@scure/base": "^1.1.6",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",

@@ -6,9 +6,9 @@ export const formatInvoice = (invoice?: string, showChars = 14): string => {
   return `${invoice.substring(0, showChars)}...${invoice.substring(invoice.length - showChars, invoice.length)}`
 }
 
-export const prettyNumber = (num?: number): string => {
+export const prettyNumber = (num?: number, maximumFractionDigits = 8): string => {
   if (!num) return '0'
-  return new Intl.NumberFormat('en', { style: 'decimal', maximumFractionDigits: 8 }).format(num)
+  return new Intl.NumberFormat('en', { style: 'decimal', maximumFractionDigits }).format(num)
 }
 
 export const prettyUnixTimestamp = (num: number): string => {

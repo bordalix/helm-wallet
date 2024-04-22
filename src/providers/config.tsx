@@ -5,14 +5,23 @@ export enum Themes {
   Dark = 'Dark',
   Light = 'Light',
 }
+
+export enum Unit {
+  BTC = 'btc',
+  EUR = 'eur',
+  USD = 'usd',
+}
+
 export interface Config {
   notifications: boolean
   theme: Themes
+  unit: Unit
 }
 
 const defaultConfig: Config = {
   notifications: false,
   theme: Themes.Light,
+  unit: Unit.BTC,
 }
 
 interface ConfigContextProps {

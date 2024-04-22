@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import Columns from './Columns'
 import Label from './Label'
 import { fromSatoshis, prettyNumber, toSatoshis } from '../lib/format'
+import { ConfigContext, Unit } from '../providers/config'
+import { FiatContext } from '../providers/fiat'
 
 enum UnitLabel {
   BTC = 'BTC',
@@ -14,6 +16,9 @@ interface InputAmountProps {
 }
 
 export default function InputAmount({ label, onChange }: InputAmountProps) {
+  const { config, updateConfig } = useContext(ConfigContext)
+  const { getEurPrice, getUsdPrice } = useContext(FiatContext)
+
   const [amount, setAmount] = useState('0')
   const [sats, setSats] = useState(true)
 
@@ -46,6 +51,20 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
       : prettyNumber(toSatoshis(parseFloat(amount))) + ' sats'
   }
 
+  const fiatAmount = () => {
+    const unit = !config.unit || config.unit === Unit.BTC ? Unit.EUR : config.unit
+    if (!amount || isNaN(Number(amount))) return
+    const btc = sats ? fromSatoshis(Number(amount)) : Number(amount)
+    if (unit === Unit.EUR) return '€ ' + prettyNumber(getEurPrice(btc), 2)
+    if (unit === Unit.USD) return '$ ' + prettyNumber(getUsdPrice(btc), 2)
+  }
+
+  const handleClickFiat = () => {
+    const unit = !config.unit || config.unit === Unit.BTC ? Unit.EUR : config.unit
+    if (unit === Unit.EUR) return updateConfig({ ...config, unit: Unit.USD })
+    if (unit === Unit.USD) return updateConfig({ ...config, unit: Unit.EUR })
+  }
+
   return (
     <fieldset className='text-left text-gray-800 dark:text-gray-100 w-full'>
       {label ? <Label text={label} /> : null}
@@ -59,7 +78,12 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
           <div className='mx-auto font-semibold'>{unit}</div>
         </div>
       </div>
-      <p className='text-right text-xs mb-2 sm:mb-4 sm:mt-2'>{alternativeAmount()}</p>
+      <div className='flex justify-between'>
+        <p className='text-xs mb-2 sm:mb-4 sm:mt-2 cursor-pointer' onClick={handleClickFiat}>
+          {fiatAmount()}
+        </p>
+        <p className='text-xs mb-2 sm:mb-4 sm:mt-2'>{alternativeAmount()}</p>
+      </div>
       {isMobile ? (
         <Columns cols={3}>
           {keys.map((k) => (
