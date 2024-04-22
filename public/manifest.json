@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Helm",
+  "name": "Helm wallet",
   "icons": [
     {
       "src": "favicon.ico",
