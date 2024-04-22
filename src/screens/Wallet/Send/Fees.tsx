@@ -28,6 +28,8 @@ export default function SendFees() {
   const [error, setError] = useState('')
 
   const { address, invoice, magicHint, satoshis, total, txFees } = sendInfo
+  const totalNeeded = (total ?? 0) + (txFees ?? 0)
+
   const keys = ECPairFactory(ecc).makeRandom()
   const refundPublicKey = keys.publicKey.toString('hex')
 
@@ -64,7 +66,8 @@ export default function SendFees() {
 
   useEffect(() => {
     if (sendInfo.total) {
-      if (getBalance(wallet) < sendInfo.total) setError('Insufficient funds')
+      if (getBalance(wallet) < totalNeeded)
+        setError(`Insufficient funds, you just have ${prettyNumber(getBalance(wallet))} sats`)
     }
   }, [sendInfo.total])
 
