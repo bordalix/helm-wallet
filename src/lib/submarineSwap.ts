@@ -51,6 +51,7 @@ export const submarineSwap = async (
       invoice,
       to: 'BTC',
       from: 'L-BTC',
+      referralId: 'helm',
       refundPublicKey,
     })
   ).data

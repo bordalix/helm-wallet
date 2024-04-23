@@ -66,6 +66,7 @@ export const reverseSwap = async (
       from: 'BTC',
       invoiceAmount,
       preimageHash: crypto.sha256(preimage).toString('hex'),
+      referralId: 'helm',
       to: 'L-BTC',
     })
   ).data as ReverseSwapResponse
