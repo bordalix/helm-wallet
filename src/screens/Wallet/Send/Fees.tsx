@@ -46,7 +46,7 @@ export default function SendFees() {
           const txFees = feesToSendSats(satoshis, wallet)
           setBoltzFees(0)
           getLiquidAddress(invoice, magicHint, wallet).then((address) => {
-            setSendInfo({ ...sendInfo, address, keys, txFees, total: satoshis })
+            setSendInfo({ ...sendInfo, address, keys, txFees })
           })
           return
         }
