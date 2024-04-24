@@ -1,4 +1,4 @@
-import { networks, Creator, Updater, Transaction, address } from 'liquidjs-lib'
+import { networks, Creator, Updater, Transaction, address, UpdaterOutput } from 'liquidjs-lib'
 import { Wallet } from '../providers/wallet'
 import { generateAddress } from './address'
 import { Utxo } from './types'
@@ -7,6 +7,20 @@ import { CoinsSelected } from './coinSelection'
 export const buildPset = async (coinSelection: CoinsSelected, destinationAddress: string, wallet: Wallet) => {
   const network = networks[wallet.network]
   const { amount, changeAmount, coins, txfee } = coinSelection
+
+  let boltzOutput: UpdaterOutput = {
+    amount,
+    asset: network.assetHash,
+    script: address.toOutputScript(destinationAddress, network),
+  }
+
+  if (address.isConfidential(destinationAddress)) {
+    boltzOutput = {
+      ...boltzOutput,
+      blindingPublicKey: address.fromConfidential(destinationAddress).blindingKey,
+      blinderIndex: 0,
+    }
+  }
 
   const pset = Creator.newPset()
   const updater = new Updater(pset)
@@ -22,13 +36,7 @@ export const buildPset = async (coinSelection: CoinsSelected, destinationAddress
     )
     .addOutputs([
       // send to boltz
-      {
-        amount,
-        asset: network.assetHash,
-        script: address.toOutputScript(destinationAddress, network),
-        blindingPublicKey: address.fromConfidential(destinationAddress).blindingKey,
-        blinderIndex: 0,
-      },
+      boltzOutput,
       // network fees
       {
         amount: txfee,
