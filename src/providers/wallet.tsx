@@ -103,7 +103,9 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const changeChainSource = async (w: Wallet) => {
-    await chainSource.close()
+    try {
+      await chainSource.close()
+    } catch {}
     chainSource = new WsElectrumChainSource(w.explorer, w.network)
   }
 
