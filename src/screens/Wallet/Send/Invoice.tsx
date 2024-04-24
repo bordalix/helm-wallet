@@ -34,11 +34,11 @@ export default function SendInvoice() {
 
   useEffect(() => {
     if (!invoice) return
+    setError('')
     if (isValidLnUrl(invoice)) {
       setSendInfo({ lnurl: invoice })
       navigate(Pages.SendAmount)
     } else {
-      setError('')
       try {
         if (/^ln/.test(invoice)) {
           setSendInfo(decodeInvoice(invoice))
@@ -56,9 +56,11 @@ export default function SendInvoice() {
   }, [invoice])
 
   const handlePaste = async () => {
-    const invoice = await pasteFromClipboard()
+    let invoice = await pasteFromClipboard()
     setButtonLabel('Pasted')
     setTimeout(() => setButtonLabel(defaultLabel), 2000)
+    invoice = invoice.replace('lightning:', '')
+    if (/\?/.test(invoice)) invoice = invoice.split('?')[0]
     setInvoice(invoice)
   }
 

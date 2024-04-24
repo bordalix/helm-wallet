@@ -41,12 +41,12 @@ const isValidBech32 = (data: string) => {
 }
 
 const isLnUrl = (data: string) => {
-  data = data.toLowerCase().replace('lightning:', '')
+  data = data.toLowerCase()
   return data.startsWith('lnurl') && isValidBech32(data)
 }
 
 const isLnAddress = (data: string) => {
-  data = data.toLowerCase().replace('lightning:', '')
+  data = data.toLowerCase()
   return data.includes('@') && emailRegex.test(data)
 }
 
