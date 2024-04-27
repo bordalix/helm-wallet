@@ -16,9 +16,19 @@ import Restoring from '../../components/Restoring'
 export default function Wallet() {
   const { limits, maxAllowedAmount } = useContext(BoltzContext)
   const { navigate } = useContext(NavigationContext)
-  const { restoring, wallet } = useContext(WalletContext)
+  const { chainSource, reconnectChainSource, restoring, wallet } = useContext(WalletContext)
 
   const canSend = maxAllowedAmount(wallet) > limits.minimal
+
+  const handleSend = () => {
+    if (!chainSource.isConnected()) reconnectChainSource(wallet)
+    navigate(Pages.SendInvoice)
+  }
+
+  const handleReceive = () => {
+    if (!chainSource.isConnected()) reconnectChainSource(wallet)
+    navigate(Pages.ReceiveAmount)
+  }
 
   return (
     <Container>
@@ -27,8 +37,8 @@ export default function Wallet() {
         {restoring ? <Restoring restoring={restoring} /> : <TransactionsList short />}
       </Content>
       <ButtonsOnBottom>
-        <Button icon={<ScanIcon />} label='Send' onClick={() => navigate(Pages.SendInvoice)} disabled={!canSend} />
-        <Button icon={<QRCodeIcon />} label='Receive' onClick={() => navigate(Pages.ReceiveAmount)} />
+        <Button icon={<ScanIcon />} label='Send' onClick={handleSend} disabled={!canSend} />
+        <Button icon={<QRCodeIcon />} label='Receive' onClick={handleReceive} />
       </ButtonsOnBottom>
     </Container>
   )

@@ -62,6 +62,7 @@ interface WalletContextProps {
   restoring: number
   increaseIndex: () => void
   logout: () => void
+  reconnectChainSource: (w: Wallet) => void
   reloadWallet: (w?: Wallet) => void
   restoreWallet: (w: Wallet) => void
   resetWallet: () => void
@@ -79,6 +80,7 @@ export const WalletContext = createContext<WalletContextProps>({
   restoring: 0,
   increaseIndex: () => {},
   logout: () => {},
+  reconnectChainSource: () => {},
   reloadWallet: () => {},
   restoreWallet: () => {},
   resetWallet: () => {},
@@ -102,9 +104,9 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     setWallet({ ...wallet, mnemonic: m })
   }
 
-  const changeChainSource = async (w: Wallet) => {
+  const reconnectChainSource = async (w: Wallet) => {
     try {
-      await chainSource.close()
+      if (chainSource.isConnected()) await chainSource.close()
     } catch {}
     chainSource = new WsElectrumChainSource(w.explorer, w.network)
   }
@@ -112,14 +114,14 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const changeExplorer = async (explorer: ExplorerName) => {
     const clone = { ...wallet, explorer }
     updateWallet(clone)
-    if (clone.explorer !== chainSource.explorer) await changeChainSource(clone)
+    if (clone.explorer !== chainSource.explorer) await reconnectChainSource(clone)
     reloadWallet(clone)
   }
 
   const changeNetwork = async (networkName: NetworkName) => {
     const clone = { ...wallet, network: networkName }
     updateWallet(clone)
-    if (clone.network !== chainSource.network) await changeChainSource(clone)
+    if (clone.network !== chainSource.network) await reconnectChainSource(clone)
     if (wallet.initialized) restoreWallet(clone)
   }
 
@@ -183,7 +185,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
       const wallet = readWalletFromStorage() ?? defaultWallet
       updateWallet(wallet)
       if (wallet.explorer !== chainSource.explorer || wallet.network !== chainSource.network) {
-        await changeChainSource(wallet)
+        await reconnectChainSource(wallet)
       }
       if (wallet.initialized) reloadWallet(wallet)
       setLoading(false)
@@ -204,6 +206,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
         restoring,
         increaseIndex,
         logout,
+        reconnectChainSource,
         reloadWallet,
         restoreWallet,
         resetWallet,

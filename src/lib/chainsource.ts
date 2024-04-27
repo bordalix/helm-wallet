@@ -32,14 +32,15 @@ export type ElectrumBlockHeader = {
 export type ChainSource = {
   explorer: ExplorerName
   network: NetworkName
-  waitForAddressReceivesTx(addr: string): Promise<string | null>
+  close(): Promise<void>
   fetchHistories(scripts: Buffer[]): Promise<ElectrumHistory[]>
   fetchBlockHeader(height: number): Promise<ElectrumBlockHeader>
   fetchTransactions(txs: ElectrumHistory[]): Promise<ElectrumTransaction[]>
   fetchSingleTransaction(txid: string): Promise<string>
+  isConnected(): boolean
   listUnspents(script: Buffer): Promise<ElectrumUnspent[]>
   listUtxos(script: Buffer): Promise<MVUtxo[]>
-  close(): Promise<void>
+  waitForAddressReceivesTx(addr: string): Promise<string | null>
 }
 
 const GetTransactionMethod = 'blockchain.transaction.get'
@@ -125,6 +126,10 @@ export class WsElectrumChainSource implements ChainSource {
     } catch (e) {
       console.log('error closing ws:', e)
     }
+  }
+
+  isConnected() {
+    return this.ws.isConnected()
   }
 
   private async unsubscribeScriptStatus(script: Buffer): Promise<void> {
