@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import Button from '../../../components/Button'
 import BarcodeScanner from '../../../components/BarcodeScanner'
-import { decodeInvoice } from '../../../lib/lightning'
+import { decodeInvoice, isLnInvoice } from '../../../lib/lightning'
 import Error from '../../../components/Error'
 import ButtonsOnBottom from '../../../components/ButtonsOnBottom'
 import { NavigationContext, Pages } from '../../../providers/navigation'
@@ -12,19 +12,27 @@ import Title from '../../../components/Title'
 import Container from '../../../components/Container'
 import { pasteFromClipboard } from '../../../lib/clipboard'
 import { isValidLnUrl } from '../../../lib/lnurl'
+import * as bip21 from '../../../lib/bip21'
+import { WalletContext } from '../../../providers/wallet'
+import { NetworkName } from '../../../lib/network'
 
 export default function SendInvoice() {
   const { navigate } = useContext(NavigationContext)
   const { setSendInfo } = useContext(FlowContext)
+  const { wallet } = useContext(WalletContext)
 
   const defaultLabel = 'Paste invoice or LNURL'
   const [buttonLabel, setButtonLabel] = useState(defaultLabel)
   const [cameraAllowed, setCameraAllowed] = useState(false)
   const [error, setError] = useState('')
-  const [invoice, setInvoice] = useState('')
+  const [pastedData, setPastedData] = useState('')
 
   // Firefox doesn't support navigator.clipboard.readText()
   const firefox = !navigator.clipboard || !('readText' in navigator.clipboard)
+
+  const wrongNetwork = (invoice: string) =>
+    (invoice.startsWith('lnbc') && wallet.network !== NetworkName.Liquid) ||
+    (!invoice.startsWith('lnbc') && wallet.network === NetworkName.Liquid)
 
   useEffect(() => {
     navigator.permissions.query({ name: 'camera' as PermissionName }).then((x) => {
@@ -33,35 +41,52 @@ export default function SendInvoice() {
   })
 
   useEffect(() => {
-    if (!invoice) return
+    if (!pastedData) return
     setError('')
-    if (isValidLnUrl(invoice)) {
-      setSendInfo({ lnurl: invoice })
-      navigate(Pages.SendAmount)
-    } else {
+    if (bip21.isBip21(pastedData)) {
+      const { address, amount, invoice, lnurl } = bip21.decode(pastedData)
+      if (address) {
+        setSendInfo({ address: address, satoshis: amount })
+        return navigate(amount ? Pages.SendDetails : Pages.SendAmount)
+      }
+      if (invoice) {
+        if (wrongNetwork(invoice)) return setError('Invoice from wrong network')
+        const decodedInvoice = decodeInvoice(invoice)
+        if (decodedInvoice.magicHint && amount) decodedInvoice.satoshis = amount
+        setSendInfo(decodedInvoice)
+        return navigate(Pages.SendDetails)
+      }
+      if (lnurl) {
+        setSendInfo({ lnurl: pastedData })
+        return navigate(Pages.SendAmount)
+      }
+      return setError('Unable to parse bip21')
+    }
+    if (isValidLnUrl(pastedData)) {
+      setSendInfo({ lnurl: pastedData })
+      return navigate(Pages.SendAmount)
+    }
+    if (isLnInvoice(pastedData)) {
       try {
-        if (/^ln/.test(invoice)) {
-          setSendInfo(decodeInvoice(invoice))
-          navigate(Pages.SendDetails)
-        } else {
-          setSendInfo({ address: invoice })
-          navigate(Pages.SendAmount)
-        }
+        if (wrongNetwork(pastedData)) return setError('Invoice from wrong network')
+        setSendInfo(decodeInvoice(pastedData))
+        return navigate(Pages.SendDetails)
       } catch (e) {
         console.error(e)
         setError('Invalid invoice')
       }
+    } else {
+      setSendInfo({ address: pastedData })
+      return navigate(Pages.SendAmount)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [invoice])
+  }, [pastedData])
 
   const handlePaste = async () => {
-    let invoice = await pasteFromClipboard()
+    let data = await pasteFromClipboard()
     setButtonLabel('Pasted')
     setTimeout(() => setButtonLabel(defaultLabel), 2000)
-    invoice = invoice.replace('lightning:', '')
-    if (/\?/.test(invoice)) invoice = invoice.split('?')[0]
-    setInvoice(invoice)
+    setPastedData(data)
   }
 
   const handleCancel = () => {
@@ -69,7 +94,7 @@ export default function SendInvoice() {
     navigate(Pages.Wallet)
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setInvoice(e.target.value)
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setPastedData(e.target.value)
 
   return (
     <Container>
@@ -82,7 +107,7 @@ export default function SendInvoice() {
               {firefox ? (
                 <Input label='Paste your invoice here' left='&#9889;' onChange={handleChange} />
               ) : cameraAllowed ? (
-                <BarcodeScanner setInvoice={setInvoice} setError={setError} />
+                <BarcodeScanner setPastedData={setPastedData} setError={setError} />
               ) : null}
             </div>
           )}

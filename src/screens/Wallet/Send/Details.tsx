@@ -11,7 +11,6 @@ import { getBalance } from '../../../lib/wallet'
 import { WalletContext } from '../../../providers/wallet'
 import { decodeInvoice } from '../../../lib/lightning'
 import Error from '../../../components/Error'
-import { NetworkName } from '../../../lib/network'
 import { extractError } from '../../../lib/error'
 
 export default function SendDetails() {
@@ -24,10 +23,6 @@ export default function SendDetails() {
 
   const { address, invoice, satoshis } = sendInfo
 
-  const wrongNetwork = (invoice: string) =>
-    (/^lnbc/.test(invoice) && wallet.network !== NetworkName.Liquid) ||
-    (!/^lnbc/.test(invoice) && wallet.network === NetworkName.Liquid)
-
   useEffect(() => {
     if (!address && !invoice) return setError('Missing invoice')
     if (address && satoshis) {
@@ -37,9 +32,6 @@ export default function SendDetails() {
       })
     }
     if (invoice) {
-      if (wrongNetwork(invoice)) {
-        return setError('Invoice received is for a different network. Change network on Settings and try again.')
-      }
       try {
         const { note, satoshis } = decodeInvoice(sendInfo.invoice ?? '')
         if (!satoshis) return setError('Error decoding invoice')

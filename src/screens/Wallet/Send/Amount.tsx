@@ -13,18 +13,22 @@ import { fetchLnUrl } from '../../../lib/lnurl'
 import Error from '../../../components/Error'
 import { extractError } from '../../../lib/error'
 import { decodeInvoice } from '../../../lib/lightning'
+import { WalletContext } from '../../../providers/wallet'
+import { getBalance } from '../../../lib/wallet'
 
 enum ButtonLabel {
-  Low = 'Amount too low',
   High = 'Amount too high',
+  Low = 'Amount too low',
   Nok = 'Something went wrong',
   Ok = 'Continue',
+  Poor = 'Insufficient funds',
 }
 
 export default function SendAmount() {
   const { navigate } = useContext(NavigationContext)
   const { sendInfo, setSendInfo } = useContext(FlowContext)
   const { limits } = useContext(BoltzContext)
+  const { wallet } = useContext(WalletContext)
 
   const [amount, setAmount] = useState(0)
   const [error, setError] = useState('')
@@ -52,15 +56,21 @@ export default function SendAmount() {
     }
   }
 
-  const { minimal, maximal } = limits
-  const disabled = amount < minimal || amount > maximal || Boolean(error)
-  const label = error
-    ? ButtonLabel.Nok
-    : amount < limits.minimal
-    ? ButtonLabel.Low
-    : amount > limits.maximal
-    ? ButtonLabel.High
-    : ButtonLabel.Ok
+  const balance = getBalance(wallet)
+  const { minimal, maximal } = limits // Boltz limit
+
+  const label =
+    amount > balance
+      ? ButtonLabel.Poor
+      : error
+      ? ButtonLabel.Nok
+      : amount < limits.minimal
+      ? ButtonLabel.Low
+      : amount > limits.maximal
+      ? ButtonLabel.High
+      : ButtonLabel.Ok
+
+  const disabled = label !== ButtonLabel.Ok
 
   return (
     <Container>

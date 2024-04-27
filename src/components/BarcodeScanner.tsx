@@ -3,10 +3,10 @@ import { BrowserMultiFormatReader } from '@zxing/library'
 
 interface BarcodeScannerProps {
   setError: (arg0: string) => void
-  setInvoice: (arg0: string) => void
+  setPastedData: (arg0: string) => void
 }
 
-export default function BarcodeScanner({ setError, setInvoice }: BarcodeScannerProps) {
+export default function BarcodeScanner({ setError, setPastedData }: BarcodeScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const reader = useRef(new BrowserMultiFormatReader())
 
@@ -28,7 +28,7 @@ export default function BarcodeScanner({ setError, setInvoice }: BarcodeScannerP
         (result) => {
           if (result) {
             const aux = JSON.stringify(result)
-            setInvoice(JSON.parse(aux).text)
+            setPastedData(JSON.parse(aux).text)
           }
         },
       )

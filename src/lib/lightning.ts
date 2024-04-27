@@ -43,3 +43,5 @@ export const decodeInvoice = (invoice: string): Invoice => {
     satoshis,
   }
 }
+
+export const isLnInvoice = (data: string) => data.startsWith('ln')

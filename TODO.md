@@ -10,6 +10,7 @@ TODO list:
 - [ ] show fiat value?
 - [ ] handle lightning: urls
 - [ ] dark mode
+- [ ] pass some validations from send details to send invoice
 
 DONE
 
