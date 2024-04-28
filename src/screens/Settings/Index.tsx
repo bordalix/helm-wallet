@@ -24,6 +24,8 @@ import InfoIcon from '../../icons/Info'
 import About from './About'
 import DarkThemeIcon from '../../icons/DarkTheme'
 import Theme from './Theme'
+import Tor from './Tor'
+import TorIcon from '../../icons/Tor'
 
 enum Options {
   Menu = 'menu',
@@ -37,6 +39,7 @@ enum Options {
   Reload = 'reload',
   Reset = 'reset',
   Theme = 'theme',
+  Tor = 'tor',
 }
 
 interface Option {
@@ -92,6 +95,10 @@ export default function Settings() {
       icon: <DarkThemeIcon />,
       option: Options.Theme,
     },
+    {
+      icon: <TorIcon />,
+      option: Options.Tor,
+    },
   ]
 
   const validOptions = (): Option[] => {
@@ -133,6 +140,7 @@ export default function Settings() {
         {option === Options.Reload && <Reload />}
         {option === Options.Reset && <Reset backup={() => setOption(Options.Backup)} />}
         {option === Options.Theme && <Theme />}
+        {option === Options.Tor && <Tor />}
       </div>
       <Footer />
     </OuterContainer>
