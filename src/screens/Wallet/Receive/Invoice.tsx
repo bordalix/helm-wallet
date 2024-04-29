@@ -32,6 +32,7 @@ export default function ReceiveInvoice() {
   const finishedTxIds: string[] = []
 
   const onFinish = (txid: string) => {
+    // avoid double call to onFinish for same txid
     if (finishedTxIds.includes(txid)) return
     finishedTxIds.push(txid)
     increaseIndex()
