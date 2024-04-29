@@ -29,8 +29,11 @@ export default function ReceiveInvoice() {
   const [invoice, setInvoice] = useState('')
 
   const firefox = !navigator.clipboard || !('writeText' in navigator.clipboard)
+  const finishedTxIds: string[] = []
 
   const onFinish = (txid: string) => {
+    if (finishedTxIds.includes(txid)) return
+    finishedTxIds.push(txid)
     increaseIndex()
     setTimeout(reloadWallet, someSeconds)
     setTimeout(reloadWallet, inOneMinute)
