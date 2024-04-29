@@ -18,13 +18,14 @@ import * as ecc from '@bitcoinerlab/secp256k1'
 import { getBalance } from '../../../lib/wallet'
 import { feesToSendSats } from '../../../lib/fees'
 import { getLiquidAddress } from '../../../lib/reverseSwap'
+import Loading from '../../../components/Loading'
 
 export default function SendFees() {
   const { setMnemonic, wallet } = useContext(WalletContext)
   const { navigate } = useContext(NavigationContext)
   const { sendInfo, setSendInfo } = useContext(FlowContext)
 
-  const [boltzFees, setBoltzFees] = useState(0)
+  const [boltzFees, setBoltzFees] = useState(-1)
   const [error, setError] = useState('')
 
   const { address, invoice, magicHint, satoshis, total, txFees } = sendInfo
@@ -90,13 +91,20 @@ export default function SendFees() {
 
   if (!wallet.mnemonic) return <NeedsPassword onMnemonic={setMnemonic} />
 
+  const UpdatingFees = () => (
+    <>
+      <Loading />
+      <p>Updating fees</p>
+    </>
+  )
+
   return (
     <Container>
       <Content>
         <Title text='Payment fees' subtext={`You pay ${prettyTotal} sats`} />
         <div className='flex flex-col gap-2'>
           <Error error={Boolean(error)} text={error} />
-          <Table data={data} />
+          {boltzFees < 0 || !sendInfo.txFees ? <UpdatingFees /> : <Table data={data} />}
         </div>
       </Content>
       <ButtonsOnBottom>
