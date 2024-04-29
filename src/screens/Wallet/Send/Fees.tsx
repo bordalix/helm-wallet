@@ -19,8 +19,10 @@ import { getBalance } from '../../../lib/wallet'
 import { feesToSendSats } from '../../../lib/fees'
 import { getLiquidAddress } from '../../../lib/reverseSwap'
 import Loading from '../../../components/Loading'
+import { ConfigContext } from '../../../providers/config'
 
 export default function SendFees() {
+  const { config } = useContext(ConfigContext)
   const { setMnemonic, wallet } = useContext(WalletContext)
   const { navigate } = useContext(NavigationContext)
   const { sendInfo, setSendInfo } = useContext(FlowContext)
@@ -46,12 +48,12 @@ export default function SendFees() {
         if (magicHint) {
           const txFees = feesToSendSats(satoshis, wallet)
           setBoltzFees(0)
-          getLiquidAddress(invoice, magicHint, wallet).then((address) => {
+          getLiquidAddress(invoice, magicHint, config, wallet).then((address) => {
             setSendInfo({ ...sendInfo, address, keys, txFees })
           })
           return
         }
-        submarineSwap(invoice, refundPublicKey, wallet.network)
+        submarineSwap(invoice, refundPublicKey, wallet.network, config)
           .then((swapResponse) => {
             const { expectedAmount } = swapResponse
             const txFees = feesToSendSats(expectedAmount, wallet)

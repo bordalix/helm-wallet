@@ -15,12 +15,14 @@ export enum Unit {
 export interface Config {
   notifications: boolean
   theme: Themes
+  tor: boolean
   unit: Unit
 }
 
 const defaultConfig: Config = {
   notifications: false,
   theme: Themes.Light,
+  tor: false,
   unit: Unit.BTC,
 }
 
@@ -73,7 +75,6 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
     const config = readConfigFromStorage() ?? { ...defaultConfig, theme: preferredTheme() }
     updateConfig(config)
     setLoading(false)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading])
 
   return (

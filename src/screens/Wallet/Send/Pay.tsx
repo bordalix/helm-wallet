@@ -14,8 +14,10 @@ import { inOneMinute, someSeconds } from '../../../lib/constants'
 import { sendSats } from '../../../lib/transactions'
 import Error from '../../../components/Error'
 import Loading from '../../../components/Loading'
+import { ConfigContext } from '../../../providers/config'
 
 export default function SendPayment() {
+  const { config } = useContext(ConfigContext)
   const { navigate } = useContext(NavigationContext)
   const { sendInfo, setSendInfo } = useContext(FlowContext)
   const { increaseIndex, reloadWallet, setMnemonic, wallet } = useContext(WalletContext)
@@ -44,7 +46,7 @@ export default function SendPayment() {
       if (sendInfo.address && sendInfo.total) {
         sendSats(sendInfo.total, sendInfo.address, wallet).then((txid) => onTxid(txid))
       } else if (sendInfo.invoice) {
-        finalizeSubmarineSwap(sendInfo, wallet, onTxid)
+        finalizeSubmarineSwap(sendInfo, config, wallet, onTxid)
       }
     }
   }, [wallet.mnemonic])

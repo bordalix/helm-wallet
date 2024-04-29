@@ -10,6 +10,7 @@ import { SendInfo } from '../providers/flow'
 import { getBoltzApiUrl, getBoltzWsUrl } from './boltz'
 import { sendSats } from './transactions'
 import { NetworkName } from './network'
+import { Config } from '../providers/config'
 
 /**
  * Submarine swap flow:
@@ -44,10 +45,11 @@ export const submarineSwap = async (
   invoice: string,
   refundPublicKey: string,
   network: NetworkName,
+  config: Config,
 ): Promise<SubmarineSwapResponse> => {
   // Create a Submarine Swap
   const swapResponse: SubmarineSwapResponse = (
-    await axios.post(`${getBoltzApiUrl(network)}/v2/swap/submarine`, {
+    await axios.post(`${getBoltzApiUrl(network, config.tor)}/v2/swap/submarine`, {
       invoice,
       to: 'BTC',
       from: 'L-BTC',
@@ -61,7 +63,12 @@ export const submarineSwap = async (
   return swapResponse
 }
 
-export const finalizeSubmarineSwap = (sendInfo: SendInfo, wallet: Wallet, onTxid: (txid: string) => void) => {
+export const finalizeSubmarineSwap = (
+  sendInfo: SendInfo,
+  config: Config,
+  wallet: Wallet,
+  onTxid: (txid: string) => void,
+) => {
   const { invoice, keys, swapResponse } = sendInfo
   if (!invoice || !keys || !swapResponse) return
   let txid = ''
@@ -98,7 +105,7 @@ export const finalizeSubmarineSwap = (sendInfo: SendInfo, wallet: Wallet, onTxid
 
         // Get the information request to create a partial signature
         const claimTxDetails = (
-          await axios.get(`${getBoltzApiUrl(wallet.network)}/v2/swap/submarine/${swapResponse.id}/claim`)
+          await axios.get(`${getBoltzApiUrl(wallet.network, config.tor)}/v2/swap/submarine/${swapResponse.id}/claim`)
         ).data
 
         // Verify that Boltz actually paid the invoice by comparing the preimage hash
@@ -125,7 +132,7 @@ export const finalizeSubmarineSwap = (sendInfo: SendInfo, wallet: Wallet, onTxid
         musig.initializeSession(Buffer.from(claimTxDetails.transactionHash, 'hex'))
 
         // Give our public nonce and the partial signature to Boltz
-        await axios.post(`${getBoltzApiUrl(wallet.network)}/v2/swap/submarine/${swapResponse.id}/claim`, {
+        await axios.post(`${getBoltzApiUrl(wallet.network, config.tor)}/v2/swap/submarine/${swapResponse.id}/claim`, {
           pubNonce: Buffer.from(musig.getPublicNonce()).toString('hex'),
           partialSignature: Buffer.from(musig.signPartial()).toString('hex'),
         })

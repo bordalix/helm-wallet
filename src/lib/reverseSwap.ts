@@ -11,6 +11,7 @@ import { Wallet } from '../providers/wallet'
 import { getBoltzApiUrl, getBoltzWsUrl } from './boltz'
 import { satsVbyte } from './fees'
 import { MagicHint } from './lightning'
+import { Config } from '../providers/config'
 
 /**
  * Reverse swap flow:
@@ -43,6 +44,7 @@ export interface ReverseSwapResponse {
 export const reverseSwap = async (
   invoiceAmount: number,
   destinationAddress: string,
+  config: Config,
   wallet: Wallet,
   onFinish: (txid: string) => void,
   onInvoice: (invoice: string) => void,
@@ -59,7 +61,7 @@ export const reverseSwap = async (
 
   // Create a Submarine Swap
   const createdResponse = (
-    await axios.post(`${getBoltzApiUrl(wallet.network)}/v2/swap/reverse`, {
+    await axios.post(`${getBoltzApiUrl(wallet.network, config.tor)}/v2/swap/reverse`, {
       address: destinationAddress,
       addressSignature: signature.toString('hex'),
       claimPublicKey: keys.publicKey.toString('hex'),
@@ -144,12 +146,15 @@ export const reverseSwap = async (
 
         // Get the partial signature from Boltz
         const boltzSig = (
-          await axios.post(`${getBoltzApiUrl(wallet.network)}/v2/swap/reverse/${createdResponse.id}/claim`, {
-            index: 0,
-            transaction: claimTx.toHex(),
-            preimage: preimage.toString('hex'),
-            pubNonce: Buffer.from(musig.getPublicNonce()).toString('hex'),
-          })
+          await axios.post(
+            `${getBoltzApiUrl(wallet.network, config.tor)}/v2/swap/reverse/${createdResponse.id}/claim`,
+            {
+              index: 0,
+              transaction: claimTx.toHex(),
+              preimage: preimage.toString('hex'),
+              pubNonce: Buffer.from(musig.getPublicNonce()).toString('hex'),
+            },
+          )
         ).data
 
         // Aggregate the nonces
@@ -176,7 +181,7 @@ export const reverseSwap = async (
         claimTx.ins[0].witness = [musig.aggregatePartials()]
 
         // Broadcast the finalized transaction
-        await axios.post(`${getBoltzApiUrl(wallet.network)}/v2/chain/L-BTC/transaction`, {
+        await axios.post(`${getBoltzApiUrl(wallet.network, config.tor)}/v2/chain/L-BTC/transaction`, {
           hex: claimTx.toHex(),
         })
 
@@ -194,8 +199,14 @@ export const reverseSwap = async (
   }
 }
 
-export const getLiquidAddress = async (invoice: string, magicHint: MagicHint, wallet: Wallet): Promise<string> => {
-  const bip21Data = (await axios.get(`${getBoltzApiUrl(wallet.network)}/v2/swap/reverse/${invoice}/bip21`)).data
+export const getLiquidAddress = async (
+  invoice: string,
+  magicHint: MagicHint,
+  config: Config,
+  wallet: Wallet,
+): Promise<string> => {
+  const bip21Data = (await axios.get(`${getBoltzApiUrl(wallet.network, config.tor)}/v2/swap/reverse/${invoice}/bip21`))
+    .data
   const bip21Split = bip21Data.bip21.split(':')
   const bip21Address = bip21Split[1].split('?')[0]
 

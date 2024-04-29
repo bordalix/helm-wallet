@@ -6,6 +6,7 @@ import { getBoltzApiUrl } from '../lib/boltz'
 import { Wallet, WalletContext } from './wallet'
 import { getBalance } from '../lib/wallet'
 import { feeForCoins } from '../lib/fees'
+import { ConfigContext } from './config'
 
 export interface ExpectedFees {
   boltzFees: Satoshis
@@ -54,6 +55,7 @@ export const BoltzContext = createContext<BoltzContextProps>({
 })
 
 export const BoltzProvider = ({ children }: { children: ReactNode }) => {
+  const { config } = useContext(ConfigContext)
   const { wallet } = useContext(WalletContext)
 
   const [error, setError] = useState('')
@@ -63,13 +65,13 @@ export const BoltzProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     try {
-      fetchURL(`${getBoltzApiUrl(wallet.network)}/v2/swap/submarine`).then((data) => {
+      fetchURL(`${getBoltzApiUrl(wallet.network, config.tor)}/v2/swap/submarine`).then((data) => {
         const { limits, fees } = data['L-BTC'].BTC
         const { minerFees, percentage } = fees
         setSendFees({ minerFees, percentage })
         setLimits(limits)
       })
-      fetchURL(`${getBoltzApiUrl(wallet.network)}/v2/swap/reverse`).then((data) => {
+      fetchURL(`${getBoltzApiUrl(wallet.network, config.tor)}/v2/swap/reverse`).then((data) => {
         const { minerFees, percentage } = data.BTC['L-BTC'].fees
         setRecvFees({ minerFees: minerFees.claim + minerFees.lockup, percentage })
       })

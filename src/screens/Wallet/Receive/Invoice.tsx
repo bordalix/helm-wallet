@@ -16,8 +16,10 @@ import { inOneMinute, someSeconds } from '../../../lib/constants'
 import { NewAddress, generateAddress } from '../../../lib/address'
 import { ElectrumHistory } from '../../../lib/chainsource'
 import Loading from '../../../components/Loading'
+import { ConfigContext } from '../../../providers/config'
 
 export default function ReceiveInvoice() {
+  const { config } = useContext(ConfigContext)
   const { recvInfo, setRecvInfo } = useContext(FlowContext)
   const { navigate } = useContext(NavigationContext)
   const { chainSource, increaseIndex, reloadWallet, wallet } = useContext(WalletContext)
@@ -59,7 +61,7 @@ export default function ReceiveInvoice() {
       try {
         generateAddress(wallet).then((addr) => {
           setAddress(addr)
-          reverseSwap(Number(recvInfo.amount), addr.confidentialAddress, wallet, onFinish, setInvoice)
+          reverseSwap(Number(recvInfo.amount), addr.confidentialAddress, config, wallet, onFinish, setInvoice)
           chainSource.waitForAddressReceivesTx(addr.address).then(() => {
             chainSource.fetchHistories([addr.script]).then((histories: ElectrumHistory[]) => {
               const newTx = histories.find((tx) => tx.height <= 0)

@@ -14,8 +14,14 @@ const Testnet = () => (
   </div>
 )
 
+const Tor = () => (
+  <div className='flex items-center'>
+    <p className='bg-violet-600  border-violet-600 text-white px-1 rounded-md uppercase text-xxs font-semibold'>Tor</p>
+  </div>
+)
+
 export default function Header() {
-  const { toggleShowConfig } = useContext(ConfigContext)
+  const { config, toggleShowConfig } = useContext(ConfigContext)
   const { navigate } = useContext(NavigationContext)
   const { reloading, wallet } = useContext(WalletContext)
 
@@ -30,7 +36,10 @@ export default function Header() {
       >
         <LogoIcon />
       </button>
-      {wallet.network === NetworkName.Testnet ? <Testnet /> : null}
+      <div className='flex gap-2'>
+        {wallet.network === NetworkName.Testnet ? <Testnet /> : null}
+        {config.tor ? <Tor /> : null}
+      </div>
       <button onClick={toggleShowConfig} className='p-2 rounded-full bg-gray-100 dark:bg-gray-800'>
         <SettingsIcon />
       </button>
