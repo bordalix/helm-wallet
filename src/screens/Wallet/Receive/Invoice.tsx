@@ -15,6 +15,7 @@ import { copyToClipboard } from '../../../lib/clipboard'
 import { inOneMinute, someSeconds } from '../../../lib/constants'
 import { NewAddress, generateAddress } from '../../../lib/address'
 import { ElectrumHistory } from '../../../lib/chainsource'
+import Loading from '../../../components/Loading'
 
 export default function ReceiveInvoice() {
   const { recvInfo, setRecvInfo } = useContext(FlowContext)
@@ -74,15 +75,26 @@ export default function ReceiveInvoice() {
 
   const qrValue = Math.floor(clickCounter / 3) % 2 === 0 ? invoice : address?.confidentialAddress
 
+  const GeneratingInvoice = () => (
+    <>
+      <Loading />
+      <p>Generating invoice</p>
+    </>
+  )
+
   return (
     <Container>
       <Content>
         <Title text='Invoice' subtext='Scan or copy to clipboard' />
         <div className='flex flex-col gap-2'>
           <Error error={Boolean(error)} text={error} />
-          <div onClick={() => setClickCounter((c) => c + 1)}>
-            <QrCode value={qrValue ?? ''} />
-          </div>
+          {invoice ? (
+            <div onClick={() => setClickCounter((c) => c + 1)}>
+              <QrCode value={qrValue ?? ''} />
+            </div>
+          ) : (
+            <GeneratingInvoice />
+          )}
         </div>
       </Content>
       <ButtonsOnBottom>
