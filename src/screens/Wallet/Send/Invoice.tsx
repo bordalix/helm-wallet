@@ -35,6 +35,7 @@ export default function SendInvoice() {
     (!invoice.startsWith('lnbc') && wallet.network === NetworkName.Liquid)
 
   useEffect(() => {
+    if (firefox) return
     navigator.permissions.query({ name: 'camera' as PermissionName }).then((x) => {
       if (x.state !== 'denied') setCameraAllowed(true)
     })
