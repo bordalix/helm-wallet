@@ -7,6 +7,7 @@ import { ExplorerName } from '../lib/explorers'
 import { defaultExplorer, defaultGapLimit, defaultNetwork } from '../lib/constants'
 import { ChainSource, WsElectrumChainSource } from '../lib/chainsource'
 import { getHistories, restore } from '../lib/restore'
+import { ConfigContext } from './config'
 
 let chainSource = new WsElectrumChainSource(defaultExplorer, defaultNetwork)
 
@@ -90,6 +91,7 @@ export const WalletContext = createContext<WalletContextProps>({
 })
 
 export const WalletProvider = ({ children }: { children: ReactNode }) => {
+  const { config, updateConfig } = useContext(ConfigContext)
   const { navigate } = useContext(NavigationContext)
 
   const [loading, setLoading] = useState(true)
@@ -121,6 +123,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const changeNetwork = async (networkName: NetworkName) => {
     const clone = { ...wallet, network: networkName }
     updateWallet(clone)
+    if (config.tor && networkName !== NetworkName.Liquid) updateConfig({ ...config, tor: false })
     if (clone.network !== chainSource.network) await reconnectChainSource(clone)
     if (wallet.initialized) restoreWallet(clone)
   }

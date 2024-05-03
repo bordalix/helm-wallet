@@ -13,6 +13,13 @@ export default function About() {
   const { maxAllowedAmount, maxLiquidAmount } = useContext(BoltzContext)
   const { wallet } = useContext(WalletContext)
 
+  const maxAmount = {
+    boltz: maxAllowedAmount(wallet),
+    liquid: maxLiquidAmount(wallet),
+  }
+
+  const showSweepAll = wallet.initialized && maxAmount.liquid > 0
+
   const { toggleShowConfig } = useContext(ConfigContext)
   return (
     <Container>
@@ -37,19 +44,19 @@ export default function About() {
             </a>{' '}
             to fetch information from the chain
           </p>
-          <p className='underline cursor-pointer'>
-            <a href='https://github.com/bordalix/helm-wallet'>Github</a>
-          </p>
-          {wallet.initialized ? (
+          {showSweepAll ? (
             <p>
               To send all your funds,
               <br />
-              create an invoice of <span className='font-semibold'>{prettyNumber(maxAllowedAmount(wallet))}</span> sats
+              create an invoice of <span className='font-semibold'>{prettyNumber(maxAmount.boltz)}</span> sats
               <br />
-              (or <span className='font-semibold'>{prettyNumber(maxLiquidAmount(wallet))}</span> sats if other Helm
-              wallet)
+              (or <span className='font-semibold'>{prettyNumber(maxAmount.liquid)}</span> sats if other Helm wallet)
             </p>
           ) : null}
+          <p>Made with 🧡 by @bordalix</p>
+          <p className='underline cursor-pointer'>
+            <a href='https://github.com/bordalix/helm-wallet'>Github</a>
+          </p>
         </div>
       </Content>
       <ButtonsOnBottom>

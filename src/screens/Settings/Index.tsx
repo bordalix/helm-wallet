@@ -2,7 +2,7 @@ import { ReactElement, useContext, useState } from 'react'
 import Logout from './Logout'
 import Explorer from './Explorer'
 import Network from './Network'
-import Header from './Header'
+import Header from '../../components/Header'
 import Footer from '../../components/Footer'
 import ExplorerIcon from '../../icons/Explorer'
 import LogoutIcon from '../../icons/Logout'
@@ -52,7 +52,7 @@ export default function Settings() {
 
   const [option, setOption] = useState(Options.Menu)
 
-  const hideBack = option === Options.Menu
+  const showBack = option !== Options.Menu
 
   const options: Option[] = [
     {
@@ -109,13 +109,13 @@ export default function Settings() {
 
   return (
     <OuterContainer>
-      <Header hideBack={hideBack} setOption={setOption} />
+      <Header showBack={showBack} setOption={setOption} />
       <div className='grow'>
         {option === Options.Menu && (
           <div>
             {validOptions().map(({ icon, option }) => (
               <div
-                className='flex justify-between cursor-pointer px-2.5 py-2.5 first:border-t-2 border-b-2 dark:border-gray-700'
+                className='flex justify-between cursor-pointer px-2.5 py-2 first:border-t-2 border-b-2 dark:border-gray-700'
                 key={option}
                 onClick={() => setOption(option)}
               >

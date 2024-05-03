@@ -1,10 +1,12 @@
 import { useContext } from 'react'
-import LogoIcon from '../icons/Logo'
-import SettingsIcon from '../icons/Settings'
 import { ConfigContext } from '../providers/config'
 import { NavigationContext, Pages } from '../providers/navigation'
 import { WalletContext } from '../providers/wallet'
 import { NetworkName } from '../lib/network'
+import BackIcon from '../icons/Back'
+import LogoIcon from '../icons/Logo'
+import SettingsIcon from '../icons/Settings'
+import SettingsBlackIcon from '../icons/SettingsBlack'
 
 const Testnet = () => (
   <div className='flex items-center'>
@@ -20,29 +22,52 @@ const Tor = () => (
   </div>
 )
 
-export default function Header() {
-  const { config, toggleShowConfig } = useContext(ConfigContext)
+export default function Header({ showBack, setOption }: any) {
+  const { config, showConfig, toggleShowConfig } = useContext(ConfigContext)
   const { navigate } = useContext(NavigationContext)
   const { reloading, wallet } = useContext(WalletContext)
 
   const handleClick = () => navigate(wallet.initialized ? Pages.Wallet : Pages.Init)
+  const handleBack = () => setOption('menu')
+
+  const className = 'p-2 rounded-full bg-gray-100 dark:bg-gray-800'
+  const pulse = reloading ? 'animate-pulse ' : ''
+
+  const EmptyButton = () => <div className='w-12' />
+
+  const LogoButton = () => (
+    <button onClick={handleClick} aria-label='Home' className={pulse + className}>
+      <LogoIcon />
+    </button>
+  )
+
+  const BackButton = () => (
+    <button onClick={handleBack} aria-label='Back' className={pulse + className}>
+      <BackIcon />
+    </button>
+  )
+
+  const LeftButton = () => (showBack ? <BackButton /> : showConfig ? <EmptyButton /> : <LogoButton />)
+
+  const RightButton = () =>
+    showConfig ? (
+      <button onClick={toggleShowConfig} className='p-2 rounded-full bg-gray-800 dark:bg-gray-100'>
+        <SettingsBlackIcon />
+      </button>
+    ) : (
+      <button onClick={toggleShowConfig} className={className}>
+        <SettingsIcon />
+      </button>
+    )
 
   return (
     <header className='flex justify-between w-full mb-3 sm:mb-10'>
-      <button
-        onClick={handleClick}
-        aria-label='Back to homepage'
-        className={(reloading ? 'animate-pulse ' : '') + 'p-2 rounded-full bg-gray-100 dark:bg-gray-800'}
-      >
-        <LogoIcon />
-      </button>
+      <LeftButton />
       <div className='flex gap-2'>
         {wallet.network === NetworkName.Testnet ? <Testnet /> : null}
         {config.tor ? <Tor /> : null}
       </div>
-      <button onClick={toggleShowConfig} className='p-2 rounded-full bg-gray-100 dark:bg-gray-800'>
-        <SettingsIcon />
-      </button>
+      <RightButton />
     </header>
   )
 }

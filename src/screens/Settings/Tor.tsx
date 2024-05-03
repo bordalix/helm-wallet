@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import Button from '../../components/Button'
 import ButtonsOnBottom from '../../components/ButtonsOnBottom'
 import Title from '../../components/Title'
@@ -7,43 +7,78 @@ import Container from '../../components/Container'
 import Content from '../../components/Content'
 import Select from '../../components/Select'
 import { formatInvoice } from '../../lib/format'
-import { boltzOnionAddress } from '../../lib/constants'
+import { getBoltzOnionUrl } from '../../lib/boltz'
+import { WalletContext } from '../../providers/wallet'
+import { NetworkName } from '../../lib/network'
+import Error from '../../components/Error'
+import { checkTorConnection } from '../../lib/tor'
+import Loading from '../../components/Loading'
 
 export default function Tor() {
   const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)
+  const { wallet } = useContext(WalletContext)
 
-  const handleChange = (e: any) => {
-    updateConfig({ ...config, tor: e.target.value === '1' })
+  const [checking, setChecking] = useState(false)
+  const [errorMsg, setErrorMsg] = useState('')
+  const [startTor, setStartTor] = useState(false)
+
+  useEffect(() => {
+    if (wallet.network !== NetworkName.Liquid) setErrorMsg("Tor doesn't work on Testnet")
+  }, [wallet.network])
+
+  useEffect(() => {
+    if (startTor) {
+      setErrorMsg('')
+      setStartTor(false)
+      setChecking(true)
+      checkTorConnection().then((ok) => {
+        if (ok) updateConfig({ ...config, tor: true })
+        else setErrorMsg('Unable to connect to Tor')
+        setChecking(false)
+      })
+    }
+  }, [startTor])
+
+  const handleChange = async (e: any) => {
+    if (e.target.value === '1') setStartTor(true)
+    else updateConfig({ ...config, tor: false })
   }
 
-  console.log(config)
+  const onionUrl = getBoltzOnionUrl()
+  const disabled = wallet.network !== NetworkName.Liquid
 
   return (
     <Container>
       <Content>
         <Title text='Tor' subtext='Go fully anonymous' />
-        <Select onChange={handleChange} value={config.tor}>
+        <Error error={Boolean(errorMsg)} text={errorMsg} />
+        <Select disabled={disabled} onChange={handleChange} value={config.tor}>
           <option value={1}>On</option>
           <option value={0}>Off</option>
         </Select>
-        <div className='flex flex-col gap-4 mt-10'>
-          <p>
-            To use Tor, open this site on the{' '}
-            <a href='https://www.torproject.org/' className='pointer-cursor underline'>
-              Tor Browser
-            </a>
-          </p>
+        <div className='flex flex-col gap-6 mt-10'>
           {config.tor ? (
             <p>
-              Boltz onion address
+              <span className='font-semibold'>Connected to Tor</span>
               <br />
-              <a className='pointer-cursor underline' href={boltzOnionAddress}>
-                {formatInvoice(boltzOnionAddress)}
+              Using{' '}
+              <a className='pointer-cursor underline' href={onionUrl}>
+                {formatInvoice(onionUrl)}
               </a>
-              <br />
-              doesn't work on Testnet
             </p>
-          ) : null}
+          ) : checking ? (
+            <>
+              <Loading />
+              <p>Checking connection...</p>
+            </>
+          ) : (
+            <p>
+              To use Tor, open this site on the{' '}
+              <a href='https://www.torproject.org/' className='pointer-cursor underline'>
+                Tor Browser
+              </a>
+            </p>
+          )}
         </div>
       </Content>
       <ButtonsOnBottom>
