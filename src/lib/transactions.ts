@@ -1,7 +1,7 @@
 import { getBalance } from './wallet'
 import { Wallet } from '../providers/wallet'
 import { selectCoins } from './coinSelection'
-import { blindPset, unblindOutput } from './blinder'
+import { blindPset } from './blinder'
 import { buildPset } from './pset'
 import { signPset } from './signer'
 import { finalizeAndBroadcast } from './finalizer'
@@ -9,6 +9,7 @@ import { feeForCoins } from './fees'
 import * as liquid from 'liquidjs-lib'
 import { ChainSource, ElectrumBlockHeader, ElectrumTransaction } from './chainsource'
 import { NewAddress } from './address'
+import { getOutputValueNumber } from './output'
 
 const cached = {
   blockHeaders: <ElectrumBlockHeader[]>[],
@@ -47,13 +48,13 @@ export const getTransactionAmount = async (address: NewAddress, txHex: string, c
     const witnessPubkey = vin.witness[1] ? vin.witness[1].toString('hex') : undefined
     if (witnessPubkey === address.pubkey.toString('hex')) {
       const hex = await getTransaction(Buffer.from(vin.hash).reverse().toString('hex'), chainSource)
-      const { value } = await unblindOutput(vin.index, hex, address.blindingKeys)
+      const value = await getOutputValueNumber(vin.index, hex, address.blindingKeys)
       amount -= Number(value)
     }
   }
   for (const [idx, vout] of tx.outs.entries()) {
     if (vout.script.toString('hex') === address.script.toString('hex')) {
-      const { value } = await unblindOutput(idx, txHex, address.blindingKeys)
+      const value = await getOutputValueNumber(idx, txHex, address.blindingKeys)
       amount += Number(value)
     }
   }

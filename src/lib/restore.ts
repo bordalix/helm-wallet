@@ -1,10 +1,10 @@
 import { Wallet } from '../providers/wallet'
 import { NewAddress, generateAddress } from './address'
-import { unblindOutput } from './blinder'
 import { prettyUnixTimestamp } from './format'
 import { Transaction, Utxo } from './types'
 import { ChainSource, ElectrumBlockHeader, ElectrumHistory, ElectrumTransaction } from './chainsource'
 import { getTransactionAmount } from './transactions'
+import { getUnblindedOutput } from './output'
 
 const cached = {
   blockHeaders: <ElectrumBlockHeader[]>[],
@@ -94,12 +94,12 @@ export const restore = async (chainSource: ChainSource, histories: History[], up
         console.warn('Unknown txHex for txid', u.txid)
         continue
       }
-      const unblinded = await unblindOutput(u.vout, txHex, address.blindingKeys)
+      const unblinded = await getUnblindedOutput(u.vout, txHex, address.blindingKeys)
       utxos.push({
         ...u,
         ...unblinded,
         address: address.address,
-        asset: unblinded.asset.reverse().toString('hex'),
+        asset: Buffer.from(unblinded.asset).reverse().toString('hex'),
         blindingPublicKey: address.blindingKeys.publicKey,
         blindingPrivateKey: address.blindingKeys.privateKey,
         nextIndex: address.nextIndex,

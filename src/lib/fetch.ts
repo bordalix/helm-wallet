@@ -1,11 +1,12 @@
 import { Wallet } from '../providers/wallet'
 import { generateAddress } from './address'
-import { BlindingKeyPair, unblindOutput } from './blinder'
+import { BlindingKeyPair } from './blinder'
 import { AddressTxInfo, fetchAddress, fetchAddressTxs, fetchAddressUtxos, fetchTxHex } from './explorers'
 import { prettyUnixTimestamp } from './format'
 import { Transaction, Utxo } from './types'
 import * as liquid from 'liquidjs-lib'
 import { defaultGapLimit } from './constants'
+import { getOutputValueNumber, getUnblindedOutput } from './output'
 
 export const fetchURL = async (url: string): Promise<any> => {
   const res = await fetch(url)
@@ -38,7 +39,7 @@ const getTransactionAmount = async (
   for (const vin of txInfo.vin) {
     if (vin.prevout.scriptpubkey_address === address) {
       const txHex = await fetchTxHex(vin.txid, wallet)
-      const { value } = await unblindOutput(vin.vout, txHex, blindingKeys)
+      const value = await getOutputValueNumber(vin.vout, txHex, blindingKeys)
       return -Number(value)
     }
   }
@@ -46,7 +47,7 @@ const getTransactionAmount = async (
     const vout = txInfo.vout[i]
     if (vout.scriptpubkey_address === address) {
       const txHex = await fetchTxHex(txInfo.txid, wallet)
-      const { value } = await unblindOutput(i, txHex, blindingKeys)
+      const value = await getOutputValueNumber(i, txHex, blindingKeys)
       return Number(value)
     }
   }
@@ -79,13 +80,13 @@ export const fetchHistory = async (wallet: Wallet): Promise<HistoryResponse> => 
       }
       for (const utxo of await fetchAddressUtxos(address, wallet)) {
         const txHex = await fetchTxHex(utxo.txid, wallet)
-        const unblinded = await unblindOutput(utxo.vout, txHex, blindingKeys)
+        const unblinded = await getUnblindedOutput(utxo.vout, txHex, blindingKeys)
         const script = liquid.address.toOutputScript(address)
         utxos.push({
           ...utxo,
           ...unblinded,
           address,
-          asset: unblinded.asset.reverse().toString('hex'),
+          asset: Buffer.from(unblinded.asset).reverse().toString('hex'),
           blindingPublicKey: blindingKeys.publicKey,
           blindingPrivateKey: blindingKeys.privateKey,
           nextIndex,
