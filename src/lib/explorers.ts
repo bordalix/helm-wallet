@@ -98,12 +98,40 @@ export const fetchAddress = async (address: string, wallet: Wallet): Promise<Add
   return await response.json()
 }
 
+interface AddressTxInfoVin {
+  txid: string
+  vout: number
+  prevout: {
+    scriptpubkey: string
+    scriptpubkey_asm: string
+    scriptpubkey_type: string
+    scriptpubkey_address: string
+    valuecommitment: string
+    assetcommitment: string
+  }
+  scriptsig: string
+  scriptsig_asm: string
+  witness: [string]
+  is_coinbase: boolean
+  sequence: number
+  is_pegin: boolean
+}
+
+interface AddressTxInfoVout {
+  scriptpubkey: string
+  scriptpubkey_asm: string
+  scriptpubkey_type: string
+  scriptpubkey_address: string
+  valuecommitment: string
+  assetcommitment: string
+}
+
 export interface AddressTxInfo {
   txid: string
   version: number
   locktime: number
-  vin: [any]
-  vout: [any]
+  vin: [AddressTxInfoVin]
+  vout: [AddressTxInfoVout]
   size: number
   weight: number
   fee: number
