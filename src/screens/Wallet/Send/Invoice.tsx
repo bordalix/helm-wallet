@@ -87,7 +87,7 @@ export default function SendInvoice() {
     let data = await pasteFromClipboard()
     setButtonLabel('Pasted')
     setTimeout(() => setButtonLabel(defaultLabel), 2000)
-    setPastedData(data)
+    setPastedData(data.toLowerCase())
   }
 
   const handleCancel = () => {

@@ -17,7 +17,7 @@ export interface Bip21Decoded {
 export const decode = (uri: string): Bip21Decoded => {
   if (!isBip21(uri)) throw new Error('Invalid BIP21 URI: ' + uri)
   let amount, destination, options, query
-  const [scheme, rest] = uri.toLowerCase().split(':')
+  const [scheme, rest] = uri.split(':')
   if (rest.indexOf('?') !== -1) {
     const split = rest.split('?')
     destination = split[0]
