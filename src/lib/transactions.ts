@@ -9,7 +9,7 @@ import { feeForCoins } from './fees'
 import * as liquid from 'liquidjs-lib'
 import { ChainSource, ElectrumBlockHeader, ElectrumTransaction } from './chainsource'
 import { NewAddress } from './address'
-import { getOutputValueNumber } from './output'
+import { getOutputValue } from './output'
 
 const cached = {
   blockHeaders: <ElectrumBlockHeader[]>[],
@@ -48,13 +48,13 @@ export const getTransactionAmount = async (address: NewAddress, txHex: string, c
     const witnessPubkey = vin.witness[1] ? vin.witness[1].toString('hex') : undefined
     if (witnessPubkey === address.pubkey.toString('hex')) {
       const hex = await getTransaction(Buffer.from(vin.hash).reverse().toString('hex'), chainSource)
-      const value = await getOutputValueNumber(vin.index, hex, address.blindingKeys)
+      const value = await getOutputValue(vin.index, hex, address.blindingKeys)
       amount -= Number(value)
     }
   }
   for (const [idx, vout] of tx.outs.entries()) {
     if (vout.script.toString('hex') === address.script.toString('hex')) {
-      const value = await getOutputValueNumber(idx, txHex, address.blindingKeys)
+      const value = await getOutputValue(idx, txHex, address.blindingKeys)
       amount += Number(value)
     }
   }

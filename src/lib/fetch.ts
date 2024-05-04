@@ -6,7 +6,7 @@ import { prettyUnixTimestamp } from './format'
 import { Transaction, Utxo } from './types'
 import * as liquid from 'liquidjs-lib'
 import { defaultGapLimit } from './constants'
-import { getOutputValueNumber, getUnblindedOutput } from './output'
+import { getOutputValue, getUnblindedOutput } from './output'
 
 export const fetchURL = async (url: string): Promise<any> => {
   const res = await fetch(url)
@@ -39,7 +39,7 @@ const getTransactionAmount = async (
   for (const vin of txInfo.vin) {
     if (vin.prevout.scriptpubkey_address === address) {
       const txHex = await fetchTxHex(vin.txid, wallet)
-      const value = await getOutputValueNumber(vin.vout, txHex, blindingKeys)
+      const value = await getOutputValue(vin.vout, txHex, blindingKeys)
       return -Number(value)
     }
   }
@@ -47,7 +47,7 @@ const getTransactionAmount = async (
     const vout = txInfo.vout[i]
     if (vout.scriptpubkey_address === address) {
       const txHex = await fetchTxHex(txInfo.txid, wallet)
-      const value = await getOutputValueNumber(i, txHex, blindingKeys)
+      const value = await getOutputValue(i, txHex, blindingKeys)
       return Number(value)
     }
   }

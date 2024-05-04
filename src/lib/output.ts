@@ -7,15 +7,15 @@ const isUnblinded = (output: Output) => output.value.length < 33
 
 const fromBytes = (value: Buffer) => ElementsValue.fromBytes(value).number
 
-export const getOutputValueNumber = async (
+export const getOutputValue = async (
   index: number,
   txHex: string,
-  blindingKeys: BlindingKeyPair,
+  blindingKeyPair: BlindingKeyPair,
 ): Promise<Number> => {
   const tx = Transaction.fromHex(txHex)
   const output = tx.outs[index]
   if (isUnblinded(output)) return fromBytes(output.value)
-  const { value } = await unblindOutput(index, txHex, blindingKeys)
+  const { value } = await unblindOutput(index, txHex, blindingKeyPair)
   return Number(value)
 }
 
