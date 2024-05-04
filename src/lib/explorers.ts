@@ -94,6 +94,7 @@ export interface AddressInfo {
   }
 }
 
+// return info onchain about a given address
 export const fetchAddress = async (address: string, wallet: Wallet): Promise<AddressInfo> => {
   const url = `${getRestApiExplorerURL(wallet)}/api/address/${address}`
   const response = await fetch(url)
@@ -145,6 +146,7 @@ export interface AddressTxInfo {
   }
 }
 
+// returns all transactions for a given address
 export const fetchAddressTxs = async (address: string, wallet: Wallet): Promise<AddressTxInfo[]> => {
   const explorerURL = getRestApiExplorerURL(wallet)
   const url = `${explorerURL}/api/address/${address}/txs`
@@ -152,25 +154,26 @@ export const fetchAddressTxs = async (address: string, wallet: Wallet): Promise<
   return await response.json()
 }
 
+// returns all utxos for a given address
 export const fetchAddressUtxos = async (address: string, wallet: Wallet): Promise<BlindedUtxo[]> => {
   const url = `${getRestApiExplorerURL(wallet)}/api/address/${address}/utxo`
   const response = await fetch(url)
   return await response.json()
 }
 
+// returns transaction in hexadecimal for a given transaction id
 export const fetchTxHex = async (txid: string, wallet: Wallet): Promise<string> => {
   const url = `${getRestApiExplorerURL(wallet)}/api/tx/${txid}/hex`
   const response = await fetch(url)
   return await response.text()
 }
 
+// broadcasts a given transaction using Boltz endpoint
 export const broadcastTxHex = async (txHex: string, wallet: Wallet, config: Config): Promise<{ id: string }> => {
   const url = `${getBoltzApiUrl(wallet.network, config.tor)}/v2/chain/L-BTC/transaction`
   const response = await fetch(url, {
     body: JSON.stringify({ hex: txHex }),
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     method: 'POST',
   })
   return await response.json()
