@@ -24,7 +24,7 @@ export default function Notifications() {
     <div className='flex flex-col h-full justify-between'>
       <Content>
         <Title text='Notifications' subtext='Allow to receive notifications' />
-        <Select onChange={handleChange} value={value}>
+        <Select disabled onChange={handleChange} value={value}>
           <option value='0'>Not allowed</option>
           <option value='1'>Allowed</option>
         </Select>
