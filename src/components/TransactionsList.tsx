@@ -23,7 +23,7 @@ const TransactionLine = ({ data, wallet }: { data: Transaction; wallet: Wallet }
 
 export default function TransactionsList({ short }: { short?: boolean }) {
   const { navigate } = useContext(NavigationContext)
-  const { reloading, wallet } = useContext(WalletContext)
+  const { reloading, reloadWallet, wallet } = useContext(WalletContext)
 
   const transactions = wallet.transactions[wallet.network]
 
@@ -33,11 +33,17 @@ export default function TransactionsList({ short }: { short?: boolean }) {
   const sorted = transactions.sort((a, b) => (!a.unixdate ? -1 : !b.unixdate ? 1 : b.unixdate - a.unixdate))
   const showTxs = short ? sorted.slice(0, showMax) : sorted
 
+  const handleReload = () => reloadWallet(wallet)
+
   return (
     <div className='mt-4'>
       <div className='flex justify-between'>
         <Label text={`${short ? 'Last' : 'All'} transactions`} />
-        {reloading ? <Label text='Reloading...' pulse /> : <Label text={`Updated ${prettyAgo(wallet.lastUpdate)}`} />}
+        {reloading ? (
+          <Label text='Reloading...' pulse />
+        ) : (
+          <Label onClick={handleReload} pointer text={`Updated ${prettyAgo(wallet.lastUpdate)}`} />
+        )}
       </div>
       <div className='flex flex-col gap-2 h-72 overflow-auto'>
         {showTxs.map((t) => (
