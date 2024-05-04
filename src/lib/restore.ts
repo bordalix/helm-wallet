@@ -1,10 +1,10 @@
 import { Wallet } from '../providers/wallet'
 import { NewAddress, generateAddress } from './address'
-import { unblindOutput } from './blinder'
 import { prettyUnixTimestamp } from './format'
 import { Transaction, Utxo } from './types'
-import * as liquid from 'liquidjs-lib'
 import { ChainSource, ElectrumBlockHeader, ElectrumHistory, ElectrumTransaction } from './chainsource'
+import { getTransactionAmount } from './transactions'
+import { getUnblindedOutput } from './output'
 
 const cached = {
   blockHeaders: <ElectrumBlockHeader[]>[],
@@ -28,34 +28,6 @@ const getBlockHeader = async (height: number, chainSource: ChainSource): Promise
   const bh = await chainSource.fetchBlockHeader(height)
   cached.blockHeaders.push(bh)
   return bh
-}
-
-const getTransaction = async (txid: string, chainSource: ChainSource): Promise<string> => {
-  const inCache = cached.txHexas.find((tx) => tx.txid === txid)
-  if (inCache) return inCache.hex
-  const hex = await chainSource.fetchSingleTransaction(txid)
-  cached.txHexas.push({ txid, hex })
-  return hex
-}
-
-const getOutputAmount = async (address: NewAddress, txHex: string, chainSource: ChainSource) => {
-  let amount = 0
-  const tx = liquid.Transaction.fromHex(txHex)
-  for (const vin of tx.ins) {
-    const witnessPubkey = vin.witness[1] ? vin.witness[1].toString('hex') : undefined
-    if (witnessPubkey === address.pubkey.toString('hex')) {
-      const hex = await getTransaction(vin.hash.reverse().toString('hex'), chainSource)
-      const { value } = await unblindOutput(vin.index, hex, address.blindingKeys)
-      amount -= Number(value)
-    }
-  }
-  for (const [idx, vout] of tx.outs.entries()) {
-    if (vout.script.toString('hex') === address.script.toString('hex')) {
-      const { value } = await unblindOutput(idx, txHex, address.blindingKeys)
-      amount += Number(value)
-    }
-  }
-  return amount
 }
 
 export interface History {
@@ -98,11 +70,10 @@ export const restore = async (chainSource: ChainSource, histories: History[], up
     const { address, history } = h
 
     const txs = await getElectrumTransactions(history, chainSource)
-    // const txs = await chainSource.fetchTransactions(history)
 
     for (const tx of txs) {
       const timestamp = tx.height > 0 ? (await getBlockHeader(tx.height, chainSource)).timestamp : 0
-      const amount = await getOutputAmount(address, tx.hex, chainSource)
+      const amount = await getTransactionAmount(address, tx.hex, chainSource)
       const existingTx = transactions.find((t) => t.txid === tx.tx_hash)
       if (existingTx) existingTx.amount += amount
       else {
@@ -123,12 +94,12 @@ export const restore = async (chainSource: ChainSource, histories: History[], up
         console.warn('Unknown txHex for txid', u.txid)
         continue
       }
-      const unblinded = await unblindOutput(u.vout, txHex, address.blindingKeys)
+      const unblinded = await getUnblindedOutput(u.vout, txHex, address.blindingKeys)
       utxos.push({
         ...u,
         ...unblinded,
         address: address.address,
-        asset: unblinded.asset.reverse().toString('hex'),
+        asset: Buffer.from(unblinded.asset).reverse().toString('hex'),
         blindingPublicKey: address.blindingKeys.publicKey,
         blindingPrivateKey: address.blindingKeys.privateKey,
         nextIndex: address.nextIndex,

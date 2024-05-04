@@ -1,4 +1,4 @@
-import { TxOutput, confidential } from 'liquidjs-lib'
+import { TxOutput } from 'liquidjs-lib'
 import { NetworkName } from './network'
 import { Output } from 'liquidjs-lib/src/transaction'
 
@@ -24,7 +24,13 @@ export type Transaction = {
 }
 export type Transactions = Record<NetworkName, Transaction[]>
 
-export type UnblindedOutput = confidential.UnblindOutputResult & { prevout: Output }
+export type UnblindedOutput = {
+  asset: Buffer
+  assetBlindingFactor?: Buffer
+  prevout: Output
+  value: string
+  valueBlindingFactor?: Buffer
+}
 
 export type MVUtxo = {
   txid: string

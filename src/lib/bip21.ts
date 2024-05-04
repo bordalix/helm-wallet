@@ -37,6 +37,7 @@ export const decode = (uri: string): Bip21Decoded => {
   }
   if (scheme === 'liquidnetwork') return { amount, address: destination }
   if (scheme === 'liquidtestnet') return { amount, address: destination }
+  if (scheme === 'bitcoin' && options?.liquidnetwork) return { amount, address: options.liquidnetwork as string }
   return { amount, destination }
 }
 
