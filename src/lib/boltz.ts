@@ -2,7 +2,7 @@ import { NetworkName } from './network'
 
 const liquidUrl = 'https://api.boltz.exchange'
 const testnetUrl = 'https://testnet.boltz.exchange/api'
-const onionUrl = 'http://boltzzzbnus4m7mta3cxmflnps4fp7dueu2tgurstbvrbt6xswzcocyd.onion/api/'
+const onionUrl = 'http://boltzzzbnus4m7mta3cxmflnps4fp7dueu2tgurstbvrbt6xswzcocyd.onion/api'
 
 export const getBoltzApiUrl = (network: NetworkName, tor = false) => {
   if (tor && network === NetworkName.Liquid) return onionUrl
