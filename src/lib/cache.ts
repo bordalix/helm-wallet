@@ -13,17 +13,22 @@ export const defaultCache: CacheInfo = {
   txHexas: [],
 }
 
+let cacheInMemory: CacheInfo = defaultCache
+
 export const getCache = (): CacheInfo => {
+  if (cacheInMemory.blockHeaders.length > 0) return cacheInMemory
   const cache = readCacheFromStorage() ?? defaultCache
   for (const key of Object.keys(defaultCache)) {
     if (!cache[key as keyof CacheInfo]) cache[key as keyof CacheInfo] = []
   }
+  cacheInMemory = cache
   return cache
 }
 
 export const updateCache = (cache: CacheInfo) => {
   const onlyConfirmedTxs = cache.electrumTxs.filter((tx) => tx.height > 2)
-  return saveCacheToStorage({ ...cache, electrumTxs: onlyConfirmedTxs })
+  cacheInMemory = { ...cache, electrumTxs: onlyConfirmedTxs }
+  return saveCacheToStorage(cacheInMemory)
 }
 
 export const cleanCache = () => saveCacheToStorage(defaultCache)
