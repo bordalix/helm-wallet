@@ -8,6 +8,7 @@ import { defaultExplorer, defaultGapLimit, defaultNetwork } from '../lib/constan
 import { ChainSource, WsElectrumChainSource } from '../lib/chainsource'
 import { getHistories, restore } from '../lib/restore'
 import { ConfigContext } from './config'
+import { cleanCache } from '../lib/cache'
 
 let chainSource = new WsElectrumChainSource(defaultExplorer, defaultNetwork)
 
@@ -172,6 +173,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
 
   const resetWallet = () => {
     logout()
+    cleanCache()
     updateWallet(defaultWallet)
     saveMnemonicToStorage('', 'password')
     navigate(Pages.Init)

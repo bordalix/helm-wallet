@@ -2,6 +2,7 @@ import { Encrypted, decrypt, encrypt } from './encryption'
 import { Config } from '../providers/config'
 import { getNetworkNames } from './network'
 import { Wallet } from '../providers/wallet'
+import { CacheInfo } from './cache'
 
 export const clearStorage = () => {
   return localStorage.clear()
@@ -53,4 +54,13 @@ export const saveMnemonicToStorage = async (mnemonic: string, password: string):
 export const readMnemonicFromStorage = async (password: string): Promise<string | undefined> => {
   const encrypted = localStorage.getItem('mnemonic') as string
   return encrypted ? await decrypt(JSON.parse(encrypted) as Encrypted, password) : undefined
+}
+
+export const saveCacheToStorage = (cache: CacheInfo): void => {
+  localStorage.setItem('cache', JSON.stringify(cache))
+}
+
+export const readCacheFromStorage = (): CacheInfo | undefined => {
+  const cache = localStorage.getItem('cache')
+  return cache ? JSON.parse(cache) : undefined
 }

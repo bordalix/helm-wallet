@@ -2,33 +2,10 @@ import { Wallet } from '../providers/wallet'
 import { NewAddress, generateAddress } from './address'
 import { prettyUnixTimestamp } from './format'
 import { Transaction, Utxo } from './types'
-import { ChainSource, ElectrumBlockHeader, ElectrumHistory, ElectrumTransaction } from './chainsource'
+import { ChainSource, ElectrumHistory } from './chainsource'
 import { getTransactionAmount } from './transactions'
 import { getUnblindedOutput } from './output'
-
-const cached = {
-  blockHeaders: <ElectrumBlockHeader[]>[],
-  electrumTxs: <ElectrumTransaction[]>[],
-  txHexas: <{ txid: string; hex: string }[]>[],
-}
-
-const getElectrumTransactions = async (history: ElectrumHistory[], chainSource: ChainSource) => {
-  const toFetch = history.filter((h) => !cached.electrumTxs.find((t) => t.tx_hash === h.tx_hash))
-  if (toFetch) {
-    for (const tx of await chainSource.fetchTransactions(toFetch)) {
-      if (!cached.electrumTxs.find((t) => t.tx_hash === tx.tx_hash)) cached.electrumTxs.push(tx)
-    }
-  }
-  return history.map((h): ElectrumTransaction => cached.electrumTxs.find((t) => t.tx_hash === h.tx_hash)!)
-}
-
-const getBlockHeader = async (height: number, chainSource: ChainSource): Promise<ElectrumBlockHeader> => {
-  const inCache = cached.blockHeaders.find((bh) => bh.height === height)
-  if (inCache) return inCache
-  const bh = await chainSource.fetchBlockHeader(height)
-  cached.blockHeaders.push(bh)
-  return bh
-}
+import { getCachedBlockHeader, getCachedElectrumTransactions } from './cache'
 
 export interface History {
   address: NewAddress
@@ -69,10 +46,10 @@ export const restore = async (chainSource: ChainSource, histories: History[], up
   for (const h of histories) {
     const { address, history } = h
 
-    const txs = await getElectrumTransactions(history, chainSource)
+    const txs = await getCachedElectrumTransactions(history, chainSource)
 
     for (const tx of txs) {
-      const timestamp = tx.height > 0 ? (await getBlockHeader(tx.height, chainSource)).timestamp : 0
+      const timestamp = tx.height > 0 ? (await getCachedBlockHeader(tx.height, chainSource)).timestamp : 0
       const amount = await getTransactionAmount(address, tx.hex, chainSource)
       const existingTx = transactions.find((t) => t.txid === tx.tx_hash)
       if (existingTx) existingTx.amount += amount

@@ -1,5 +1,5 @@
 import { ReactNode, createContext, useEffect, useState } from 'react'
-import { clearStorage, readConfigFromStorage, saveConfigToStorage } from '../lib/storage'
+import { readConfigFromStorage, saveConfigToStorage } from '../lib/storage'
 
 export enum Themes {
   Dark = 'Dark',
@@ -29,7 +29,6 @@ const defaultConfig: Config = {
 interface ConfigContextProps {
   config: Config
   loading: boolean
-  resetConfig: () => void
   showConfig: boolean
   toggleShowConfig: () => void
   updateConfig: (c: Config) => void
@@ -38,7 +37,6 @@ interface ConfigContextProps {
 export const ConfigContext = createContext<ConfigContextProps>({
   config: defaultConfig,
   loading: true,
-  resetConfig: () => {},
   showConfig: false,
   toggleShowConfig: () => {},
   updateConfig: () => {},
@@ -66,11 +64,6 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
     else document.body.classList.remove('dark')
   }
 
-  const resetConfig = () => {
-    clearStorage()
-    updateConfig(defaultConfig)
-  }
-
   useEffect(() => {
     if (!loading) return
     const config = readConfigFromStorage() ?? { ...defaultConfig, theme: preferredTheme() }
@@ -79,7 +72,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   }, [loading])
 
   return (
-    <ConfigContext.Provider value={{ config, loading, resetConfig, showConfig, toggleShowConfig, updateConfig }}>
+    <ConfigContext.Provider value={{ config, loading, showConfig, toggleShowConfig, updateConfig }}>
       {children}
     </ConfigContext.Provider>
   )
