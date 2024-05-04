@@ -10,6 +10,7 @@ import * as liquid from 'liquidjs-lib'
 import { ChainSource, ElectrumBlockHeader, ElectrumTransaction } from './chainsource'
 import { NewAddress } from './address'
 import { getOutputValue } from './output'
+import { Config } from '../providers/config'
 
 const cached = {
   blockHeaders: <ElectrumBlockHeader[]>[],
@@ -17,7 +18,12 @@ const cached = {
   txHexas: <{ txid: string; hex: string }[]>[],
 }
 
-export const sendSats = async (sats: number, destinationAddress: string, wallet: Wallet): Promise<string> => {
+export const sendSats = async (
+  sats: number,
+  destinationAddress: string,
+  wallet: Wallet,
+  config: Config,
+): Promise<string> => {
   // check if enough balance
   const utxos = wallet.utxos[wallet.network]
   const balance = getBalance(wallet)
@@ -28,7 +34,7 @@ export const sendSats = async (sats: number, destinationAddress: string, wallet:
   const pset = await buildPset(coinSelection, destinationAddress, wallet)
   const blindedPset = await blindPset(pset, coinSelection.coins)
   const signedPset = await signPset(blindedPset, coinSelection.coins, wallet)
-  const txid = await finalizeAndBroadcast(signedPset, wallet)
+  const txid = await finalizeAndBroadcast(signedPset, wallet, config)
 
   return txid
 }

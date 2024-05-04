@@ -44,7 +44,7 @@ export default function SendPayment() {
   useEffect(() => {
     if (wallet.mnemonic) {
       if (sendInfo.address && sendInfo.total) {
-        sendSats(sendInfo.total, sendInfo.address, wallet).then((txid) => onTxid(txid))
+        sendSats(sendInfo.total, sendInfo.address, wallet, config).then((txid) => onTxid(txid))
       } else if (sendInfo.invoice) {
         finalizeSubmarineSwap(sendInfo, config, wallet, onTxid)
       }

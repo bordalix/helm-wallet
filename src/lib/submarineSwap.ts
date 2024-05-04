@@ -95,7 +95,7 @@ export const finalizeSubmarineSwap = (
       // "invoice.set" means Boltz is waiting for an onchain transaction to be sent
       case 'invoice.set': {
         console.log('Waiting for onchain transaction')
-        txid = await sendSats(swapResponse.expectedAmount, swapResponse.address, wallet)
+        txid = await sendSats(swapResponse.expectedAmount, swapResponse.address, wallet, config)
         break
       }
 
