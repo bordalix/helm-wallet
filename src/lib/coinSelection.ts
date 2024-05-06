@@ -1,3 +1,4 @@
+import { dustLimit } from './constants'
 import { feeForCoins } from './fees'
 import { Utxo } from './types'
 
@@ -120,16 +121,26 @@ export const selectCoins = (amount: number, utxos: Utxo[]): CoinsSelected => {
     value = 0
 
   const balance = coins.reduce((prev, curr) => prev + curr.value, 0)
-  if (balance === sats + txfee) return { amount, changeAmount, coins, txfee }
+  if (balance === amount + txfee) return { amount, changeAmount, coins, txfee }
+  // A special case, where user is trying to send almost everything,
+  // but change amount is below dust limit. In this case, increase txfees.
+  if (balance - amount - txfee < dustLimit)
+    return {
+      amount,
+      changeAmount: 0,
+      coins,
+      txfee: txfee + balance - amount - txfee,
+    }
 
   do {
-    sats = sats - changeAmount // changeAmount is negative or 0
+    sats = sats - changeAmount
     coins = sortAndSelect(sats, utxos)
     value = coins.reduce((prev, curr) => prev + curr.value, 0)
     txfee = feeForCoins(coins.length)
-    changeAmount = value - sats - txfee
+    changeAmount = value - amount - txfee
+    if (changeAmount > 0 && changeAmount < dustLimit) sats += dustLimit
     numAttempts -= 1
-  } while (changeAmount < 0 && numAttempts > 0)
+  } while (changeAmount !== 0 && changeAmount < dustLimit && numAttempts > 0)
 
   return { amount, changeAmount, coins, txfee }
 }
