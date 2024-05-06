@@ -53,7 +53,6 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
     window?.matchMedia?.('(prefers-color-scheme: dark)').matches ? Themes.Dark : Themes.Light
 
   const updateConfig = (data: Config) => {
-    console.log('updateConfig', data)
     setConfig(data)
     updateTheme(data)
     saveConfigToStorage(data)
