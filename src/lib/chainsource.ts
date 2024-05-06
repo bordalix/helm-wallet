@@ -1,8 +1,9 @@
 import { ElectrumWS } from 'ws-electrumx-client'
-import { address, crypto } from 'liquidjs-lib'
+import { address } from 'liquidjs-lib'
 import { NetworkName } from './network'
 import { MVUtxo } from './types'
 import { ExplorerName, getWebSocketExplorerURL } from './explorers'
+import { toScriptHash } from './address'
 
 type ElectrumUnspent = {
   height: number
@@ -152,10 +153,6 @@ export class WsElectrumChainSource implements ChainSource {
       scriptHash,
     )
   }
-}
-
-function toScriptHash(script: Buffer): string {
-  return crypto.sha256(script).reverse().toString('hex')
 }
 
 const DYNAFED_HF_MASK = 2147483648
