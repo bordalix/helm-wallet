@@ -31,8 +31,8 @@ export default function SendPayment() {
     if (!txid) return setError('Error broadcasting transaction')
     increaseIndex()
     setSendInfo({ ...sendInfo, txid })
-    setTimeout(reloadWallet, someSeconds)
-    setTimeout(reloadWallet, inOneMinute)
+    setTimeout(() => reloadWallet(wallet), someSeconds)
+    setTimeout(() => reloadWallet(wallet), inOneMinute)
     navigate(Pages.SendSuccess)
   }
 

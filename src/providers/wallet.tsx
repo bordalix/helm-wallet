@@ -6,9 +6,9 @@ import { Mnemonic, NextIndexes, Transactions, Utxos, XPubs } from '../lib/types'
 import { ExplorerName } from '../lib/explorers'
 import { defaultExplorer, defaultGapLimit, defaultNetwork } from '../lib/constants'
 import { ChainSource, WsElectrumChainSource } from '../lib/chainsource'
-import { getHistories, restore } from '../lib/restore'
+import { restore } from '../lib/restore'
 import { ConfigContext } from './config'
-import { cleanCache } from '../lib/cache'
+import { cleanCache, getCachedElectrumHistories } from '../lib/cache'
 
 let chainSource = new WsElectrumChainSource(defaultExplorer, defaultNetwork)
 
@@ -65,7 +65,7 @@ interface WalletContextProps {
   increaseIndex: () => void
   logout: () => void
   reconnectChainSource: (w: Wallet) => void
-  reloadWallet: (w?: Wallet) => void
+  reloadWallet: (w: Wallet, quick?: boolean) => void
   restoreWallet: (w: Wallet) => void
   resetWallet: () => void
   setMnemonic: (m: Mnemonic) => void
@@ -139,13 +139,15 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => setMnemonic('')
 
-  const reloadWallet = async (w?: Wallet) => {
+  const reloadWallet = async (w: Wallet, quickReload = false) => {
     if (reloading) return
     setReloading(true)
-    const clone = w ? { ...w } : { ...wallet }
+    const start = Date.now()
+    console.log('start', start)
+    const clone = { ...w }
     // use the next line to use the REST API
     // const { nextIndex, transactions, utxos } = await fetchHistory(clone)
-    const { histories } = await getHistories(chainSource, clone)
+    const { histories } = await getCachedElectrumHistories(chainSource, clone, quickReload)
     const { nextIndex, transactions, utxos } = await restore(chainSource, histories)
     clone.nextIndex[clone.network] = nextIndex
     clone.transactions[clone.network] = transactions
@@ -153,13 +155,14 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     clone.lastUpdate = Math.floor(Date.now() / 1000)
     updateWallet(clone)
     setReloading(false)
+    console.log('finish', Date.now() - start)
   }
 
   const restoreWallet = async (w: Wallet) => {
     if (restoring) return
     setRestoring(-1)
     const clone = { ...w }
-    const { histories, numTxs } = await getHistories(chainSource, clone)
+    const { histories, numTxs } = await getCachedElectrumHistories(chainSource, clone)
     setRestoring(numTxs)
     const update = () => setRestoring((r) => r - 1)
     const { nextIndex, transactions, utxos } = await restore(chainSource, histories, update)

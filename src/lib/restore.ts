@@ -1,51 +1,17 @@
-import { Wallet } from '../providers/wallet'
-import { NewAddress, generateAddress } from './address'
 import { prettyUnixTimestamp } from './format'
 import { Transaction, Utxo } from './types'
-import { ChainSource, ElectrumHistory } from './chainsource'
+import { ChainSource } from './chainsource'
 import { getTransactionAmount } from './transactions'
 import { getUnblindedOutput } from './output'
-import { getCachedBlockHeader, getCachedElectrumTransactions } from './cache'
+import { AddressesHistory, getCachedBlockHeader, getCachedElectrumTransactions } from './cache'
 
-export interface History {
-  address: NewAddress
-  history: ElectrumHistory[]
-}
-
-export const getHistories = async (chainSource: ChainSource, wallet: Wallet) => {
-  const { gapLimit } = wallet
-  const uniqueTxHashes = new Set()
-  let emptyAddrInARow = 0
-  let histories: History[] = []
-  let index = 0
-
-  while (emptyAddrInARow < gapLimit) {
-    // generate address
-    const address = await generateAddress(wallet, index)
-    if (!address.address || !address.blindingKeys) throw new Error('Could not generate new address')
-    // get address history
-    const history = await chainSource.fetchHistories([address.script])
-    // push to return object
-    if (history.length > 0) {
-      histories.push({ address, history })
-      history.map((h) => uniqueTxHashes.add(h.tx_hash))
-    }
-    // update emptyAddrInARow and index
-    emptyAddrInARow = history.length === 0 ? emptyAddrInARow + 1 : 0
-    index += 1
-  }
-
-  return { histories, numTxs: uniqueTxHashes.size }
-}
-
-export const restore = async (chainSource: ChainSource, histories: History[], update?: () => void) => {
+export const restore = async (chainSource: ChainSource, histories: AddressesHistory[], update?: () => void) => {
   const transactions: Transaction[] = []
   const utxos: Utxo[] = []
   const lastIndex = histories.reduce((prev, curr) => (curr.address.nextIndex > prev ? curr.address.nextIndex : prev), 0)
 
   for (const h of histories) {
     const { address, history } = h
-
     const txs = await getCachedElectrumTransactions(history, chainSource)
 
     for (const tx of txs) {
@@ -64,7 +30,9 @@ export const restore = async (chainSource: ChainSource, histories: History[], up
       }
     }
 
-    for (const u of await chainSource.listUtxos(address.script)) {
+    const listUtxos = await chainSource.listUtxos(address.script)
+
+    for (const u of listUtxos) {
       const txHex = transactions.find((t) => t.txid === u.txid)?.hex
       if (!txHex) {
         // eslint-disable-next-line no-console
