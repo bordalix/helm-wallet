@@ -42,7 +42,7 @@ const explorers: Explorer[] = [
     },
     [NetworkName.Testnet]: {
       restApiExplorerURL: 'https://liquid.network/liquidtestnet',
-      webSocketExplorerURL: 'wss://blockstream.info/liquidtestnet/electrum-websocket/api',
+      webSocketExplorerURL: 'wss://esplora.blockstream.com/liquidtestnet/electrum-websocket/api',
     },
   },
   {
