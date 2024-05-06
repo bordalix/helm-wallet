@@ -31,3 +31,7 @@ export const generateAddress = async (wallet: Wallet, index?: number): Promise<N
   const confidentialAddress = liquid.address.toConfidential(unconfidentialAddress, blindingKeys.publicKey)
   return { address, blindingKeys, confidentialAddress, nextIndex, pubkey, script }
 }
+
+export const toScriptHash = (script: Buffer): string => {
+  return liquid.crypto.sha256(script).reverse().toString('hex')
+}
