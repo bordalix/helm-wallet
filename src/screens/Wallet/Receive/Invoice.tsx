@@ -39,8 +39,8 @@ export default function ReceiveInvoice() {
     if (finishedTxIds.includes(txid)) return
     finishedTxIds.push(txid)
     increaseIndex()
-    setTimeout(() => reloadWallet(wallet, true), someSeconds)
-    setTimeout(() => reloadWallet(wallet, true), inOneMinute)
+    setTimeout(() => reloadWallet(wallet), someSeconds)
+    setTimeout(() => reloadWallet(wallet), inOneMinute)
     setRecvInfo({ ...recvInfo, txid })
     navigate(Pages.ReceiveSuccess)
   }

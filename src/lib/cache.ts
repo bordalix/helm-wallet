@@ -1,19 +1,17 @@
 import { Wallet } from '../providers/wallet'
-import { NewAddress, generateAddress, toScriptHash } from './address'
+import { NewAddress, generateAddress } from './address'
 import { ChainSource, ElectrumBlockHeader, ElectrumHistory, ElectrumTransaction } from './chainsource'
 import { readCacheFromStorage, saveCacheToStorage } from './storage'
 
 export interface CacheInfo {
   blockHeaders: ElectrumBlockHeader[]
   electrumTxs: ElectrumTransaction[]
-  histories: { script: string; history: ElectrumHistory[] }[]
   txHexas: { txid: string; hex: string }[]
 }
 
 export const defaultCache: CacheInfo = {
   blockHeaders: [],
   electrumTxs: [],
-  histories: [],
   txHexas: [],
 }
 
@@ -54,25 +52,10 @@ export interface AddressesHistory {
 }
 
 // Dangerous cache (updates often)
-// {
-//   address: NewAddress,
-//   history: [
-//     {
-//       height: number,
-//       tx_hash: string
-//     }
-//   ]
-// }
-// Quick reload should be using ONLY after RECEIVING,
-// since it should be a new address, so not in cache.
-// Using this after SEND will make it miss the payment,
-// since UTXO used will change history for one address.
 export const getCachedElectrumHistories = async (
   chainSource: ChainSource,
   wallet: Wallet,
-  quickReload = false,
 ): Promise<{ histories: AddressesHistory[]; numTxs: number }> => {
-  const cache = getCache()
   const { gapLimit } = wallet
   const uniqueTxHashes = new Set()
   let emptyAddrInARow = 0
@@ -83,22 +66,18 @@ export const getCachedElectrumHistories = async (
     // generate address
     const address = await generateAddress(wallet, index)
     if (!address.address || !address.blindingKeys) throw new Error('Could not generate new address')
-    const addressScript = toScriptHash(address.script)
     // get address history
-    const inCache = cache.histories.find((h) => h.script === addressScript)
-    const history = quickReload && inCache ? inCache.history : await chainSource.fetchHistories([address.script])
+    const history = await chainSource.fetchHistories([address.script])
     // push to return object
     if (history.length > 0) {
       histories.push({ address, history })
       history.map((h) => uniqueTxHashes.add(h.tx_hash))
-      if (!inCache) cache.histories.push({ script: addressScript, history })
     }
     // update emptyAddrInARow and index
     emptyAddrInARow = history.length === 0 ? emptyAddrInARow + 1 : 0
     index += 1
   }
 
-  if (!quickReload) updateCache(cache)
   return { histories, numTxs: uniqueTxHashes.size }
 }
 

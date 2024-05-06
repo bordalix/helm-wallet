@@ -139,15 +139,13 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => setMnemonic('')
 
-  const reloadWallet = async (w: Wallet, quickReload = false) => {
+  const reloadWallet = async (w: Wallet) => {
     if (reloading) return
     setReloading(true)
-    const start = Date.now()
-    console.log('start', start)
     const clone = { ...w }
     // use the next line to use the REST API
     // const { nextIndex, transactions, utxos } = await fetchHistory(clone)
-    const { histories } = await getCachedElectrumHistories(chainSource, clone, quickReload)
+    const { histories } = await getCachedElectrumHistories(chainSource, clone)
     const { nextIndex, transactions, utxos } = await restore(chainSource, histories)
     clone.nextIndex[clone.network] = nextIndex
     clone.transactions[clone.network] = transactions
@@ -155,7 +153,6 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     clone.lastUpdate = Math.floor(Date.now() / 1000)
     updateWallet(clone)
     setReloading(false)
-    console.log('finish', Date.now() - start)
   }
 
   const restoreWallet = async (w: Wallet) => {
