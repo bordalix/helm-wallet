@@ -60,7 +60,8 @@ export default function InitOld() {
           <Error error={label === ButtonLabel.Invalid} text={label} />
           <Columns>
             {[...passphrase].map((word, i) => (
-              <Word key={word} left={i + 1} onChange={(e: any) => handleChange(e, i)} text={word} />
+              // eslint-disable-next-line react/no-array-index-key
+              <Word key={i} left={i + 1} onChange={(e: any) => handleChange(e, i)} text={word} />
             ))}
           </Columns>
         </div>
