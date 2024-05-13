@@ -15,8 +15,8 @@ import { checkTorConnection } from '../../lib/tor'
 import Loading from '../../components/Loading'
 
 export default function Tor() {
-  const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)
-  const { wallet } = useContext(WalletContext)
+  const { config, toggleShowConfig } = useContext(ConfigContext)
+  const { toggleTor, wallet } = useContext(WalletContext)
 
   const [checking, setChecking] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
@@ -32,7 +32,7 @@ export default function Tor() {
       setStartTor(false)
       setChecking(true)
       checkTorConnection().then((ok) => {
-        if (ok) updateConfig({ ...config, tor: true })
+        if (ok) toggleTor(true)
         else setErrorMsg('Unable to connect to Tor')
         setChecking(false)
       })
@@ -41,7 +41,7 @@ export default function Tor() {
 
   const handleChange = async (e: any) => {
     if (e.target.value === '1') setStartTor(true)
-    else updateConfig({ ...config, tor: false })
+    else toggleTor(false)
   }
 
   const onionUrl = getBoltzOnionUrl()

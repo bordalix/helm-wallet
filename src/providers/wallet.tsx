@@ -69,6 +69,7 @@ interface WalletContextProps {
   restoreWallet: (w: Wallet) => void
   resetWallet: () => void
   setMnemonic: (m: Mnemonic) => void
+  toggleTor: (t: boolean) => void
   updateWallet: (w: Wallet) => void
   wallet: Wallet
 }
@@ -87,6 +88,7 @@ export const WalletContext = createContext<WalletContextProps>({
   restoreWallet: () => {},
   resetWallet: () => {},
   setMnemonic: () => {},
+  toggleTor: () => {},
   updateWallet: () => {},
   wallet: defaultWallet,
 })
@@ -107,11 +109,11 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     setWallet({ ...wallet, mnemonic: m })
   }
 
-  const reconnectChainSource = async (w: Wallet) => {
+  const reconnectChainSource = async (w: Wallet, c = config) => {
     try {
       if (chainSource.isConnected()) await chainSource.close()
     } catch {}
-    chainSource = new WsElectrumChainSource(w.explorer, w.network)
+    chainSource = new WsElectrumChainSource(w.explorer, w.network, c.tor)
   }
 
   const changeExplorer = async (explorer: ExplorerName) => {
@@ -124,9 +126,14 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const changeNetwork = async (networkName: NetworkName) => {
     const clone = { ...wallet, network: networkName }
     updateWallet(clone)
-    if (config.tor && networkName !== NetworkName.Liquid) updateConfig({ ...config, tor: false })
     if (clone.network !== chainSource.network) await reconnectChainSource(clone)
     if (wallet.initialized) restoreWallet(clone)
+  }
+
+  const toggleTor = (tor: boolean) => {
+    const clone = { ...config, tor }
+    // TODO reconnectChainSource(wallet, clone)
+    updateConfig(clone)
   }
 
   const increaseIndex = () => {
@@ -216,6 +223,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
         restoreWallet,
         resetWallet,
         setMnemonic,
+        toggleTor,
         updateWallet,
         wallet,
       }}

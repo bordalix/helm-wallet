@@ -2,6 +2,7 @@ import { Config } from '../providers/config'
 import { Wallet } from '../providers/wallet'
 import { getBoltzApiUrl } from './boltz'
 import { NetworkName } from './network'
+import { explorerOnionUrl } from './tor'
 import { BlindedUtxo } from './types'
 
 export enum ExplorerName {
@@ -13,7 +14,6 @@ export enum ExplorerName {
 export interface ExplorerURLs {
   restApiExplorerURL: string
   webSocketExplorerURL: string // ws:// or wss:// endpoint
-  onionExplorerUrl?: string
 }
 
 export interface Explorer {
@@ -29,7 +29,6 @@ const explorers: Explorer[] = [
     [NetworkName.Liquid]: {
       restApiExplorerURL: 'https://blockstream.info/liquid',
       webSocketExplorerURL: 'wss://esplora.blockstream.com/liquid/electrum-websocket/api',
-      onionExplorerUrl: 'http://explorerzydxu5ecjrkwceayqybizmpjjznk5izmitf2modhcusuqlid.onion/',
     },
     [NetworkName.Testnet]: {
       restApiExplorerURL: 'https://blockstream.info/liquidtestnet',
@@ -41,7 +40,6 @@ const explorers: Explorer[] = [
     [NetworkName.Liquid]: {
       restApiExplorerURL: 'https://liquid.network',
       webSocketExplorerURL: 'wss://esplora.blockstream.com/liquid/electrum-websocket/api',
-      onionExplorerUrl: 'http://explorerzydxu5ecjrkwceayqybizmpjjznk5izmitf2modhcusuqlid.onion/',
     },
     [NetworkName.Testnet]: {
       restApiExplorerURL: 'https://liquid.network/liquidtestnet',
@@ -65,7 +63,12 @@ const getRestApiExplorerURL = ({ explorer, network }: Wallet) => {
   if (exp?.[network]) return exp[network]?.restApiExplorerURL
 }
 
-export const getWebSocketExplorerURL = (explorer: ExplorerName, network: NetworkName): string | undefined => {
+export const getWebSocketExplorerURL = (
+  explorer: ExplorerName,
+  network: NetworkName,
+  tor = false,
+): string | undefined => {
+  if (tor && network === NetworkName.Liquid) console.log(explorerOnionUrl) // TODO
   const exp = explorers.find((e) => e.name === explorer)
   return exp?.[network]?.webSocketExplorerURL
 }
