@@ -13,6 +13,7 @@ export enum ExplorerName {
 export interface ExplorerURLs {
   restApiExplorerURL: string
   webSocketExplorerURL: string // ws:// or wss:// endpoint
+  onionExplorerUrl?: string
 }
 
 export interface Explorer {
@@ -28,6 +29,7 @@ const explorers: Explorer[] = [
     [NetworkName.Liquid]: {
       restApiExplorerURL: 'https://blockstream.info/liquid',
       webSocketExplorerURL: 'wss://esplora.blockstream.com/liquid/electrum-websocket/api',
+      onionExplorerUrl: 'http://explorerzydxu5ecjrkwceayqybizmpjjznk5izmitf2modhcusuqlid.onion/',
     },
     [NetworkName.Testnet]: {
       restApiExplorerURL: 'https://blockstream.info/liquidtestnet',
@@ -39,6 +41,7 @@ const explorers: Explorer[] = [
     [NetworkName.Liquid]: {
       restApiExplorerURL: 'https://liquid.network',
       webSocketExplorerURL: 'wss://esplora.blockstream.com/liquid/electrum-websocket/api',
+      onionExplorerUrl: 'http://explorerzydxu5ecjrkwceayqybizmpjjznk5izmitf2modhcusuqlid.onion/',
     },
     [NetworkName.Testnet]: {
       restApiExplorerURL: 'https://liquid.network/liquidtestnet',
