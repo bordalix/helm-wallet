@@ -7,11 +7,10 @@ import Container from '../../components/Container'
 import Content from '../../components/Content'
 import Select from '../../components/Select'
 import { formatInvoice } from '../../lib/format'
-import { getBoltzOnionUrl } from '../../lib/boltz'
 import { WalletContext } from '../../providers/wallet'
 import { NetworkName } from '../../lib/network'
 import Error from '../../components/Error'
-import { checkTorConnection } from '../../lib/tor'
+import { boltzOnionUrl, checkTorConnection, wsOnionUrl } from '../../lib/tor'
 import Loading from '../../components/Loading'
 
 export default function Tor() {
@@ -44,7 +43,6 @@ export default function Tor() {
     else toggleTor(false)
   }
 
-  const onionUrl = getBoltzOnionUrl()
   const disabled = wallet.network !== NetworkName.Liquid
 
   return (
@@ -58,14 +56,23 @@ export default function Tor() {
         </Select>
         <div className='flex flex-col gap-6 mt-10'>
           {config.tor ? (
-            <p>
-              <span className='font-semibold'>Connected to Tor</span>
-              <br />
-              Using{' '}
-              <a className='pointer-cursor underline' href={onionUrl}>
-                {formatInvoice(onionUrl)}
-              </a>
-            </p>
+            <>
+              <p>
+                <span className='font-semibold'>Connected to Tor</span>
+              </p>
+              <p>
+                Using{' '}
+                <a className='pointer-cursor underline' href={boltzOnionUrl}>
+                  {formatInvoice(boltzOnionUrl)}
+                </a>
+              </p>
+              <p>
+                and{' '}
+                <a className='pointer-cursor underline' href={wsOnionUrl}>
+                  {formatInvoice(wsOnionUrl)}
+                </a>
+              </p>
+            </>
           ) : checking ? (
             <>
               <Loading />

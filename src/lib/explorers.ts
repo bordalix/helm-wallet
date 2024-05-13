@@ -2,7 +2,7 @@ import { Config } from '../providers/config'
 import { Wallet } from '../providers/wallet'
 import { getBoltzApiUrl } from './boltz'
 import { NetworkName } from './network'
-import { explorerOnionUrl } from './tor'
+import { wsOnionUrl } from './tor'
 import { BlindedUtxo } from './types'
 
 export enum ExplorerName {
@@ -68,7 +68,7 @@ export const getWebSocketExplorerURL = (
   network: NetworkName,
   tor = false,
 ): string | undefined => {
-  if (tor && network === NetworkName.Liquid) console.log(explorerOnionUrl) // TODO
+  if (tor && network === NetworkName.Liquid) return wsOnionUrl
   const exp = explorers.find((e) => e.name === explorer)
   return exp?.[network]?.webSocketExplorerURL
 }

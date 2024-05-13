@@ -28,7 +28,7 @@ const defaultConfig: Config = {
 
 interface ConfigContextProps {
   config: Config
-  loading: boolean
+  loadingConfig: boolean
   showConfig: boolean
   toggleShowConfig: () => void
   updateConfig: (c: Config) => void
@@ -36,7 +36,7 @@ interface ConfigContextProps {
 
 export const ConfigContext = createContext<ConfigContextProps>({
   config: defaultConfig,
-  loading: true,
+  loadingConfig: true,
   showConfig: false,
   toggleShowConfig: () => {},
   updateConfig: () => {},
@@ -44,7 +44,7 @@ export const ConfigContext = createContext<ConfigContextProps>({
 
 export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   const [config, setConfig] = useState<Config>(defaultConfig)
-  const [loading, setLoading] = useState(true)
+  const [loadingConfig, setLoadingConfig] = useState(true)
   const [showConfig, setShowConfig] = useState(false)
 
   const toggleShowConfig = () => setShowConfig(!showConfig)
@@ -64,14 +64,14 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   }
 
   useEffect(() => {
-    if (!loading) return
+    if (!loadingConfig) return
     const config = readConfigFromStorage() ?? { ...defaultConfig, theme: preferredTheme() }
     updateConfig(config)
-    setLoading(false)
-  }, [loading])
+    setLoadingConfig(false)
+  }, [loadingConfig])
 
   return (
-    <ConfigContext.Provider value={{ config, loading, showConfig, toggleShowConfig, updateConfig }}>
+    <ConfigContext.Provider value={{ config, loadingConfig, showConfig, toggleShowConfig, updateConfig }}>
       {children}
     </ConfigContext.Provider>
   )

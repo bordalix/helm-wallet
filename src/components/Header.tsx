@@ -65,7 +65,7 @@ export default function Header({ showBack, setOption }: any) {
       <LeftButton />
       <div className='flex gap-2'>
         {wallet.network === NetworkName.Testnet ? <Testnet /> : null}
-        {config.tor ? <Tor /> : null}
+        {wallet.network === NetworkName.Liquid && config.tor ? <Tor /> : null}
       </div>
       <RightButton />
     </header>

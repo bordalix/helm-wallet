@@ -9,6 +9,7 @@ import { ChainSource, WsElectrumChainSource } from '../lib/chainsource'
 import { restore } from '../lib/restore'
 import { ConfigContext } from './config'
 import { cleanCache, getCachedElectrumHistories } from '../lib/cache'
+import { extractError } from '../lib/error'
 
 let chainSource = new WsElectrumChainSource(defaultExplorer, defaultNetwork)
 
@@ -59,7 +60,7 @@ interface WalletContextProps {
   chainSource: ChainSource
   changeExplorer: (e: ExplorerName) => void
   changeNetwork: (n: NetworkName) => void
-  loading: boolean
+  loadingWallet: boolean
   reloading: boolean
   restoring: number
   increaseIndex: () => void
@@ -78,7 +79,7 @@ export const WalletContext = createContext<WalletContextProps>({
   chainSource,
   changeExplorer: () => {},
   changeNetwork: () => {},
-  loading: true,
+  loadingWallet: true,
   reloading: false,
   restoring: 0,
   increaseIndex: () => {},
@@ -94,10 +95,10 @@ export const WalletContext = createContext<WalletContextProps>({
 })
 
 export const WalletProvider = ({ children }: { children: ReactNode }) => {
-  const { config, updateConfig } = useContext(ConfigContext)
+  const { config, loadingConfig, updateConfig } = useContext(ConfigContext)
   const { navigate } = useContext(NavigationContext)
 
-  const [loading, setLoading] = useState(true)
+  const [loadingWallet, setLoadingWallet] = useState(true)
   const [reloading, setReloading] = useState(false)
   const [restoring, setRestoring] = useState(0)
   const [wallet, setWallet] = useState(defaultWallet)
@@ -109,11 +110,11 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     setWallet({ ...wallet, mnemonic: m })
   }
 
-  const reconnectChainSource = async (w: Wallet, c = config) => {
-    try {
-      if (chainSource.isConnected()) await chainSource.close()
-    } catch {}
-    chainSource = new WsElectrumChainSource(w.explorer, w.network, c.tor)
+  const reconnectChainSource = async (w: Wallet, tor = false) => {
+    chainSource
+      .close()
+      .then(() => (chainSource = new WsElectrumChainSource(w.explorer, w.network, tor)))
+      .catch((e) => console.log('Error reconnecting chainSource', extractError(e)))
   }
 
   const changeExplorer = async (explorer: ExplorerName) => {
@@ -126,14 +127,13 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const changeNetwork = async (networkName: NetworkName) => {
     const clone = { ...wallet, network: networkName }
     updateWallet(clone)
-    if (clone.network !== chainSource.network) await reconnectChainSource(clone)
-    if (wallet.initialized) restoreWallet(clone)
+    if (clone.network !== chainSource.network) await reconnectChainSource(clone, config.tor)
+    if (wallet.initialized) reloadWallet(clone)
   }
 
   const toggleTor = (tor: boolean) => {
-    const clone = { ...config, tor }
-    // TODO reconnectChainSource(wallet, clone)
-    updateConfig(clone)
+    reconnectChainSource(wallet, tor)
+    updateConfig({ ...config, tor })
   }
 
   const increaseIndex = () => {
@@ -193,19 +193,23 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const getWalletFromStorage = async () => {
-      if (!loading) return
+      if (!loadingWallet) return
       const wallet = readWalletFromStorage() ?? defaultWallet
       updateWallet(wallet)
-      if (wallet.explorer !== chainSource.explorer || wallet.network !== chainSource.network) {
-        await reconnectChainSource(wallet)
+      if (
+        wallet.explorer !== chainSource.explorer ||
+        wallet.network !== chainSource.network ||
+        (wallet.network === NetworkName.Liquid && config.tor)
+      ) {
+        await reconnectChainSource(wallet, config.tor)
       }
       if (wallet.initialized) reloadWallet(wallet)
-      setLoading(false)
+      setLoadingWallet(false)
       navigate(wallet.initialized ? Pages.Wallet : Pages.Init)
     }
-    getWalletFromStorage()
+    if (!loadingConfig) getWalletFromStorage()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading])
+  }, [loadingConfig, loadingWallet])
 
   return (
     <WalletContext.Provider
@@ -213,7 +217,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
         chainSource,
         changeExplorer,
         changeNetwork,
-        loading,
+        loadingWallet,
         reloading,
         restoring,
         increaseIndex,

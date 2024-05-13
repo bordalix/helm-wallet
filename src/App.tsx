@@ -22,12 +22,14 @@ import ReceiveFees from './screens/Wallet/Receive/Fees'
 import SendSuccess from './screens/Wallet/Send/Success'
 import Transactions from './screens/Wallet/Transactions'
 import SendAmount from './screens/Wallet/Send/Amount'
+import { WalletContext } from './providers/wallet'
 
 export default function App() {
-  const { loading, showConfig } = useContext(ConfigContext)
+  const { loadingConfig, showConfig } = useContext(ConfigContext)
   const { screen } = useContext(NavigationContext)
+  const { loadingWallet } = useContext(WalletContext)
 
-  if (loading) return <Loading />
+  if (loadingConfig || loadingWallet) return <Loading />
   if (showConfig) return <Settings />
 
   return (

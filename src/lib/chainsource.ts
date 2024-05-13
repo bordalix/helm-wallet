@@ -53,7 +53,7 @@ const SubscribeStatusMethod = 'blockchain.scripthash' // ElectrumWS add .subscri
 export class WsElectrumChainSource implements ChainSource {
   private ws: ElectrumWS
 
-  constructor(public explorer: ExplorerName, public network: NetworkName, public tor?: boolean) {
+  constructor(public explorer: ExplorerName, public network: NetworkName, public tor = false) {
     const wsUrl = getWebSocketExplorerURL(explorer, network, tor)
     if (!wsUrl) throw new Error('Undefined ws url')
     this.ws = new ElectrumWS(wsUrl)
@@ -122,11 +122,7 @@ export class WsElectrumChainSource implements ChainSource {
   }
 
   async close() {
-    try {
-      await this.ws.close('close')
-    } catch (e) {
-      console.log('error closing ws:', e)
-    }
+    this.ws.close('close').catch((e) => console.log('error closing ws:', e))
   }
 
   isConnected() {

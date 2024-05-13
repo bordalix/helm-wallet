@@ -11,5 +11,3 @@ export const getBoltzApiUrl = (network: NetworkName, tor = false) => {
 
 export const getBoltzWsUrl = (network: NetworkName) =>
   `${getBoltzApiUrl(network, false).replace('https://', 'wss://')}/v2/ws`
-
-export const getBoltzOnionUrl = () => boltzOnionUrl
