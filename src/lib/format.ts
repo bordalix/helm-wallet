@@ -20,11 +20,11 @@ export const prettyUnixTimestamp = (num: number): string => {
   }).format(date)
 }
 
-export const fromSatoshis = (num: Satoshis): number => {
+export const fromSatoshis = (num = 0): number => {
   return Decimal.div(num, 100_000_000).toNumber()
 }
 
-export const toSatoshis = (num: number): Satoshis => {
+export const toSatoshis = (num = 0): Satoshis => {
   return Decimal.mul(num, 100_000_000).toNumber()
 }
 
