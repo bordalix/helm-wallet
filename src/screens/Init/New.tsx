@@ -10,6 +10,7 @@ import { Mnemonic } from '../../lib/types'
 import Content from '../../components/Content'
 import { FlowContext } from '../../providers/flow'
 import Container from '../../components/Container'
+import TipIcon from '../../icons/Tip'
 
 export default function InitNew() {
   const { navigate } = useContext(NavigationContext)
@@ -28,12 +29,15 @@ export default function InitNew() {
     <Container>
       <Content>
         <Title text='Your new wallet' subtext='Write down the following words' />
-        <p className='p-2' />
         <Columns>
           {mnemonic.split(' ').map((word, i) => (
             <Word key={word} left={i + 1} text={word} />
           ))}
         </Columns>
+        <div className='flex justify-center align-middle mt-4'>
+          <TipIcon small />
+          <p className='text-sm'>You can see it later on Settings &gt; Backup</p>
+        </div>
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handleProceed} label='Continue' />
