@@ -6,5 +6,5 @@ interface ColumnsProps {
 }
 
 export default function Columns({ children, cols }: ColumnsProps) {
-  return <div className={`grid grid-cols-${cols ?? 2} gap-y-3 gap-x-3 px-0`}>{children}</div>
+  return <div className={`grid grid-cols-${cols ?? 2} gap-y-3 gap-x-3 px-0 w-full`}>{children}</div>
 }
