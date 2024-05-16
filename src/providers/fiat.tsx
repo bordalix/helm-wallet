@@ -27,10 +27,10 @@ export const FiatProvider = ({ children }: { children: ReactNode }) => {
 
   const fiatPrices = useRef<FiatPrices>(emptyFiatPrices)
 
-  const fromEuro = (euros: number) => toSatoshis(Decimal.div(euros, fiatPrices.current.eur).toNumber())
-  const fromUSD = (usds: number) => toSatoshis(Decimal.div(usds, fiatPrices.current.usd).toNumber())
-  const toEuro = (sats: number): number => Decimal.mul(fromSatoshis(sats), fiatPrices.current.eur).toNumber()
-  const toUSD = (sats: number): number => Decimal.mul(fromSatoshis(sats), fiatPrices.current.usd).toNumber()
+  const fromEuro = (euros = 0) => toSatoshis(Decimal.div(euros, fiatPrices.current.eur).toNumber())
+  const fromUSD = (usds = 0) => toSatoshis(Decimal.div(usds, fiatPrices.current.usd).toNumber())
+  const toEuro = (sats = 0) => Decimal.mul(fromSatoshis(sats), fiatPrices.current.eur).toNumber()
+  const toUSD = (sats = 0) => Decimal.mul(fromSatoshis(sats), fiatPrices.current.usd).toNumber()
 
   const updateFiatPrices = async () => {
     if (loading) return

@@ -10,6 +10,7 @@ export enum Unit {
   BTC = 'btc',
   EUR = 'eur',
   USD = 'usd',
+  SAT = 'sat',
 }
 
 export interface Config {
