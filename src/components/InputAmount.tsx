@@ -7,7 +7,9 @@ import { FiatContext } from '../providers/fiat'
 
 enum UnitLabel {
   BTC = 'BTC',
+  Euro = '€',
   Sats = 'Sats',
+  USD = '$',
 }
 
 interface InputAmountProps {
@@ -17,7 +19,7 @@ interface InputAmountProps {
 
 export default function InputAmount({ label, onChange }: InputAmountProps) {
   const { config, updateConfig } = useContext(ConfigContext)
-  const { getEurPrice, getUsdPrice } = useContext(FiatContext)
+  const { toEuro, toUSD } = useContext(FiatContext)
 
   const [amount, setAmount] = useState('0')
   const [sats, setSats] = useState(true)
@@ -54,9 +56,9 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
   const fiatAmount = () => {
     const unit = !config.unit || config.unit === Unit.BTC ? Unit.EUR : config.unit
     if (!amount || isNaN(Number(amount))) return
-    const btc = sats ? fromSatoshis(Number(amount)) : Number(amount)
-    if (unit === Unit.EUR) return '€ ' + prettyNumber(getEurPrice(btc), 2)
-    if (unit === Unit.USD) return '$ ' + prettyNumber(getUsdPrice(btc), 2)
+    const _sats = sats ? Number(amount) : toSatoshis(Number(amount))
+    if (unit === Unit.EUR) return '€ ' + prettyNumber(toEuro(_sats), 2)
+    if (unit === Unit.USD) return '$ ' + prettyNumber(toUSD(_sats), 2)
   }
 
   const handleClickFiat = () => {

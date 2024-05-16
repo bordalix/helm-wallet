@@ -1,17 +1,24 @@
 import { ReactNode, createContext, useEffect, useRef, useState } from 'react'
 import { FiatPrices, getPriceFeed } from '../lib/fiat'
+import { fromSatoshis, toSatoshis } from '../lib/format'
+import Decimal from 'decimal.js'
+import { Satoshis } from '../lib/types'
 
 type FiatContextProps = {
-  getEurPrice: (sats: number) => number
-  getUsdPrice: (sats: number) => number
+  fromEuro: (fiat: number) => Satoshis
+  fromUSD: (fiat: number) => Satoshis
+  toEuro: (sats: number) => number
+  toUSD: (sats: number) => number
   updateFiatPrices: () => void
 }
 
 const emptyFiatPrices: FiatPrices = { eur: 0, usd: 0 }
 
 export const FiatContext = createContext<FiatContextProps>({
-  getEurPrice: () => 0,
-  getUsdPrice: () => 0,
+  fromEuro: () => 0,
+  fromUSD: () => 0,
+  toEuro: () => 0,
+  toUSD: () => 0,
   updateFiatPrices: () => {},
 })
 
@@ -20,8 +27,10 @@ export const FiatProvider = ({ children }: { children: ReactNode }) => {
 
   const fiatPrices = useRef<FiatPrices>(emptyFiatPrices)
 
-  const getEurPrice = (sats: number): number => sats * fiatPrices.current.eur
-  const getUsdPrice = (sats: number): number => sats * fiatPrices.current.usd
+  const fromEuro = (euros: number) => toSatoshis(Decimal.div(euros, fiatPrices.current.eur).toNumber())
+  const fromUSD = (usds: number) => toSatoshis(Decimal.div(usds, fiatPrices.current.usd).toNumber())
+  const toEuro = (sats: number): number => Decimal.mul(fromSatoshis(sats), fiatPrices.current.eur).toNumber()
+  const toUSD = (sats: number): number => Decimal.mul(fromSatoshis(sats), fiatPrices.current.usd).toNumber()
 
   const updateFiatPrices = async () => {
     if (loading) return
@@ -35,5 +44,9 @@ export const FiatProvider = ({ children }: { children: ReactNode }) => {
     updateFiatPrices()
   }, [])
 
-  return <FiatContext.Provider value={{ getEurPrice, getUsdPrice, updateFiatPrices }}>{children}</FiatContext.Provider>
+  return (
+    <FiatContext.Provider value={{ fromEuro, fromUSD, toEuro, toUSD, updateFiatPrices }}>
+      {children}
+    </FiatContext.Provider>
+  )
 }
