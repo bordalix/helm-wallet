@@ -6,19 +6,17 @@ import { FiatContext } from '../providers/fiat'
 import { ConfigContext, Unit } from '../providers/config'
 
 interface BalanceProps {
-  value: Satoshis
+  sats: Satoshis
 }
 
-export default function Balance({ value }: BalanceProps) {
+export default function Balance({ sats }: BalanceProps) {
   const { config, updateConfig } = useContext(ConfigContext)
-  const { getEurPrice, getUsdPrice } = useContext(FiatContext)
-
-  const btc = fromSatoshis(value)
+  const { toEuro, toUSD } = useContext(FiatContext)
 
   const subTexts = {
-    [Unit.BTC]: prettyNumber(btc, 8) + ' BTC',
-    [Unit.EUR]: prettyNumber(getEurPrice(btc), 2) + ' EUR',
-    [Unit.USD]: prettyNumber(getUsdPrice(btc), 2) + ' USD',
+    [Unit.BTC]: prettyNumber(fromSatoshis(sats), 8) + ' BTC',
+    [Unit.EUR]: prettyNumber(toEuro(sats), 2) + ' EUR',
+    [Unit.USD]: prettyNumber(toUSD(sats), 2) + ' USD',
   }
 
   const handleClick = () => {
@@ -29,7 +27,7 @@ export default function Balance({ value }: BalanceProps) {
     if (unit === Unit.USD) return updateConfig({ ...config, unit: Unit.BTC })
   }
 
-  const text = prettyNumber(value) + ' sats'
+  const text = prettyNumber(sats) + ' sats'
   const subtext = subTexts[config.unit ?? Unit.BTC]
 
   return (

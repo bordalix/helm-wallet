@@ -33,7 +33,7 @@ export default function Wallet() {
   return (
     <Container>
       <Content>
-        <Balance value={getBalance(wallet)} />
+        <Balance sats={getBalance(wallet)} />
         {restoring ? <Restoring restoring={restoring} /> : <TransactionsList short />}
       </Content>
       <ButtonsOnBottom>
