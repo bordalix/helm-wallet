@@ -2,14 +2,14 @@ import { useContext, useEffect, useState } from 'react'
 import Columns from './Columns'
 import Label from './Label'
 import { fromSatoshis, prettyNumber, toSatoshis } from '../lib/format'
-import { ConfigContext, Unit } from '../providers/config'
+import { Unit } from '../providers/config'
 import { FiatContext } from '../providers/fiat'
 
-enum UnitLabel {
-  BTC = 'BTC',
-  Euro = '€',
-  Sats = 'Sats',
-  USD = '$',
+const unitLabels = {
+  [Unit.SAT]: 'Sats',
+  [Unit.BTC]: 'BTC',
+  [Unit.EUR]: 'EUR',
+  [Unit.USD]: 'USD',
 }
 
 interface InputAmountProps {
@@ -18,27 +18,58 @@ interface InputAmountProps {
 }
 
 export default function InputAmount({ label, onChange }: InputAmountProps) {
-  const { config, updateConfig } = useContext(ConfigContext)
-  const { toEuro, toUSD } = useContext(FiatContext)
+  const { fromEuro, fromUSD, toEuro, toUSD } = useContext(FiatContext)
 
-  const [amount, setAmount] = useState('0')
-  const [sats, setSats] = useState(true)
+  const [amount, setAmount] = useState('')
+  const [sats, setSats] = useState(0)
+  const [unit, setUnit] = useState(Unit.SAT)
+
+  const nextUnit = () => {
+    switch (unit) {
+      case Unit.SAT:
+        return Unit.BTC
+      case Unit.BTC:
+        return Unit.EUR
+      case Unit.EUR:
+        return Unit.USD
+      case Unit.USD:
+        return Unit.SAT
+    }
+  }
 
   const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', '<']
 
   useEffect(() => {
-    setSats(!/\./.test(amount))
-    onChange(!/\./.test(amount) ? Number(amount) : toSatoshis(parseFloat(amount)))
+    const value =
+      unit === Unit.SAT
+        ? Number(amount)
+        : unit === Unit.BTC
+        ? toSatoshis(parseFloat(amount))
+        : unit === Unit.EUR
+        ? fromEuro(parseFloat(amount))
+        : unit === Unit.USD
+        ? fromUSD(parseFloat(amount))
+        : 0
+    setSats(Math.floor(value))
   }, [amount])
 
-  const unit = sats ? UnitLabel.Sats : UnitLabel.BTC
+  useEffect(() => {
+    onChange(sats)
+  }, [sats])
+
   const className =
     'w-full p-3 pr-6 text-sm text-right font-semibold rounded-l-md -mr-4 bg-gray-100 dark:bg-gray-800 focus-visible:outline-none'
+
   const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints // TODO
 
+  const handleUnitChange = (unit: Unit) => {
+    setAmount('')
+    setUnit(unit)
+  }
+
   const clickHandler = (key: string) => {
-    if (amount === '0' && key === '.') return setAmount('0.')
-    if (amount === '0' && key !== '<') return setAmount(key)
+    if (amount === '' && key === '.') return setAmount('0.')
+    if (amount === '' && key !== '<') return setAmount(key)
     if (key === '<') {
       const aux = amount.split('')
       return setAmount(aux.slice(0, aux.length - 1).join(''))
@@ -46,25 +77,27 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
     setAmount(amount + key)
   }
 
-  const alternativeAmount = () => {
-    if (!amount || isNaN(Number(amount))) return sats ? '0 BTC' : '0 sats'
-    return sats
-      ? prettyNumber(fromSatoshis(parseInt(amount))) + ' BTC'
-      : prettyNumber(toSatoshis(parseFloat(amount))) + ' sats'
-  }
-
-  const fiatAmount = () => {
-    const unit = !config.unit || config.unit === Unit.BTC ? Unit.EUR : config.unit
-    if (!amount || isNaN(Number(amount))) return
-    const _sats = sats ? Number(amount) : toSatoshis(Number(amount))
-    if (unit === Unit.EUR) return '€ ' + prettyNumber(toEuro(_sats), 2)
-    if (unit === Unit.USD) return '$ ' + prettyNumber(toUSD(_sats), 2)
-  }
-
-  const handleClickFiat = () => {
-    const unit = !config.unit || config.unit === Unit.BTC ? Unit.EUR : config.unit
-    if (unit === Unit.EUR) return updateConfig({ ...config, unit: Unit.USD })
-    if (unit === Unit.USD) return updateConfig({ ...config, unit: Unit.EUR })
+  const OtherAmounts = () => {
+    const values = [
+      [Unit.USD, prettyNumber(toUSD(sats), 2)],
+      [Unit.EUR, prettyNumber(toEuro(sats), 2)],
+      [Unit.SAT, prettyNumber(sats, 0)],
+      [Unit.BTC, prettyNumber(fromSatoshis(sats), 8)],
+    ].filter((row) => row[0] !== unit)
+    const commonClassNames = 'text-xs mb-2 sm:mb-4 sm:mt-2 truncate'
+    return (
+      <Columns cols={3}>
+        <p className={`${commonClassNames} text-left`} onClick={() => handleUnitChange(values[0][0] as Unit)}>
+          {values[0][1]} {unitLabels[values[0][0] as Unit]}
+        </p>
+        <p className={`${commonClassNames} text-center`} onClick={() => handleUnitChange(values[1][0] as Unit)}>
+          {values[1][1]} {unitLabels[values[1][0] as Unit]}
+        </p>
+        <p className={`${commonClassNames} text-right`} onClick={() => handleUnitChange(values[2][0] as Unit)}>
+          {values[2][1]} {unitLabels[values[2][0] as Unit]}
+        </p>
+      </Columns>
+    )
   }
 
   return (
@@ -74,17 +107,23 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
         {isMobile ? (
           <p className={className}>{amount}</p>
         ) : (
-          <input type='text' placeholder='0' onChange={(e) => setAmount(e.target.value)} className={className} />
+          <input
+            type='text'
+            placeholder='0'
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            className={className}
+          />
         )}
-        <div className='w-16 h-full flex items-center rounded-r-md text-sm bg-gray-400 text-gray-100 dark:text-gray-800'>
-          <div className='mx-auto font-semibold'>{unit}</div>
+        <div
+          className='w-16 h-full flex items-center rounded-r-md cursor-pointer text-sm bg-gray-800 dark:bg-gray-100 text-gray-100 dark:text-gray-800 border-gray-200 dark:border-gray-700'
+          onClick={() => handleUnitChange(nextUnit())}
+        >
+          <div className='mx-auto font-semibold'>{unitLabels[unit]}</div>
         </div>
       </div>
-      <div className='flex justify-between'>
-        <p className='text-xs mb-2 sm:mb-4 sm:mt-2 cursor-pointer' onClick={handleClickFiat}>
-          {fiatAmount()}
-        </p>
-        <p className='text-xs mb-2 sm:mb-4 sm:mt-2'>{alternativeAmount()}</p>
+      <div className='flex justify-between mb-4'>
+        <OtherAmounts />
       </div>
       {isMobile ? (
         <Columns cols={3}>

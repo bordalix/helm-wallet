@@ -17,6 +17,7 @@ export default function Balance({ sats }: BalanceProps) {
     [Unit.BTC]: prettyNumber(fromSatoshis(sats), 8) + ' BTC',
     [Unit.EUR]: prettyNumber(toEuro(sats), 2) + ' EUR',
     [Unit.USD]: prettyNumber(toUSD(sats), 2) + ' USD',
+    [Unit.SAT]: prettyNumber(sats, 0) + ' Sats',
   }
 
   const handleClick = () => {
@@ -25,6 +26,7 @@ export default function Balance({ sats }: BalanceProps) {
     if (unit === Unit.BTC) return updateConfig({ ...config, unit: Unit.EUR })
     if (unit === Unit.EUR) return updateConfig({ ...config, unit: Unit.USD })
     if (unit === Unit.USD) return updateConfig({ ...config, unit: Unit.BTC })
+    if (unit === Unit.SAT) return updateConfig({ ...config, unit: Unit.BTC })
   }
 
   const text = prettyNumber(sats) + ' sats'
