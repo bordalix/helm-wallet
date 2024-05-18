@@ -23,6 +23,7 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
   const [amount, setAmount] = useState('')
   const [sats, setSats] = useState(0)
   const [unit, setUnit] = useState(Unit.SAT)
+  const [lock, setLock] = useState(false)
 
   const nextUnit = () => {
     switch (unit) {
@@ -40,6 +41,7 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
   const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', '<']
 
   useEffect(() => {
+    if (lock) return setLock(false)
     const value =
       unit === Unit.SAT
         ? Number(amount)
@@ -63,7 +65,16 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
   const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints // TODO
 
   const handleUnitChange = (unit: Unit) => {
-    setAmount('')
+    setLock(true)
+    setAmount(
+      unit === Unit.SAT
+        ? String(sats)
+        : unit === Unit.BTC
+        ? prettyNumber(fromSatoshis(sats), 8)
+        : unit === Unit.USD
+        ? prettyNumber(toUSD(sats), 2)
+        : prettyNumber(toEuro(sats), 2),
+    )
     setUnit(unit)
   }
 
