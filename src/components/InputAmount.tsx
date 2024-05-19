@@ -67,7 +67,9 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
   const handleUnitChange = (unit: Unit) => {
     setLock(true)
     setAmount(
-      unit === Unit.SAT
+      sats === 0
+        ? ''
+        : unit === Unit.SAT
         ? String(sats)
         : unit === Unit.BTC
         ? prettyNumber(fromSatoshis(sats), 8)
