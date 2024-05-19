@@ -1,6 +1,8 @@
 // This optional code is used to register a service worker.
 // register() is not called by default.
 
+import { notifyNewUpdateAvailable } from './lib/notifications'
+
 // This lets the app load faster on subsequent visits in production, and gives
 // it offline capabilities. However, it also means that developers (and users)
 // will only see deployed updates on subsequent visits to a page, after all the
@@ -71,6 +73,7 @@ function registerValidSW(swUrl, config) {
                 'New content is available and will be used when all ' +
                   'tabs for this page are closed. See https://cra.link/PWA.',
               )
+              notifyNewUpdateAvailable()
 
               // Execute callback
               if (config && config.onUpdate) {
