@@ -5,30 +5,25 @@ export const requestPermission = async (): Promise<boolean> => {
   return result === 'granted'
 }
 
-export const notifyNewUpdateAvailable = () => {
-  const title = 'Update available'
-  const options = {
-    body: `Close all tabs and re-open to update`,
-    icon: '/favicon.png',
-  }
+const sendNotification = (title: string, body: string) => {
+  const options = { body, icon: '/favicon.png' }
   new Notification(title, options)
+}
+
+export const notifyNewUpdateAvailable = () => {
+  const body = 'Close all tabs and re-open to update'
+  const title = 'Update available'
+  sendNotification(title, body)
 }
 
 export const sendTestNotification = () => {
+  const body = 'If you read this, everything is ok'
   const title = 'Test notification'
-  const options = {
-    body: 'If you read this, everything is ok',
-    icon: '/favicon.png',
-  }
-  new Notification(title, options)
+  sendNotification(title, body)
 }
 
-// TODO
-export const paymentReceived = (sats: number) => {
+export const notifyPaymentReceived = (sats: number) => {
+  const body = `You received ${prettyNumber(sats)} sats`
   const title = 'Payment received'
-  const options = {
-    body: `You received ${prettyNumber(sats)} sats`,
-    icon: '/favicon.png',
-  }
-  new Notification(title, options)
+  sendNotification(title, body)
 }

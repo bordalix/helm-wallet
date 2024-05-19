@@ -17,6 +17,7 @@ import { NewAddress, generateAddress } from '../../../lib/address'
 import { ElectrumHistory } from '../../../lib/chainsource'
 import Loading from '../../../components/Loading'
 import { ConfigContext } from '../../../providers/config'
+import { notifyPaymentReceived } from '../../../lib/notifications'
 
 export default function ReceiveInvoice() {
   const { config } = useContext(ConfigContext)
@@ -42,6 +43,7 @@ export default function ReceiveInvoice() {
     setTimeout(() => reloadWallet(wallet), someSeconds)
     setTimeout(() => reloadWallet(wallet), inOneMinute)
     setRecvInfo({ ...recvInfo, txid })
+    notifyPaymentReceived(recvInfo.amount)
     navigate(Pages.ReceiveSuccess)
   }
 
