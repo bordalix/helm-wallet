@@ -35,7 +35,7 @@ export const updateCache = (cache: CacheInfo) => {
 
 export const cleanCache = () => saveCacheToStorage(defaultCache)
 
-// safe cache (never changes)
+/** safe cache (never changes) */
 export const getCachedBlockHeader = async (height: number, chainSource: ChainSource) => {
   const cache = getCache()
   const inCache = cache.blockHeaders.find((bh) => bh.height === height)
@@ -51,7 +51,7 @@ export interface AddressesHistory {
   history: ElectrumHistory[]
 }
 
-// Dangerous cache (updates often)
+/** Dangerous cache (updates often) */
 export const getCachedElectrumHistories = async (
   chainSource: ChainSource,
   wallet: Wallet,
@@ -81,14 +81,17 @@ export const getCachedElectrumHistories = async (
   return { histories, numTxs: uniqueTxHashes.size }
 }
 
-// safe cache (never changes)
-// a txid (aka tx_hash) has always the same hex and height (after confirmation)
-// {
-//   height: number
-//   hex: string
-//   tx_hash: string
-// }
-// this method finds hex and height for a given txid
+/**
+ * finds hex and height for a given txid
+ *
+ * safe cache (never changes)
+ * a txid (aka tx_hash) has always the same hex and height (after confirmation)
+ * {
+ *   height: number
+ *   hex: string
+ *   tx_hash: string
+ * }
+ */
 export const getCachedElectrumTransactions = async (
   histories: ElectrumHistory[],
   chainSource: ChainSource,
@@ -114,7 +117,7 @@ export const getCachedElectrumTransactions = async (
   return transactions
 }
 
-// safe cache (never changes)
+/** safe cache (never changes) */
 export const getCachedTransaction = async (txid: string, chainSource: ChainSource): Promise<string> => {
   const cache = getCache()
   const inCache = cache.txHexas.find((tx) => tx.txid === txid)

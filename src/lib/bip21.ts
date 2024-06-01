@@ -14,6 +14,7 @@ export interface Bip21Decoded {
   lnurl?: string
 }
 
+/** decode a bip21 uri */
 export const decode = (uri: string): Bip21Decoded => {
   if (!isBip21(uri)) throw new Error('Invalid BIP21 URI: ' + uri)
   let amount, destination, options, query
@@ -41,6 +42,7 @@ export const decode = (uri: string): Bip21Decoded => {
   return { amount, destination }
 }
 
+/** encode a destination into a bip21 uri */
 export const encode = (destination: string, options: any = {}, scheme = defaultScheme) => {
   const query = qs.stringify(options)
 

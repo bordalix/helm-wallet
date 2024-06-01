@@ -9,6 +9,11 @@ export type BlindingKeyPair = {
   privateKey: Buffer
 }
 
+/**
+ * unblind output with blinding private key
+ *
+ * output is found via parmas txHex and vout
+ */
 export const unblindOutput = async (
   vout: number,
   txHex: string,
@@ -21,6 +26,7 @@ export const unblindOutput = async (
   return { ...unblinded, prevout: tx.outs[vout] }
 }
 
+/** blind Pset */
 export const blindPset = async (pset: Pset, utxos: Utxo[]) => {
   if (!zkp) zkp = await zkpInit()
   const zkpValidator = new ZKPValidator(zkp as any)

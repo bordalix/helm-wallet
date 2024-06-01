@@ -4,7 +4,7 @@ import { Utxo } from './types'
 
 const utxoValue = (u: Utxo) => u.value || 0
 
-// coin selection strategy: accumulate utxos until value is achieved
+/** coin selection strategy: accumulate utxos until value is achieved */
 const accumulativeStrategy = (target: number, coins: Utxo[]): Utxo[] => {
   let totalValue = 0
   const selectedCoins = []
@@ -20,7 +20,7 @@ const accumulativeStrategy = (target: number, coins: Utxo[]): Utxo[] => {
   return []
 }
 
-// coin selection strategy: tries to get an exact value (no change)
+/** coin selection strategy: tries to get an exact value (no change) */
 const branchAndBoundStrategy = (target: number, coins: Utxo[]): Utxo[] | undefined => {
   const MAX_TRIES = 1_000
   const selected: number[] = []
@@ -95,7 +95,7 @@ const branchAndBoundStrategy = (target: number, coins: Utxo[]): Utxo[] | undefin
   return selected.map((i) => coins[i])
 }
 
-// select coins for given amount, with respective blinding private key
+/** select coins for given amount, with respective blinding private key */
 function sortAndSelect(amount: number, utxos: Utxo[]): Utxo[] {
   // sort utxos in descending order of value will decrease number of inputs
   // (and fees) but will increase utxo fragmentation
@@ -110,7 +110,7 @@ export interface CoinsSelected {
   coins: Utxo[]
   txfee: number
 }
-
+/** select coins for given amount */
 export const selectCoins = (amount: number, utxos: Utxo[]): CoinsSelected => {
   // find best coins combo to pay this amount
   let changeAmount = 0,
