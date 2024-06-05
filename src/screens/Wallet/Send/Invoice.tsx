@@ -43,9 +43,10 @@ export default function SendInvoice() {
 
   useEffect(() => {
     if (!pastedData) return
+    const data = pastedData.toLowerCase()
     setError('')
-    if (bip21.isBip21(pastedData)) {
-      const { address, amount, invoice, lnurl } = bip21.decode(pastedData)
+    if (bip21.isBip21(data)) {
+      const { address, amount, invoice, lnurl } = bip21.decode(data)
       if (address) {
         setSendInfo({ address: address, satoshis: amount })
         return navigate(amount ? Pages.SendDetails : Pages.SendAmount)
@@ -58,26 +59,26 @@ export default function SendInvoice() {
         return navigate(Pages.SendDetails)
       }
       if (lnurl) {
-        setSendInfo({ lnurl: pastedData })
+        setSendInfo({ lnurl: data })
         return navigate(Pages.SendAmount)
       }
       return setError('Unable to parse bip21')
     }
-    if (isValidLnUrl(pastedData)) {
-      setSendInfo({ lnurl: pastedData })
+    if (isValidLnUrl(data)) {
+      setSendInfo({ lnurl: data })
       return navigate(Pages.SendAmount)
     }
-    if (isLnInvoice(pastedData)) {
+    if (isLnInvoice(data)) {
       try {
-        if (wrongNetwork(pastedData)) return setError('Invoice from wrong network')
-        setSendInfo(decodeInvoice(pastedData))
+        if (wrongNetwork(data)) return setError('Invoice from wrong network')
+        setSendInfo(decodeInvoice(data))
         return navigate(Pages.SendDetails)
       } catch (e) {
         console.error(e)
         setError('Invalid invoice')
       }
     } else {
-      setSendInfo({ address: pastedData })
+      setSendInfo({ address: data })
       return navigate(Pages.SendAmount)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -87,7 +88,7 @@ export default function SendInvoice() {
     let data = await pasteFromClipboard()
     setButtonLabel('Pasted')
     setTimeout(() => setButtonLabel(defaultLabel), 2000)
-    setPastedData(data.toLowerCase())
+    setPastedData(data)
   }
 
   const handleCancel = () => {
