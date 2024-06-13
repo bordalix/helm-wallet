@@ -44,7 +44,7 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
     if (lock) return setLock(false)
     const value =
       unit === Unit.SAT
-        ? Number(amount)
+        ? Number(amount ?? 0)
         : unit === Unit.BTC
         ? toSatoshis(parseFloat(amount))
         : unit === Unit.EUR
@@ -67,7 +67,7 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
   const handleUnitChange = (unit: Unit) => {
     setLock(true)
     setAmount(
-      sats === 0
+      !sats
         ? ''
         : unit === Unit.SAT
         ? String(sats)
