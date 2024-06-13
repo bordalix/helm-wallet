@@ -12,13 +12,15 @@ import ScanIcon from '../../icons/Scan'
 import TransactionsList from '../../components/TransactionsList'
 import { BoltzContext } from '../../providers/boltz'
 import Restoring from '../../components/Restoring'
+import { ConfigContext } from '../../providers/config'
 
 export default function Wallet() {
   const { limits, maxAllowedAmount } = useContext(BoltzContext)
+  const { config } = useContext(ConfigContext)
   const { navigate } = useContext(NavigationContext)
   const { chainSource, reconnectChainSource, restoring, wallet } = useContext(WalletContext)
 
-  const canSend = maxAllowedAmount(wallet) > limits.minimal
+  const canSend = maxAllowedAmount(wallet) > limits.minimal && !config.pos
 
   const handleSend = () => {
     if (!chainSource.isConnected()) reconnectChainSource(wallet)

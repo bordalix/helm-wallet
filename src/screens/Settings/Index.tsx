@@ -26,6 +26,8 @@ import DarkThemeIcon from '../../icons/DarkTheme'
 import Theme from './Theme'
 import Tor from './Tor'
 import TorIcon from '../../icons/Tor'
+import Pos from './Pos'
+import PosIcon from '../../icons/Pos'
 
 enum Options {
   Menu = 'menu',
@@ -36,6 +38,7 @@ enum Options {
   Network = 'network',
   Notifications = 'notifications',
   Password = 'password',
+  Pos = 'PoS',
   Reload = 'reload',
   Reset = 'reset',
   Theme = 'theme',
@@ -84,6 +87,10 @@ export default function Settings() {
       option: Options.Password,
     },
     {
+      icon: <PosIcon />,
+      option: Options.Pos,
+    },
+    {
       icon: <ReloadIcon />,
       option: Options.Reload,
     },
@@ -115,7 +122,7 @@ export default function Settings() {
           <div>
             {validOptions().map(({ icon, option }) => (
               <div
-                className='flex justify-between cursor-pointer px-2.5 py-2 first:border-t-2 border-b-2 dark:border-gray-700'
+                className='flex justify-between cursor-pointer px-2.5 py-1.5 sm:py-2 first:border-t-2 border-b-2 dark:border-gray-700'
                 key={option}
                 onClick={() => setOption(option)}
               >
@@ -137,6 +144,7 @@ export default function Settings() {
         {option === Options.Network && <Network />}
         {option === Options.Notifications && <Notifications />}
         {option === Options.Password && <Password />}
+        {option === Options.Pos && <Pos />}
         {option === Options.Reload && <Reload />}
         {option === Options.Reset && <Reset backup={() => setOption(Options.Backup)} />}
         {option === Options.Theme && <Theme />}

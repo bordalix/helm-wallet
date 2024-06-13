@@ -15,6 +15,7 @@ export enum Unit {
 
 export interface Config {
   notifications: boolean
+  pos: boolean
   theme: Themes
   tor: boolean
   unit: Unit
@@ -22,6 +23,7 @@ export interface Config {
 
 const defaultConfig: Config = {
   notifications: false,
+  pos: false,
   theme: Themes.Light,
   tor: false,
   unit: Unit.BTC,
