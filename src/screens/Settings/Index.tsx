@@ -13,7 +13,6 @@ import Notifications from './Notifications'
 import { WalletContext } from '../../providers/wallet'
 import Reload from './Reload'
 import ReloadIcon from '../../icons/Reload'
-import EncryptIcon from '../../icons/Encrypt'
 import Backup from './Backup'
 import BackupIcon from '../../icons/Backup'
 import Password from './Password'
@@ -28,6 +27,7 @@ import Tor from './Tor'
 import TorIcon from '../../icons/Tor'
 import Pos from './Pos'
 import PosIcon from '../../icons/Pos'
+import PasswordIcon from '../../icons/Password'
 
 enum Options {
   Menu = 'menu',
@@ -83,7 +83,7 @@ export default function Settings() {
       option: Options.Notifications,
     },
     {
-      icon: <EncryptIcon />,
+      icon: <PasswordIcon />,
       option: Options.Password,
     },
     {
