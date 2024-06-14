@@ -7,6 +7,9 @@ module.exports = {
       fontSize: {
         xxs: '0.5rem',
       },
+      screens: {
+        tall: { raw: '(min-height: 800px)' },
+      },
     },
   },
   plugins: [],
