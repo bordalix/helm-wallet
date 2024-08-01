@@ -4,7 +4,7 @@ import { Transaction, address, crypto } from 'liquidjs-lib'
 import { Musig, OutputType, SwapTreeSerializer, detectSwap, targetFee } from 'boltz-core'
 import { TaprootUtils, constructClaimTransaction, init } from 'boltz-core/dist/lib/liquid'
 import { randomBytes } from 'crypto'
-import { ECPairFactory, ECPairInterface } from 'ecpair'
+import { ECPairFactory } from 'ecpair'
 import * as ecc from '@bitcoinerlab/secp256k1'
 import { getNetwork } from './network'
 import { Wallet } from '../providers/wallet'
@@ -12,6 +12,7 @@ import { getBoltzApiUrl, getBoltzWsUrl } from './boltz'
 import { satsVbyte } from './fees'
 import { MagicHint } from './lightning'
 import { Config } from '../providers/config'
+import { ClaimInfo, removeClaim, saveClaim } from './claims'
 
 /**
  * Reverse swap flow:
@@ -21,17 +22,10 @@ import { Config } from '../providers/config'
  * 4. user validates lightining invoice
  */
 
-const waitAndClaim = async (
-  createdResponse: ReverseSwapResponse,
-  destinationAddress: string,
-  preimage: Buffer,
-  keys: ECPairInterface,
-  config: Config,
-  wallet: Wallet,
-  onFinish: (txid: string) => void,
-) => {
+const waitAndClaim = async (claimInfo: ClaimInfo, config: Config, wallet: Wallet, onFinish: (txid: string) => void) => {
   let claimTx: Transaction
   const network = getNetwork(wallet.network)
+  const { createdResponse, destinationAddress, keys, preimage } = claimInfo
 
   // Create a WebSocket and subscribe to updates for the created swap
   const webSocket = new WebSocket(getBoltzWsUrl(wallet.network))
@@ -150,6 +144,7 @@ const waitAndClaim = async (
       case 'invoice.settled': {
         console.log()
         console.log('Swap successful!')
+        removeClaim(claimInfo)
         onFinish(claimTx.getId())
         webSocket.close()
         break
@@ -207,8 +202,21 @@ export const reverseSwap = async (
     })
   ).data as ReverseSwapResponse
 
+  // Show invoice on wallet UI
   onInvoice(createdResponse.invoice)
-  waitAndClaim(createdResponse, destinationAddress, preimage, keys, config, wallet, onFinish)
+
+  const claimInfo: ClaimInfo = {
+    createdResponse,
+    destinationAddress,
+    preimage,
+    keys,
+  }
+
+  // Save claim in storage: if it fails, we can try later
+  saveClaim(claimInfo)
+
+  // Wait for Boltz to lock funds onchain and than claim them
+  waitAndClaim(claimInfo, config, wallet, onFinish)
 }
 
 export const getLiquidAddress = async (
