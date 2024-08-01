@@ -4,7 +4,7 @@ import { Transaction, address, crypto } from 'liquidjs-lib'
 import { Musig, OutputType, SwapTreeSerializer, detectSwap, targetFee } from 'boltz-core'
 import { TaprootUtils, constructClaimTransaction, init } from 'boltz-core/dist/lib/liquid'
 import { randomBytes } from 'crypto'
-import { ECPairFactory } from 'ecpair'
+import { ECPairFactory, ECPairInterface } from 'ecpair'
 import * as ecc from '@bitcoinerlab/secp256k1'
 import { getNetwork } from './network'
 import { Wallet } from '../providers/wallet'
@@ -21,59 +21,18 @@ import { Config } from '../providers/config'
  * 4. user validates lightining invoice
  */
 
-export interface ReverseSwapResponse {
-  id: string
-  invoice: string
-  swapTree: {
-    claimLeaf: {
-      version: number
-      output: string
-    }
-    refundLeaf: {
-      version: number
-      output: string
-    }
-  }
-  blindingKey: string
-  lockupAddress: string
-  onchainAmount: number
-  refundPublicKey: string
-  timeoutBlockHeight: number
-}
-
-export const reverseSwap = async (
-  invoiceAmount: number,
+const waitAndClaim = async (
+  createdResponse: ReverseSwapResponse,
   destinationAddress: string,
+  preimage: Buffer,
+  keys: ECPairInterface,
   config: Config,
   wallet: Wallet,
   onFinish: (txid: string) => void,
-  onInvoice: (invoice: string) => void,
 ) => {
-  init(await zkpInit())
-
-  // Create a random preimage for the swap; has to have a length of 32 bytes
-  const preimage = randomBytes(32)
-  const keys = ECPairFactory(ecc).makeRandom()
-  const network = getNetwork(wallet.network)
-  const signature = keys.signSchnorr(crypto.sha256(Buffer.from(destinationAddress, 'utf-8')))
-
   let claimTx: Transaction
+  const network = getNetwork(wallet.network)
 
-  // Create a Submarine Swap
-  const createdResponse = (
-    await axios.post(`${getBoltzApiUrl(wallet.network, config.tor)}/v2/swap/reverse`, {
-      address: destinationAddress,
-      addressSignature: signature.toString('hex'),
-      claimPublicKey: keys.publicKey.toString('hex'),
-      from: 'BTC',
-      invoiceAmount,
-      preimageHash: crypto.sha256(preimage).toString('hex'),
-      referralId: 'helm',
-      to: 'L-BTC',
-    })
-  ).data as ReverseSwapResponse
-
-  onInvoice(createdResponse.invoice)
   // Create a WebSocket and subscribe to updates for the created swap
   const webSocket = new WebSocket(getBoltzWsUrl(wallet.network))
   webSocket.onopen = () => {
@@ -95,11 +54,11 @@ export const reverseSwap = async (
     switch (msg.args[0].status) {
       // "swap.created" means Boltz is waiting for the invoice to be paid
       case 'swap.created': {
-        console.log('Waiting invoice to be paid')
+        console.log('Waiting for invoice to be paid')
         break
       }
 
-      // "transaction.mempool" means that Boltz send an onchain transaction
+      // "transaction.mempool" means that Boltz sent an onchain transaction
       case 'transaction.mempool': {
         const boltzPublicKey = Buffer.from(createdResponse.refundPublicKey, 'hex')
 
@@ -197,6 +156,59 @@ export const reverseSwap = async (
       }
     }
   }
+}
+
+export interface ReverseSwapResponse {
+  id: string
+  invoice: string
+  swapTree: {
+    claimLeaf: {
+      version: number
+      output: string
+    }
+    refundLeaf: {
+      version: number
+      output: string
+    }
+  }
+  blindingKey: string
+  lockupAddress: string
+  onchainAmount: number
+  refundPublicKey: string
+  timeoutBlockHeight: number
+}
+
+export const reverseSwap = async (
+  invoiceAmount: number,
+  destinationAddress: string,
+  config: Config,
+  wallet: Wallet,
+  onFinish: (txid: string) => void,
+  onInvoice: (invoice: string) => void,
+) => {
+  init(await zkpInit())
+
+  // Create a random preimage for the swap; has to have a length of 32 bytes
+  const preimage = randomBytes(32)
+  const keys = ECPairFactory(ecc).makeRandom()
+  const signature = keys.signSchnorr(crypto.sha256(Buffer.from(destinationAddress, 'utf-8')))
+
+  // Create a Submarine Swap
+  const createdResponse = (
+    await axios.post(`${getBoltzApiUrl(wallet.network, config.tor)}/v2/swap/reverse`, {
+      address: destinationAddress,
+      addressSignature: signature.toString('hex'),
+      claimPublicKey: keys.publicKey.toString('hex'),
+      from: 'BTC',
+      invoiceAmount,
+      preimageHash: crypto.sha256(preimage).toString('hex'),
+      referralId: 'helm',
+      to: 'L-BTC',
+    })
+  ).data as ReverseSwapResponse
+
+  onInvoice(createdResponse.invoice)
+  waitAndClaim(createdResponse, destinationAddress, preimage, keys, config, wallet, onFinish)
 }
 
 export const getLiquidAddress = async (
