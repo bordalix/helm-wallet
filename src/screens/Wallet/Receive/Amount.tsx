@@ -9,6 +9,7 @@ import InputAmount from '../../../components/InputAmount'
 import { BoltzContext } from '../../../providers/boltz'
 import Container from '../../../components/Container'
 import { prettyNumber } from '../../../lib/format'
+import Input from '../../../components/Input'
 
 enum ButtonLabel {
   Low = 'Amount too low',
@@ -22,14 +23,19 @@ export default function ReceiveAmount() {
   const { limits } = useContext(BoltzContext)
 
   const [amount, setAmount] = useState(0)
+  const [note, setNote] = useState('')
 
   const handleCancel = () => {
     setRecvInfo(emptyRecvInfo)
     navigate(Pages.Wallet)
   }
 
+  const handleNoteChange = (e: any) => {
+    setNote(e.target.value)
+  }
+
   const handleProceed = () => {
-    setRecvInfo({ amount, total: 0 })
+    setRecvInfo({ amount, note, total: 0 })
     navigate(Pages.ReceiveFees)
   }
 
@@ -42,6 +48,7 @@ export default function ReceiveAmount() {
       <Content>
         <Title text='Receive' subtext={`Min: ${prettyNumber(minimal)} · Max: ${prettyNumber(maximal)} sats`} />
         <InputAmount label='Amount' onChange={setAmount} />
+        <Input label='Note' onChange={handleNoteChange} subtext='Will be visible on invoice' optional />
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handleProceed} label={label} disabled={disabled} />

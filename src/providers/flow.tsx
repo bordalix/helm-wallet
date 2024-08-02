@@ -10,6 +10,7 @@ export interface InitInfo {
 
 export interface RecvInfo {
   amount: number
+  note: string
   total: number
   swapResponse?: ReverseSwapResponse
   txid?: string
@@ -49,6 +50,7 @@ export const emptyInitInfo: InitInfo = {
 
 export const emptyRecvInfo: RecvInfo = {
   amount: 0,
+  note: '',
   total: 0,
 }
 

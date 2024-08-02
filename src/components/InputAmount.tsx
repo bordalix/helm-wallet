@@ -139,17 +139,19 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
         <OtherAmounts />
       </div>
       {isMobile ? (
-        <Columns cols={3}>
-          {keys.map((k) => (
-            <p
-              key={k}
-              className='text-center p-3 sm:p-5 bg-gray-100 dark:bg-gray-800 select-none'
-              onClick={() => clickHandler(k)}
-            >
-              {k}
-            </p>
-          ))}
-        </Columns>
+        <div className='mb-4'>
+          <Columns cols={3}>
+            {keys.map((k) => (
+              <p
+                key={k}
+                className='text-center p-3 sm:p-5 bg-gray-100 dark:bg-gray-800 select-none'
+                onClick={() => clickHandler(k)}
+              >
+                {k}
+              </p>
+            ))}
+          </Columns>
+        </div>
       ) : null}
     </fieldset>
   )

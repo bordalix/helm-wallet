@@ -13,6 +13,7 @@ import { satsVbyte } from './fees'
 import { MagicHint } from './lightning'
 import { Config } from '../providers/config'
 import { ClaimInfo, removeClaim, saveClaim } from './claims'
+import { RecvInfo } from '../providers/flow'
 
 /**
  * Reverse swap flow:
@@ -191,7 +192,7 @@ export interface ReverseSwapResponse {
 }
 
 export const reverseSwap = async (
-  invoiceAmount: number,
+  recvInfo: RecvInfo,
   destinationAddress: string,
   config: Config,
   wallet: Wallet,
@@ -202,6 +203,7 @@ export const reverseSwap = async (
   const preimage = randomBytes(32)
   const keys = ECPairFactory(ecc).makeRandom()
   const signature = keys.signSchnorr(crypto.sha256(Buffer.from(destinationAddress, 'utf-8')))
+  const invoiceAmount = Number(recvInfo.amount)
 
   // Create a Reverse Submarine Swap
   const createdResponse = (
@@ -209,6 +211,7 @@ export const reverseSwap = async (
       address: destinationAddress,
       addressSignature: signature.toString('hex'),
       claimPublicKey: keys.publicKey.toString('hex'),
+      description: recvInfo.note,
       from: 'BTC',
       invoiceAmount,
       preimageHash: crypto.sha256(preimage).toString('hex'),

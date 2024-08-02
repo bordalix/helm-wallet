@@ -63,7 +63,7 @@ export default function ReceiveInvoice() {
       try {
         generateAddress(wallet).then((addr) => {
           setAddress(addr)
-          reverseSwap(Number(recvInfo.amount), addr.confidentialAddress, config, wallet, onFinish, setInvoice)
+          reverseSwap(recvInfo, addr.confidentialAddress, config, wallet, onFinish, setInvoice)
           chainSource.waitForAddressReceivesTx(addr.address).then(() => {
             chainSource.fetchHistories([addr.script]).then((histories: ElectrumHistory[]) => {
               const newTx = histories.find((tx) => tx.height <= 0)
