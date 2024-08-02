@@ -53,7 +53,15 @@ export default function About() {
               (or <span className='font-semibold'>{prettyNumber(maxAmount.liquid)}</span> sats if other Helm wallet)
             </p>
           ) : null}
-          <p>Made with 🧡 by @bordalix</p>
+          <p>
+            Made with 🧡 by{' '}
+            <a
+              className='underline cursor-pointer'
+              href='https://njump.me/npub1vt803quxxq32fuwkp42g2lyaw2t9qupvnl3z0vyc3s9kudkyhn8qt28cxv'
+            >
+              @bordalix
+            </a>
+          </p>
           <p className='underline cursor-pointer'>
             <a href='https://github.com/bordalix/helm-wallet'>Github</a>
           </p>
