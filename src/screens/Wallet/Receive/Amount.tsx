@@ -32,11 +32,8 @@ export default function ReceiveAmount() {
     navigate(Pages.Wallet)
   }
 
-  const handleNoteChange = (e: any) => {
-    setNote(e.target.value)
-  }
-
   const handleProceed = () => {
+    console.log({ amount, note, total: 0 })
     setRecvInfo({ amount, note, total: 0 })
     navigate(Pages.ReceiveFees)
   }
@@ -46,21 +43,21 @@ export default function ReceiveAmount() {
   const label = amount < limits.minimal ? ButtonLabel.Low : amount > limits.maximal ? ButtonLabel.High : ButtonLabel.Ok
   const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints // TODO
 
-  const InputNote = () => (
-    <Input
-      label='Note'
-      onChange={handleNoteChange}
-      subtext='Will be visible on invoice'
-      placeholder={defaultInvoiceNote}
-      optional
-    />
-  )
-
   return (
     <Container>
       <Content>
         <Title text='Receive' subtext={`Min: ${prettyNumber(minimal)} · Max: ${prettyNumber(maximal)} sats`} />
-        {showNote ? <InputNote /> : <InputAmount label='Amount' onChange={setAmount} />}
+        {showNote ? (
+          <Input
+            label='Note'
+            onChange={(e) => setNote(e.target.value)}
+            subtext='Will be visible on invoice'
+            placeholder={defaultInvoiceNote}
+            optional
+          />
+        ) : (
+          <InputAmount label='Amount' onChange={setAmount} />
+        )}
         {isMobile ? (
           showNote ? (
             <p className='mt-4' onClick={() => setShowNote(false)}>
@@ -71,7 +68,13 @@ export default function ReceiveAmount() {
           )
         ) : (
           <div className='mt-10'>
-            <InputNote />
+            <Input
+              label='Note'
+              onChange={(e) => setNote(e.target.value)}
+              subtext='Will be visible on invoice'
+              placeholder={defaultInvoiceNote}
+              optional
+            />
           </div>
         )}
       </Content>
