@@ -54,14 +54,13 @@ export const waitAndClaim = async (
 
   webSocket.onmessage = async (rawMsg) => {
     const msg = JSON.parse(rawMsg.data)
-    if (msg.event !== 'update') {
-      return
-    }
+    console.log('msg', msg)
 
-    if (msg.args[0].error && msg.args[0].id === createdResponse.id) {
-      closeAndRemoveClaim()
-      return
-    }
+    if (msg.event !== 'update') return
+
+    if (msg.args[0].id !== createdResponse.id) return
+
+    if (msg.args[0].error) return closeAndRemoveClaim()
 
     switch (msg.args[0].status) {
       // "swap.created" means Boltz is waiting for the invoice to be paid
