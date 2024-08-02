@@ -21,7 +21,7 @@ export default function Input({ label, left, onChange, optional, placeholder, ri
 
   return (
     <fieldset className='w-full text-gray-800 dark:text-gray-100'>
-      <div className='flex justify-between'>
+      <div className='flex justify-between items-center'>
         {label ? <Label text={label} /> : null}
         {optional ? <p className='text-xs'>Optional</p> : null}
       </div>
@@ -30,7 +30,7 @@ export default function Input({ label, left, onChange, optional, placeholder, ri
         <input className={inputClassName} onChange={onChange} placeholder={placeholder} type={type ?? 'text'} />
         {right ? <p className={`${commonSidesClassName} rounded-r-md`}>{right}</p> : null}
       </div>
-      {subtext ? <p className='text-xs'>{subtext}</p> : null}
+      {subtext ? <p className='text-xs mb-2 sm:mb-4 sm:mt-2'>{subtext}</p> : null}
     </fieldset>
   )
 }

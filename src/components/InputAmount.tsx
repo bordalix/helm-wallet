@@ -135,7 +135,7 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
           <div className='mx-auto font-semibold'>{unitLabels[unit]}</div>
         </div>
       </div>
-      <div className='flex justify-between mb-4'>
+      <div className='flex justify-between'>
         <OtherAmounts />
       </div>
       {isMobile ? (
@@ -144,7 +144,7 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
             {keys.map((k) => (
               <p
                 key={k}
-                className='text-center p-3 sm:p-5 bg-gray-100 dark:bg-gray-800 select-none'
+                className='text-center p-3 sm:p-5 bg-gray-100 dark:bg-gray-800 rounded-md select-none'
                 onClick={() => clickHandler(k)}
               >
                 {k}

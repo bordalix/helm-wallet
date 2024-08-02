@@ -24,6 +24,7 @@ export default function ReceiveAmount() {
 
   const [amount, setAmount] = useState(0)
   const [note, setNote] = useState('')
+  const [showNote, setShowNote] = useState(false)
 
   const handleCancel = () => {
     setRecvInfo(emptyRecvInfo)
@@ -42,13 +43,30 @@ export default function ReceiveAmount() {
   const { minimal, maximal } = limits
   const disabled = amount < minimal || amount > maximal
   const label = amount < limits.minimal ? ButtonLabel.Low : amount > limits.maximal ? ButtonLabel.High : ButtonLabel.Ok
+  const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints // TODO
+
+  const InputNote = () => (
+    <Input label='Note' onChange={handleNoteChange} subtext='Will be visible on invoice' optional />
+  )
 
   return (
     <Container>
       <Content>
         <Title text='Receive' subtext={`Min: ${prettyNumber(minimal)} · Max: ${prettyNumber(maximal)} sats`} />
-        <InputAmount label='Amount' onChange={setAmount} />
-        <Input label='Note' onChange={handleNoteChange} subtext='Will be visible on invoice' optional />
+        {showNote ? <InputNote /> : <InputAmount label='Amount' onChange={setAmount} />}
+        {isMobile ? (
+          showNote ? (
+            <p className='mt-4' onClick={() => setShowNote(false)}>
+              Back to amount
+            </p>
+          ) : (
+            <p onClick={() => setShowNote(true)}>Add optional note</p>
+          )
+        ) : (
+          <div className='mt-10'>
+            <InputNote />
+          </div>
+        )}
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handleProceed} label={label} disabled={disabled} />
