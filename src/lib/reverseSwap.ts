@@ -22,10 +22,22 @@ import { ClaimInfo, removeClaim, saveClaim } from './claims'
  * 4. user validates lightining invoice
  */
 
-const waitAndClaim = async (claimInfo: ClaimInfo, config: Config, wallet: Wallet, onFinish: (txid: string) => void) => {
+export const waitAndClaim = async (
+  claimInfo: ClaimInfo,
+  config: Config,
+  wallet: Wallet,
+  onFinish: (txid: string) => void,
+) => {
+  init(await zkpInit())
   let claimTx: Transaction
   const network = getNetwork(wallet.network)
   const { createdResponse, destinationAddress, keys, preimage } = claimInfo
+
+  const closeAndRemoveClaim = () => {
+    removeClaim(claimInfo, wallet.network)
+    onFinish(claimTx ? claimTx.getId() : '')
+    webSocket.close()
+  }
 
   // Create a WebSocket and subscribe to updates for the created swap
   const webSocket = new WebSocket(getBoltzWsUrl(wallet.network))
@@ -45,6 +57,11 @@ const waitAndClaim = async (claimInfo: ClaimInfo, config: Config, wallet: Wallet
       return
     }
 
+    if (msg.args[0].error && msg.args[0].id === createdResponse.id) {
+      closeAndRemoveClaim()
+      return
+    }
+
     switch (msg.args[0].status) {
       // "swap.created" means Boltz is waiting for the invoice to be paid
       case 'swap.created': {
@@ -52,8 +69,10 @@ const waitAndClaim = async (claimInfo: ClaimInfo, config: Config, wallet: Wallet
         break
       }
 
-      // "transaction.mempool" means that Boltz sent an onchain transaction
-      case 'transaction.mempool': {
+      // Boltz's lockup transaction is found in the mempool (or already confirmed)
+      // which will only happen after the user paid the Lightning hold invoice
+      case 'transaction.mempool':
+      case 'transaction.confirmed': {
         const boltzPublicKey = Buffer.from(createdResponse.refundPublicKey, 'hex')
 
         // Create a musig signing session and tweak it with the Taptree of the swap scripts
@@ -144,9 +163,7 @@ const waitAndClaim = async (claimInfo: ClaimInfo, config: Config, wallet: Wallet
       case 'invoice.settled': {
         console.log()
         console.log('Swap successful!')
-        removeClaim(claimInfo)
-        onFinish(claimTx.getId())
-        webSocket.close()
+        closeAndRemoveClaim()
         break
       }
     }
@@ -181,14 +198,12 @@ export const reverseSwap = async (
   onFinish: (txid: string) => void,
   onInvoice: (invoice: string) => void,
 ) => {
-  init(await zkpInit())
-
   // Create a random preimage for the swap; has to have a length of 32 bytes
   const preimage = randomBytes(32)
   const keys = ECPairFactory(ecc).makeRandom()
   const signature = keys.signSchnorr(crypto.sha256(Buffer.from(destinationAddress, 'utf-8')))
 
-  // Create a Submarine Swap
+  // Create a Reverse Submarine Swap
   const createdResponse = (
     await axios.post(`${getBoltzApiUrl(wallet.network, config.tor)}/v2/swap/reverse`, {
       address: destinationAddress,
@@ -213,7 +228,7 @@ export const reverseSwap = async (
   }
 
   // Save claim in storage: if it fails, we can try later
-  saveClaim(claimInfo)
+  saveClaim(claimInfo, wallet.network)
 
   // Wait for Boltz to lock funds onchain and than claim them
   waitAndClaim(claimInfo, config, wallet, onFinish)

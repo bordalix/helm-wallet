@@ -3,7 +3,7 @@ import { Config } from '../providers/config'
 import { getNetworkNames } from './network'
 import { Wallet } from '../providers/wallet'
 import { CacheInfo } from './cache'
-import { ClaimInfoStored } from './claims'
+import { Claims } from './claims'
 
 export const clearStorage = () => {
   return localStorage.clear()
@@ -66,11 +66,11 @@ export const readCacheFromStorage = (): CacheInfo | undefined => {
   return cache ? JSON.parse(cache) : undefined
 }
 
-export const saveClaimsToStorage = (claims: ClaimInfoStored[]): void => {
+export const saveClaimsToStorage = (claims: Claims): void => {
   localStorage.setItem('claims', JSON.stringify(claims))
 }
 
-export const readClaimsFromStorage = (): ClaimInfoStored[] => {
+export const readClaimsFromStorage = (): Claims => {
   const claims = localStorage.getItem('claims')
-  return claims ? JSON.parse(claims) : []
+  return claims ? JSON.parse(claims) : {}
 }

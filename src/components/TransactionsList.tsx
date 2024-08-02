@@ -23,7 +23,7 @@ const TransactionLine = ({ data, wallet }: { data: Transaction; wallet: Wallet }
 
 export default function TransactionsList({ short }: { short?: boolean }) {
   const { navigate } = useContext(NavigationContext)
-  const { reloading, reloadWallet, wallet } = useContext(WalletContext)
+  const { claiming, reloading, reloadWallet, wallet } = useContext(WalletContext)
 
   const transactions = wallet.transactions[wallet.network]
 
@@ -41,6 +41,8 @@ export default function TransactionsList({ short }: { short?: boolean }) {
         <Label text={`${short ? 'Last' : 'All'} transactions`} />
         {reloading ? (
           <Label text='Reloading...' pulse />
+        ) : claiming ? (
+          <Label text='Claiming...' pulse />
         ) : (
           <Label onClick={handleReload} pointer text={`Updated ${prettyAgo(wallet.lastUpdate)}`} />
         )}

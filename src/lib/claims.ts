@@ -2,6 +2,7 @@ import { ReverseSwapResponse } from './reverseSwap'
 import { ECPairFactory, ECPairInterface } from 'ecpair'
 import { readClaimsFromStorage, saveClaimsToStorage } from './storage'
 import * as ecc from '@bitcoinerlab/secp256k1'
+import { NetworkName } from './network'
 
 export interface ClaimInfo {
   createdResponse: ReverseSwapResponse
@@ -17,30 +18,38 @@ export interface ClaimInfoStored {
   wif: string
 }
 
-export const getClaims = () => {
-  return readClaimsFromStorage().map((c) => ({
+export type Claims = Record<NetworkName, ClaimInfoStored[]>
+
+export const getClaims = (network: NetworkName): ClaimInfo[] => {
+  const claims = readClaimsFromStorage()
+  if (!claims[network]) return []
+  return claims[network].map((c) => ({
     ...c,
     keys: ECPairFactory(ecc).fromWIF(c.wif),
     preimage: Buffer.from(c.preimage, 'base64'),
   }))
 }
 
-export const removeClaim = (claim: ClaimInfo) => {
-  saveClaimsToStorage(readClaimsFromStorage().filter((c) => c.createdResponse.id !== claim.createdResponse.id))
+export const removeClaim = (claim: ClaimInfo, network: NetworkName) => {
+  const claims = readClaimsFromStorage()
+  if (!claims[network]) return []
+  claims[network] = claims[network].filter((c) => c.createdResponse.id !== claim.createdResponse.id)
+  saveClaimsToStorage(claims)
 }
 
-export const saveClaim = (claim: ClaimInfo) => {
+export const saveClaim = (claim: ClaimInfo, network: NetworkName) => {
   const claims = readClaimsFromStorage()
-  if (claims.find((c) => c.createdResponse.id === claim.createdResponse.id)) {
-    console.log('claim already in storage')
-    return
-  }
+  if (!claims[network]) claims[network] = []
+  if (claims[network].find((c) => c.createdResponse.id === claim.createdResponse.id)) return
+
   const { createdResponse, destinationAddress } = claim
-  claims.push({
+
+  claims[network].push({
     createdResponse,
     destinationAddress,
     preimage: claim.preimage.toString('base64'),
     wif: claim.keys.toWIF(),
   })
+
   saveClaimsToStorage(claims)
 }
