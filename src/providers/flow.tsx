@@ -50,7 +50,7 @@ export const emptyInitInfo: InitInfo = {
 
 export const emptyRecvInfo: RecvInfo = {
   amount: 0,
-  note: '',
+  note: 'Helm invoice',
   total: 0,
 }
 
