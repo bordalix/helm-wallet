@@ -10,8 +10,6 @@ import { restore } from '../lib/restore'
 import { ConfigContext } from './config'
 import { cleanCache, getCachedElectrumHistories } from '../lib/cache'
 import { extractError } from '../lib/error'
-import { getClaims, removeClaim } from '../lib/claims'
-import { waitAndClaim } from '../lib/reverseSwap'
 
 let chainSource = new WsElectrumChainSource(defaultExplorer, defaultNetwork)
 
@@ -62,7 +60,6 @@ interface WalletContextProps {
   chainSource: ChainSource
   changeExplorer: (e: ExplorerName) => void
   changeNetwork: (n: NetworkName) => void
-  claiming: boolean
   loadingWallet: boolean
   reloading: boolean
   restoring: number
@@ -82,7 +79,6 @@ export const WalletContext = createContext<WalletContextProps>({
   chainSource,
   changeExplorer: () => {},
   changeNetwork: () => {},
-  claiming: false,
   loadingWallet: true,
   reloading: false,
   restoring: 0,
@@ -102,7 +98,6 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const { config, loadingConfig, updateConfig } = useContext(ConfigContext)
   const { navigate } = useContext(NavigationContext)
 
-  const [claiming, setClaiming] = useState(false)
   const [loadingWallet, setLoadingWallet] = useState(true)
   const [reloading, setReloading] = useState(false)
   const [restoring, setRestoring] = useState(0)
@@ -136,19 +131,6 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     if (wallet.initialized) reloadWallet(clone)
   }
 
-  const claimPendingSwaps = async (wallet: Wallet) => {
-    const claims = getClaims(wallet.network)
-    if (claims.length > 0) {
-      setClaiming(true)
-      const tip = await chainSource.fetchChainTip()
-      for (const claim of claims) {
-        const expired = claim.createdResponse.timeoutBlockHeight <= tip
-        if (expired) removeClaim(claim, wallet.network)
-        else waitAndClaim(claim, config, wallet, () => setClaiming(false))
-      }
-    }
-  }
-
   const increaseIndex = () => {
     const clone = { ...wallet }
     const currentValue = clone.nextIndex[wallet.network]
@@ -173,7 +155,6 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     clone.lastUpdate = Math.floor(Date.now() / 1000)
     updateWallet(clone)
     setReloading(false)
-    claimPendingSwaps(clone)
   }
 
   const restoreWallet = async (w: Wallet) => {
@@ -236,7 +217,6 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
         chainSource,
         changeExplorer,
         changeNetwork,
-        claiming,
         loadingWallet,
         reloading,
         restoring,

@@ -73,6 +73,9 @@ export const waitAndClaim = async (
       // which will only happen after the user paid the Lightning hold invoice
       case 'transaction.mempool':
       case 'transaction.confirmed': {
+        // save claim to retry later if claim tx fails
+        saveClaim(claimInfo, wallet.network)
+
         const boltzPublicKey = Buffer.from(createdResponse.refundPublicKey, 'hex')
 
         // Create a musig signing session and tweak it with the Taptree of the swap scripts
@@ -228,9 +231,6 @@ export const reverseSwap = async (
     preimage,
     keys,
   }
-
-  // Save claim in storage: if it fails, we can try later
-  saveClaim(claimInfo, wallet.network)
 
   // Wait for Boltz to lock funds onchain and than claim them
   waitAndClaim(claimInfo, config, wallet, onFinish)
