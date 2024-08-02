@@ -43,7 +43,8 @@ export default function ReceiveInvoice() {
     setTimeout(() => reloadWallet(wallet), someSeconds)
     setTimeout(() => reloadWallet(wallet), inOneMinute)
     setRecvInfo({ ...recvInfo, txid })
-    notifyPaymentReceived(recvInfo.amount)
+    console.log('recvInfo', recvInfo)
+    notifyPaymentReceived(recvInfo.total)
     navigate(Pages.ReceiveSuccess)
   }
 

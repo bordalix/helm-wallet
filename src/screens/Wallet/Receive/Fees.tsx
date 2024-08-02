@@ -20,7 +20,10 @@ export default function ReceiveFees() {
     navigate(Pages.Wallet)
   }
 
-  const handleContinue = () => navigate(Pages.ReceiveInvoice)
+  const handleContinue = () => {
+    setRecvInfo({ ...recvInfo, total })
+    navigate(Pages.ReceiveInvoice)
+  }
 
   const { amount } = recvInfo
   const { boltzFees, minerFees } = expectedFees(amount, 'recv')

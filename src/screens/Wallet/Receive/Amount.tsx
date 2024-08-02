@@ -29,7 +29,7 @@ export default function ReceiveAmount() {
   }
 
   const handleProceed = () => {
-    setRecvInfo({ amount })
+    setRecvInfo({ amount, total: 0 })
     navigate(Pages.ReceiveFees)
   }
 
