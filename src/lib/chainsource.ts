@@ -36,6 +36,7 @@ export type ChainSource = {
   close(): Promise<void>
   fetchHistories(scripts: Buffer[]): Promise<ElectrumHistory[]>
   fetchBlockHeader(height: number): Promise<ElectrumBlockHeader>
+  fetchChainTip(): Promise<number>
   fetchTransactions(txs: ElectrumHistory[]): Promise<ElectrumTransaction[]>
   fetchSingleTransaction(txid: string): Promise<string>
   isConnected(): boolean
@@ -48,6 +49,7 @@ const GetTransactionMethod = 'blockchain.transaction.get'
 const GetHistoryMethod = 'blockchain.scripthash.get_history'
 const GetBlockHeaderMethod = 'blockchain.block.header'
 const ListUnspentMethod = 'blockchain.scripthash.listunspent'
+const SubscribeHeadersMethod = 'blockchain.headers.subscribe'
 const SubscribeStatusMethod = 'blockchain.scripthash' // ElectrumWS add .subscribe to this
 
 export class WsElectrumChainSource implements ChainSource {
@@ -77,6 +79,11 @@ export class WsElectrumChainSource implements ChainSource {
   async fetchBlockHeader(height: number): Promise<ElectrumBlockHeader> {
     const hex = await this.ws.request<string>(GetBlockHeaderMethod, height)
     return deserializeBlockHeader(hex)
+  }
+
+  async fetchChainTip(): Promise<number> {
+    const hex = await this.ws.request<{ height: number; hex: string }>(SubscribeHeadersMethod)
+    return hex ? hex.height : 0
   }
 
   async fetchSingleTransaction(txid: string): Promise<string> {
