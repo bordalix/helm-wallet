@@ -10,6 +10,7 @@ import { BoltzContext } from '../../../providers/boltz'
 import Container from '../../../components/Container'
 import { prettyNumber } from '../../../lib/format'
 import Input from '../../../components/Input'
+import { defaultInvoiceNote } from '../../../lib/constants'
 
 enum ButtonLabel {
   Low = 'Amount too low',
@@ -46,7 +47,13 @@ export default function ReceiveAmount() {
   const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints // TODO
 
   const InputNote = () => (
-    <Input label='Note' onChange={handleNoteChange} subtext='Will be visible on invoice' optional />
+    <Input
+      label='Note'
+      onChange={handleNoteChange}
+      subtext='Will be visible on invoice'
+      placeholder={defaultInvoiceNote}
+      optional
+    />
   )
 
   return (
