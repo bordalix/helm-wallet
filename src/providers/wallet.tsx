@@ -10,6 +10,7 @@ import { restore } from '../lib/restore'
 import { ConfigContext } from './config'
 import { cleanCache, getCachedElectrumHistories } from '../lib/cache'
 import { extractError } from '../lib/error'
+import { deleteExpiredClaims } from '../lib/claims'
 
 let chainSource = new WsElectrumChainSource(defaultExplorer, defaultNetwork)
 
@@ -155,6 +156,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     clone.lastUpdate = Math.floor(Date.now() / 1000)
     updateWallet(clone)
     setReloading(false)
+    deleteExpiredClaims(chainSource, clone.network)
   }
 
   const restoreWallet = async (w: Wallet) => {

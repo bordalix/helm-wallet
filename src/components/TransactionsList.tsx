@@ -6,7 +6,7 @@ import { prettyAgo, prettyNumber } from '../lib/format'
 import ArrowIcon from '../icons/Arrow'
 import { NavigationContext, Pages } from '../providers/navigation'
 import { openInNewTab } from '../lib/explorers'
-import { ClaimInfo, getClaims, removeClaim } from '../lib/claims'
+import { ClaimInfo, getClaims } from '../lib/claims'
 import { waitAndClaim } from '../lib/reverseSwap'
 import { ConfigContext } from '../providers/config'
 
@@ -35,7 +35,7 @@ const PendingClaim = ({ claim, onClick }: { claim: ClaimInfo; onClick: any }) =>
 export default function TransactionsList({ short }: { short?: boolean }) {
   const { config } = useContext(ConfigContext)
   const { navigate } = useContext(NavigationContext)
-  const { chainSource, reloading, reloadWallet, wallet } = useContext(WalletContext)
+  const { reloading, reloadWallet, wallet } = useContext(WalletContext)
 
   const [claiming, setClaiming] = useState(false)
 
@@ -55,17 +55,9 @@ export default function TransactionsList({ short }: { short?: boolean }) {
     reloadWallet(wallet)
   }
 
-  const claimPendingSwaps = async () => {
-    const claims = getClaims(wallet.network)
-    if (claims.length > 0) {
-      setClaiming(true)
-      const tip = await chainSource.fetchChainTip()
-      for (const claim of claims) {
-        const expired = claim.createdResponse.timeoutBlockHeight <= tip
-        if (expired) removeClaim(claim, wallet.network)
-        else waitAndClaim(claim, config, wallet, handleFinishClaim)
-      }
-    }
+  const claimPendingSwap = (claim: ClaimInfo) => {
+    setClaiming(true)
+    waitAndClaim(claim, config, wallet, handleFinishClaim)
   }
 
   return (
@@ -85,7 +77,7 @@ export default function TransactionsList({ short }: { short?: boolean }) {
           l.txid ? (
             <TransactionLine key={`${l.amount} ${l.txid}`} data={l} wallet={wallet} />
           ) : (
-            <PendingClaim key={l.createdResponse.id} claim={l} onClick={claimPendingSwaps} />
+            <PendingClaim key={l.createdResponse.id} claim={l} onClick={() => claimPendingSwap(l)} />
           ),
         )}
         {short && transactions.length > showMax ? (

@@ -3,6 +3,7 @@ import { ECPairFactory, ECPairInterface } from 'ecpair'
 import { readClaimsFromStorage, saveClaimsToStorage } from './storage'
 import * as ecc from '@bitcoinerlab/secp256k1'
 import { NetworkName } from './network'
+import { ChainSource } from './chainsource'
 
 export interface ClaimInfo {
   createdResponse: ReverseSwapResponse
@@ -19,6 +20,18 @@ export interface ClaimInfoStored {
 }
 
 export type Claims = Record<NetworkName, ClaimInfoStored[]>
+
+export const deleteExpiredClaims = (chainSource: ChainSource, network: NetworkName): void => {
+  const claims = getClaims(network)
+  if (claims.length > 0) {
+    chainSource.fetchChainTip().then((tip) => {
+      for (const claim of claims) {
+        const expired = claim.createdResponse.timeoutBlockHeight <= tip
+        if (expired) removeClaim(claim, network)
+      }
+    })
+  }
+}
 
 export const getClaims = (network: NetworkName): ClaimInfo[] => {
   const claims = readClaimsFromStorage()
