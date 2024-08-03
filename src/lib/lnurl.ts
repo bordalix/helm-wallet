@@ -4,9 +4,11 @@ const emailRegex =
   /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 type LnUrlResponse = {
+  commentAllowed?: number
+  callback: string
   minSendable: number
   maxSendable: number
-  callback: string
+  metadata: string
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -20,14 +22,17 @@ const checkResponse = <T = any>(response: Response): Promise<T> => {
 }
 
 const checkLnUrlResponse = (amount: number, data: LnUrlResponse) => {
+  console.log('data', data)
   if (amount < data.minSendable || amount > data.maxSendable) {
     throw new Error('Amount not in LNURL range.')
   }
   return data
 }
 
-const fetchLnUrlInvoice = async (amount: number, data: LnUrlResponse) => {
-  const res = await fetch(`${data.callback}?amount=${amount}`).then(checkResponse<LnUrlCallbackResponse>)
+const fetchLnUrlInvoice = async (amount: number, note: string, data: LnUrlResponse) => {
+  let url = `${data.callback}?amount=${amount}`
+  if (note) url += `&comment=${note}`
+  const res = await fetch(url).then(checkResponse<LnUrlCallbackResponse>)
   return res.pr
 }
 
@@ -61,14 +66,24 @@ export const getCallbackUrl = (lnurl: string) => {
   return utf8.encode(bytes)
 }
 
-export const fetchLnUrl = (lnurl: string, sats: number): Promise<string> => {
+export const checkLnUrlConditions = (lnurl: string): Promise<LnUrlResponse> => {
+  return new Promise<LnUrlResponse>((resolve, reject) => {
+    const url = getCallbackUrl(lnurl)
+    fetch(url)
+      .then(checkResponse<LnUrlResponse>)
+      .then(resolve)
+      .catch(reject)
+  })
+}
+
+export const fetchLnUrl = (lnurl: string, sats: number, note: string): Promise<string> => {
   return new Promise<string>((resolve, reject) => {
     const url = getCallbackUrl(lnurl)
     const amount = Math.round(sats * 1000) // milisatoshis
     fetch(url)
       .then(checkResponse<LnUrlResponse>)
       .then((data) => checkLnUrlResponse(amount, data))
-      .then((data) => fetchLnUrlInvoice(amount, data))
+      .then((data) => fetchLnUrlInvoice(amount, note, data))
       .then(resolve)
       .catch(reject)
   })

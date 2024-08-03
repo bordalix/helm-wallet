@@ -9,8 +9,7 @@ import InputAmount from '../../../components/InputAmount'
 import { BoltzContext } from '../../../providers/boltz'
 import Container from '../../../components/Container'
 import { prettyNumber } from '../../../lib/format'
-import Input from '../../../components/Input'
-import { defaultInvoiceNote } from '../../../lib/constants'
+import InputComment from '../../../components/InputComment'
 
 enum ButtonLabel {
   Low = 'Amount too low',
@@ -24,7 +23,7 @@ export default function ReceiveAmount() {
   const { limits } = useContext(BoltzContext)
 
   const [amount, setAmount] = useState(0)
-  const [note, setNote] = useState('')
+  const [comment, setComment] = useState('')
   const [showNote, setShowNote] = useState(false)
 
   const handleCancel = () => {
@@ -33,8 +32,7 @@ export default function ReceiveAmount() {
   }
 
   const handleProceed = () => {
-    console.log({ amount, note, total: 0 })
-    setRecvInfo({ amount, note, total: 0 })
+    setRecvInfo({ amount, comment, total: 0 })
     navigate(Pages.ReceiveFees)
   }
 
@@ -47,36 +45,10 @@ export default function ReceiveAmount() {
     <Container>
       <Content>
         <Title text='Receive' subtext={`Min: ${prettyNumber(minimal)} · Max: ${prettyNumber(maximal)} sats`} />
-        {showNote ? (
-          <Input
-            label='Note'
-            onChange={(e) => setNote(e.target.value)}
-            subtext='Will be visible on invoice'
-            placeholder={defaultInvoiceNote}
-            optional
-          />
-        ) : (
-          <InputAmount label='Amount' onChange={setAmount} />
-        )}
-        {isMobile ? (
-          showNote ? (
-            <p className='mt-4' onClick={() => setShowNote(false)}>
-              Back to amount
-            </p>
-          ) : (
-            <p onClick={() => setShowNote(true)}>Add optional note</p>
-          )
-        ) : (
-          <div className='mt-10'>
-            <Input
-              label='Note'
-              onChange={(e) => setNote(e.target.value)}
-              subtext='Will be visible on invoice'
-              placeholder={defaultInvoiceNote}
-              optional
-            />
-          </div>
-        )}
+        {!showNote ? <InputAmount onChange={setAmount} /> : null}
+        {!isMobile || showNote ? <InputComment onChange={setComment} max={120} subtext /> : null}
+        {isMobile && showNote ? <p onClick={() => setShowNote(false)}>Back to amount</p> : null}
+        {isMobile && !showNote ? <p onClick={() => setShowNote(true)}>Add optional note</p> : null}
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handleProceed} label={label} disabled={disabled} />

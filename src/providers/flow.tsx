@@ -3,7 +3,7 @@ import { Invoice } from '../lib/lightning'
 import { ECPairInterface } from 'ecpair'
 import { SubmarineSwapResponse } from '../lib/submarineSwap'
 import { ReverseSwapResponse } from '../lib/reverseSwap'
-import { defaultInvoiceNote } from '../lib/constants'
+import { defaultInvoiceComment } from '../lib/constants'
 
 export interface InitInfo {
   mnemonic: string
@@ -11,7 +11,7 @@ export interface InitInfo {
 
 export interface RecvInfo {
   amount: number
-  note: string
+  comment: string
   total: number
   swapResponse?: ReverseSwapResponse
   txid?: string
@@ -28,6 +28,7 @@ export type SendInfoLightning = Invoice & {
 
 export type SendInfoLiquid = {
   address?: string
+  comment?: string
   keys?: ECPairInterface
   total?: number
   txFees?: number
@@ -51,7 +52,7 @@ export const emptyInitInfo: InitInfo = {
 
 export const emptyRecvInfo: RecvInfo = {
   amount: 0,
-  note: defaultInvoiceNote,
+  comment: defaultInvoiceComment,
   total: 0,
 }
 

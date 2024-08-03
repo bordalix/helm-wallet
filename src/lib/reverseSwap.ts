@@ -213,7 +213,7 @@ export const reverseSwap = async (
       address: destinationAddress,
       addressSignature: signature.toString('hex'),
       claimPublicKey: keys.publicKey.toString('hex'),
-      description: recvInfo.note,
+      description: recvInfo.comment,
       from: 'BTC',
       invoiceAmount,
       preimageHash: crypto.sha256(preimage).toString('hex'),

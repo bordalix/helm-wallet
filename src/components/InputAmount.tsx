@@ -13,11 +13,10 @@ const unitLabels = {
 }
 
 interface InputAmountProps {
-  label: string
   onChange: (arg0: any) => void
 }
 
-export default function InputAmount({ label, onChange }: InputAmountProps) {
+export default function InputAmount({ onChange }: InputAmountProps) {
   const { fromEuro, fromUSD, toEuro, toUSD } = useContext(FiatContext)
 
   const [amount, setAmount] = useState('')
@@ -59,10 +58,10 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
     onChange(sats)
   }, [sats])
 
+  const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints // TODO
+
   const className =
     'w-full p-3 pr-6 text-sm text-right font-semibold rounded-l-md -mr-4 bg-gray-100 dark:bg-gray-800 focus-visible:outline-none'
-
-  const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints // TODO
 
   const handleUnitChange = (unit: Unit) => {
     setLock(true)
@@ -97,7 +96,7 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
       [Unit.SAT, prettyNumber(sats, 0)],
       [Unit.BTC, prettyNumber(fromSatoshis(sats), 8)],
     ].filter((row) => row[0] !== unit)
-    const commonClassNames = 'text-xs mb-2 sm:mb-4 sm:mt-2 truncate'
+    const commonClassNames = 'text-xs my-1 truncate'
     return (
       <Columns cols={3}>
         <p className={`${commonClassNames} text-left`} onClick={() => handleUnitChange(values[0][0] as Unit)}>
@@ -115,7 +114,7 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
 
   return (
     <fieldset className='text-left text-gray-800 dark:text-gray-100 w-full'>
-      {label ? <Label text={label} /> : null}
+      <Label text='Amount' />
       <div className='flex items-center h-12 rounded-l-md bg-gray-100 dark:bg-gray-800'>
         {isMobile ? (
           <p className={className}>{amount}</p>
@@ -139,7 +138,7 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
         <OtherAmounts />
       </div>
       {isMobile ? (
-        <div className='mb-4'>
+        <div className='mb-3'>
           <Columns cols={3}>
             {keys.map((k) => (
               <p
@@ -152,7 +151,9 @@ export default function InputAmount({ label, onChange }: InputAmountProps) {
             ))}
           </Columns>
         </div>
-      ) : null}
+      ) : (
+        <div className='mb-10' />
+      )}
     </fieldset>
   )
 }

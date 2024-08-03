@@ -21,7 +21,8 @@ export default function SendDetails() {
   const [details, setDetails] = useState<PaymentDetailsProps>()
   const [error, setError] = useState('')
 
-  const { address, invoice, satoshis } = sendInfo
+  const { address, comment, invoice, satoshis } = sendInfo
+  console.log('sendInfo', sendInfo)
 
   useEffect(() => {
     if (!address && !invoice) return setError('Missing invoice')
@@ -37,7 +38,7 @@ export default function SendDetails() {
         if (!satoshis) return setError('Error decoding invoice')
         return setDetails({
           invoice,
-          note,
+          note: note ?? comment,
           satoshis,
         })
       } catch (err) {

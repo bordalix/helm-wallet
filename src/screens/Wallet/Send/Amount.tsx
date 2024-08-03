@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import Button from '../../../components/Button'
 import ButtonsOnBottom from '../../../components/ButtonsOnBottom'
 import { NavigationContext, Pages } from '../../../providers/navigation'
@@ -9,12 +9,13 @@ import InputAmount from '../../../components/InputAmount'
 import { BoltzContext } from '../../../providers/boltz'
 import Container from '../../../components/Container'
 import { prettyNumber } from '../../../lib/format'
-import { fetchLnUrl } from '../../../lib/lnurl'
+import { checkLnUrlConditions, fetchLnUrl } from '../../../lib/lnurl'
 import Error from '../../../components/Error'
 import { extractError } from '../../../lib/error'
 import { decodeInvoice } from '../../../lib/lightning'
 import { WalletContext } from '../../../providers/wallet'
 import { getBalance } from '../../../lib/wallet'
+import InputComment from '../../../components/InputComment'
 
 enum ButtonLabel {
   High = 'Amount too high',
@@ -31,7 +32,16 @@ export default function SendAmount() {
   const { wallet } = useContext(WalletContext)
 
   const [amount, setAmount] = useState(0)
+  const [comment, setComment] = useState('')
   const [error, setError] = useState('')
+  const [showNote, setShowNote] = useState(false)
+
+  const balance = getBalance(wallet)
+  const { minimal, maximal } = limits // Boltz limit
+
+  const [commentAllowed, setCommentAllowed] = useState(0)
+  const [maxSendable, setMaxSendable] = useState(minimal)
+  const [minSendable, setMinSendable] = useState(maximal)
 
   const handleCancel = () => {
     setSendInfo(emptySendInfo)
@@ -41,13 +51,13 @@ export default function SendAmount() {
   const handleProceed = async () => {
     if (!sendInfo.lnurl && !sendInfo.address) return
     if (sendInfo.address) {
-      setSendInfo({ ...sendInfo, satoshis: amount })
+      setSendInfo({ ...sendInfo, comment, satoshis: amount })
       navigate(Pages.SendDetails)
     }
     if (sendInfo.lnurl) {
       try {
-        const invoice = await fetchLnUrl(sendInfo.lnurl, amount)
-        setSendInfo(decodeInvoice(invoice))
+        const invoice = await fetchLnUrl(sendInfo.lnurl, amount, comment)
+        setSendInfo({ ...decodeInvoice(invoice), comment })
         navigate(Pages.SendDetails)
       } catch (err: any) {
         if (err.status === 404) setError(`Not found ${sendInfo.lnurl}`)
@@ -56,8 +66,16 @@ export default function SendAmount() {
     }
   }
 
-  const balance = getBalance(wallet)
-  const { minimal, maximal } = limits // Boltz limit
+  useEffect(() => {
+    if (!sendInfo.lnurl) return
+    checkLnUrlConditions(sendInfo.lnurl)
+      .then((conditions) => {
+        setCommentAllowed(conditions.commentAllowed ?? 10)
+        setMaxSendable(conditions.maxSendable > maximal ? maximal : conditions.maxSendable)
+        setMinSendable(conditions.minSendable < minimal ? minimal : conditions.minSendable)
+      })
+      .catch(() => {})
+  }, [])
 
   const label =
     amount > balance
@@ -71,15 +89,17 @@ export default function SendAmount() {
       : ButtonLabel.Ok
 
   const disabled = label !== ButtonLabel.Ok
+  const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints // TODO
 
   return (
     <Container>
       <Content>
-        <Title text='Send' subtext={`Min: ${prettyNumber(minimal)} · Max: ${prettyNumber(maximal)} sats`} />
-        <div className='flex flex-col gap-2'>
-          <Error error={Boolean(error)} text={error} />
-          <InputAmount label='Amount' onChange={setAmount} />
-        </div>
+        <Title text='Send' subtext={`Min: ${prettyNumber(minSendable)} · Max: ${prettyNumber(maxSendable)} sats`} />
+        <Error error={Boolean(error)} text={error} />
+        {!showNote ? <InputAmount onChange={setAmount} /> : null}
+        {commentAllowed && (!isMobile || showNote) ? <InputComment onChange={setComment} max={commentAllowed} /> : null}
+        {commentAllowed && isMobile && showNote ? <p onClick={() => setShowNote(false)}>Back to amount</p> : null}
+        {commentAllowed && isMobile && !showNote ? <p onClick={() => setShowNote(true)}>Add optional note</p> : null}
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handleProceed} label={label} disabled={disabled} />
