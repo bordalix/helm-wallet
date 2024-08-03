@@ -70,9 +70,11 @@ export default function SendAmount() {
     if (!sendInfo.lnurl) return
     checkLnUrlConditions(sendInfo.lnurl)
       .then((conditions) => {
-        setCommentAllowed(conditions.commentAllowed ?? 10)
-        setMaxSendable(conditions.maxSendable > maximal ? maximal : conditions.maxSendable)
-        setMinSendable(conditions.minSendable < minimal ? minimal : conditions.minSendable)
+        const max = Math.floor(conditions.maxSendable / 1000) // from milisatoshis to satoshis
+        const min = Math.floor(conditions.minSendable / 1000) // from milisatoshis to satoshis
+        setCommentAllowed(conditions.commentAllowed ?? 0)
+        setMaxSendable(max > maximal ? maximal : max)
+        setMinSendable(min < minimal ? minimal : min)
       })
       .catch(() => {})
   }, [])
@@ -82,9 +84,9 @@ export default function SendAmount() {
       ? ButtonLabel.Poor
       : error
       ? ButtonLabel.Nok
-      : amount < limits.minimal
+      : amount < minSendable
       ? ButtonLabel.Low
-      : amount > limits.maximal
+      : amount > maxSendable
       ? ButtonLabel.High
       : ButtonLabel.Ok
 
