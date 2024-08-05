@@ -22,10 +22,10 @@ export const sendSats = async (
   // check if enough balance
   const utxos = wallet.utxos[wallet.network]
   const balance = getBalance(wallet)
-  if (!balance || balance - sats - feeForCoins(utxos.length) < 0) return ''
+  if (!balance || balance - sats - feeForCoins(utxos.length, wallet.network) < 0) return ''
 
   // select coins, build pset, blind it, sign it and broadcast it
-  const coinSelection = selectCoins(sats, utxos)
+  const coinSelection = selectCoins(sats, utxos, wallet.network)
   const pset = await buildPset(coinSelection, destinationAddress, wallet)
   const blindedPset = await blindPset(pset, coinSelection.coins)
   const signedPset = await signPset(blindedPset, coinSelection.coins, wallet)

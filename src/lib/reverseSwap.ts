@@ -12,7 +12,7 @@ import { getBoltzApiUrl, getBoltzWsUrl } from './boltz'
 import { satsVbyte } from './fees'
 import { MagicHint } from './lightning'
 import { Config } from '../providers/config'
-import { ClaimInfo, removeClaim, saveClaim } from './claims'
+import { ClaimInfo, saveClaim } from './claims'
 import { RecvInfo } from '../providers/flow'
 
 /**
@@ -22,6 +22,17 @@ import { RecvInfo } from '../providers/flow'
  * 3. user receives lightning invoice
  * 4. user validates lightining invoice
  */
+
+export enum ReverseSwapStatus {
+  InvoiceSettled = 'invoice.settled',
+  InvoiceExpired = 'invoice.expired',
+  SwapCreated = 'swap.created',
+  SwapExpired = 'swap.expired',
+  TransactionConfirmed = 'transaction.confirmed',
+  TransactionFailed = 'transaction.failed',
+  TransactionMempool = 'transaction.mempool',
+  TransactionRefunded = 'transaction.refunded',
+}
 
 export const waitAndClaim = async (
   claimInfo: ClaimInfo,
@@ -34,10 +45,9 @@ export const waitAndClaim = async (
   const network = getNetwork(wallet.network)
   const { createdResponse, destinationAddress, keys, preimage } = claimInfo
 
-  const closeAndRemoveClaim = () => {
-    removeClaim(claimInfo, wallet.network)
-    onFinish(claimTx ? claimTx.getId() : '')
+  const closeAndFinish = () => {
     webSocket.close()
+    onFinish(claimTx ? claimTx.getId() : '')
   }
 
   // Create a WebSocket and subscribe to updates for the created swap
@@ -60,23 +70,23 @@ export const waitAndClaim = async (
 
     if (msg.args[0].id !== createdResponse.id) return
 
-    if (msg.args[0].error) return closeAndRemoveClaim()
+    if (msg.args[0].error) return closeAndFinish()
 
     switch (msg.args[0].status) {
       // "swap.created" means Boltz is waiting for the invoice to be paid
-      case 'swap.created': {
+      case ReverseSwapStatus.SwapCreated: {
         console.log('Waiting for invoice to be paid')
+        claimInfo.lastStatus = msg.args[0].status
+        saveClaim(claimInfo, wallet.network)
         break
       }
 
       // Boltz's lockup transaction is found in the mempool (or already confirmed)
       // which will only happen after the user paid the Lightning hold invoice
-      case 'transaction.mempool':
-      case 'transaction.confirmed': {
-        // save claim to retry later if claim tx fails
-        saveClaim(claimInfo, wallet.network)
-
+      case ReverseSwapStatus.TransactionMempool:
+      case ReverseSwapStatus.TransactionConfirmed: {
         const boltzPublicKey = Buffer.from(createdResponse.refundPublicKey, 'hex')
+        // const boltzPublicKey = Buffer.from('4444', 'hex')
 
         // Create a musig signing session and tweak it with the Taptree of the swap scripts
         const musig = new Musig(await zkpInit(), keys, randomBytes(32), [boltzPublicKey, keys.publicKey])
@@ -98,7 +108,7 @@ export const waitAndClaim = async (
         console.log('Creating claim transaction')
 
         // Create a claim transaction to be signed cooperatively via a key path spend
-        claimTx = targetFee(satsVbyte, (fee) =>
+        claimTx = targetFee(satsVbyte(wallet.network), (fee) =>
           constructClaimTransaction(
             [
               {
@@ -118,6 +128,9 @@ export const waitAndClaim = async (
             address.fromConfidential(destinationAddress).blindingKey,
           ),
         )
+
+        claimInfo.lastStatus = msg.args[0].status
+        saveClaim(claimInfo, wallet.network)
 
         // Get the partial signature from Boltz
         const boltzSig = (
@@ -155,19 +168,36 @@ export const waitAndClaim = async (
         // Witness of the input to the aggregated signature
         claimTx.ins[0].witness = [musig.aggregatePartials()]
 
+        claimInfo.claimTx = claimTx.toHex()
+        saveClaim(claimInfo, wallet.network)
+
         // Broadcast the finalized transaction
+        console.log(`${getBoltzApiUrl(wallet.network, config.tor)}/v2/chain/L-BTC/transaction`)
         await axios.post(`${getBoltzApiUrl(wallet.network, config.tor)}/v2/chain/L-BTC/transaction`, {
           hex: claimTx.toHex(),
         })
 
+        claimInfo.claimed = true
+        saveClaim(claimInfo, wallet.network)
+
         break
       }
 
-      case 'invoice.settled': {
-        console.log()
+      case ReverseSwapStatus.InvoiceSettled: {
         console.log('Swap successful!')
-        closeAndRemoveClaim()
+        claimInfo.lastStatus = msg.args[0].status
+        saveClaim(claimInfo, wallet.network)
+        closeAndFinish()
         break
+      }
+
+      case ReverseSwapStatus.InvoiceExpired:
+      case ReverseSwapStatus.SwapExpired:
+      case ReverseSwapStatus.TransactionFailed:
+      case ReverseSwapStatus.TransactionRefunded: {
+        console.log(msg.args[0].status)
+        claimInfo.lastStatus = msg.args[0].status
+        saveClaim(claimInfo, wallet.network)
       }
     }
   }
@@ -226,8 +256,11 @@ export const reverseSwap = async (
   onInvoice(createdResponse.invoice)
 
   const claimInfo: ClaimInfo = {
+    claimed: false,
+    claimTx: '',
     createdResponse,
     destinationAddress,
+    lastStatus: '',
     preimage,
     keys,
   }

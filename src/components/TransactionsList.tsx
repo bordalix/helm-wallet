@@ -6,7 +6,7 @@ import { prettyAgo, prettyNumber } from '../lib/format'
 import ArrowIcon from '../icons/Arrow'
 import { NavigationContext, Pages } from '../providers/navigation'
 import { openInNewTab } from '../lib/explorers'
-import { ClaimInfo, getClaims } from '../lib/claims'
+import { ClaimInfo, getRetriableClaims } from '../lib/claims'
 import { waitAndClaim } from '../lib/reverseSwap'
 import { ConfigContext } from '../providers/config'
 
@@ -39,7 +39,7 @@ export default function TransactionsList({ short }: { short?: boolean }) {
 
   const [claiming, setClaiming] = useState(false)
 
-  const claims = getClaims(wallet.network)
+  const claims = getRetriableClaims(wallet.network)
   const transactions = wallet.transactions[wallet.network]
 
   if (transactions?.length + claims.length === 0) return <></>
