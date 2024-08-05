@@ -129,7 +129,7 @@ export class WsElectrumChainSource implements ChainSource {
   }
 
   async close() {
-    this.ws.close('close').catch((e) => console.log('error closing ws:', e))
+    if (this.ws.isConnected()) this.ws.close('close').catch((e) => console.log('error closing ws:', e))
   }
 
   isConnected() {
