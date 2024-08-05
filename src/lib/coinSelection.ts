@@ -1,5 +1,6 @@
 import { dustLimit } from './constants'
 import { feeForCoins } from './fees'
+import { NetworkName } from './network'
 import { Utxo } from './types'
 
 const utxoValue = (u: Utxo) => u.value || 0
@@ -111,13 +112,13 @@ export interface CoinsSelected {
   txfee: number
 }
 /** select coins for given amount */
-export const selectCoins = (amount: number, utxos: Utxo[]): CoinsSelected => {
+export const selectCoins = (amount: number, utxos: Utxo[], network: NetworkName): CoinsSelected => {
   // find best coins combo to pay this amount
   let changeAmount = 0,
     coins = utxos,
     numAttempts = 10,
     sats = amount,
-    txfee = feeForCoins(utxos.length),
+    txfee = feeForCoins(utxos.length, network),
     value = 0
 
   const balance = coins.reduce((prev, curr) => prev + curr.value, 0)
@@ -136,7 +137,7 @@ export const selectCoins = (amount: number, utxos: Utxo[]): CoinsSelected => {
     sats = sats - changeAmount
     coins = sortAndSelect(sats, utxos)
     value = coins.reduce((prev, curr) => prev + curr.value, 0)
-    txfee = feeForCoins(coins.length)
+    txfee = feeForCoins(coins.length, network)
     changeAmount = value - amount - txfee
     if (changeAmount > 0 && changeAmount < dustLimit) sats += dustLimit
     numAttempts -= 1

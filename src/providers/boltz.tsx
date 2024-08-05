@@ -90,7 +90,7 @@ export const BoltzProvider = ({ children }: { children: ReactNode }) => {
 
   const maxAmount = (wallet: Wallet) => {
     const balance = getBalance(wallet)
-    const txFees = feeForCoins(wallet.utxos[wallet.network].length)
+    const txFees = feeForCoins(wallet.utxos[wallet.network].length, wallet.network)
     const { boltzFees, minerFees } = expectedFees(balance - txFees)
     return { balance, txFees, boltzFees, minerFees }
   }
