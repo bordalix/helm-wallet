@@ -1,4 +1,4 @@
-import { ReverseSwapResponse, ReverseSwapStatus } from './reverseSwap'
+import { ReverseSwapResponse } from './reverseSwap'
 import { ECPairFactory, ECPairInterface } from 'ecpair'
 import { readClaimsFromStorage, saveClaimsToStorage } from './storage'
 import * as ecc from '@bitcoinerlab/secp256k1'
@@ -60,11 +60,7 @@ const getClaims = (network: NetworkName): ClaimInfo[] => {
 }
 
 export const getRetriableClaims = (network: NetworkName): ClaimInfo[] => {
-  return getClaims(network).filter((c) =>
-    [ReverseSwapStatus.TransactionConfirmed, ReverseSwapStatus.TransactionMempool].includes(
-      c.lastStatus as ReverseSwapStatus,
-    ),
-  )
+  return getClaims(network).filter((claim) => !claim.claimed)
 }
 
 export const removeClaim = (claim: ClaimInfo, network: NetworkName): void => {

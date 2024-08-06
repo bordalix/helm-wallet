@@ -22,7 +22,6 @@ export default function SendDetails() {
   const [error, setError] = useState('')
 
   const { address, comment, invoice, satoshis } = sendInfo
-  console.log('sendInfo', sendInfo)
 
   useEffect(() => {
     if (!address && !invoice) return setError('Missing invoice')

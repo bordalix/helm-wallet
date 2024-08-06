@@ -3,7 +3,6 @@ import { Invoice } from '../lib/lightning'
 import { ECPairInterface } from 'ecpair'
 import { SubmarineSwapResponse } from '../lib/submarineSwap'
 import { ReverseSwapResponse } from '../lib/reverseSwap'
-import { defaultInvoiceComment } from '../lib/constants'
 
 export interface InitInfo {
   mnemonic: string
@@ -52,7 +51,7 @@ export const emptyInitInfo: InitInfo = {
 
 export const emptyRecvInfo: RecvInfo = {
   amount: 0,
-  comment: defaultInvoiceComment,
+  comment: '',
   total: 0,
 }
 

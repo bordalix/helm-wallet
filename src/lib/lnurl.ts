@@ -22,7 +22,6 @@ const checkResponse = <T = any>(response: Response): Promise<T> => {
 }
 
 const checkLnUrlResponse = (amount: number, data: LnUrlResponse) => {
-  console.log('data', data)
   if (amount < data.minSendable || amount > data.maxSendable) {
     throw new Error('Amount not in LNURL range.')
   }

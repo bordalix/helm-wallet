@@ -5,10 +5,11 @@ import { Transaction } from '../lib/types'
 import { prettyAgo, prettyNumber } from '../lib/format'
 import ArrowIcon from '../icons/Arrow'
 import { NavigationContext, Pages } from '../providers/navigation'
-import { openInNewTab } from '../lib/explorers'
-import { ClaimInfo, getRetriableClaims } from '../lib/claims'
+import { broadcastTxHex, openInNewTab } from '../lib/explorers'
+import { ClaimInfo, getRetriableClaims, removeClaim } from '../lib/claims'
 import { waitAndClaim } from '../lib/reverseSwap'
 import { ConfigContext } from '../providers/config'
+import { FlowContext } from '../providers/flow'
 
 const TransactionLine = ({ data, wallet }: { data: Transaction; wallet: Wallet }) => {
   const amount = `${data.amount > 0 ? '+' : '-'} ${prettyNumber(Math.abs(data.amount))} sats`
@@ -34,6 +35,7 @@ const PendingClaim = ({ claim, onClick }: { claim: ClaimInfo; onClick: any }) =>
 
 export default function TransactionsList({ short }: { short?: boolean }) {
   const { config } = useContext(ConfigContext)
+  const { setRecvInfo } = useContext(FlowContext)
   const { navigate } = useContext(NavigationContext)
   const { reloading, reloadWallet, wallet } = useContext(WalletContext)
 
@@ -50,14 +52,25 @@ export default function TransactionsList({ short }: { short?: boolean }) {
   const showLines = short ? lines.slice(0, showMax) : lines
 
   const handleReload = () => reloadWallet(wallet)
-  const handleFinishClaim = () => {
-    setClaiming(false)
-    reloadWallet(wallet)
-  }
 
   const claimPendingSwap = (claim: ClaimInfo) => {
     setClaiming(true)
-    waitAndClaim(claim, config, wallet, handleFinishClaim)
+
+    const handleFinish = (txid: string) => {
+      if (!txid) return setClaiming(false)
+      removeClaim(claim, wallet.network)
+      reloadWallet(wallet)
+      setRecvInfo({
+        amount: claim.createdResponse.onchainAmount,
+        comment: '',
+        total: claim.createdResponse.onchainAmount,
+        txid,
+      })
+      navigate(Pages.ReceiveSuccess)
+    }
+
+    if (claim.claimTx) broadcastTxHex(claim.claimTx, wallet, config).then(({ id }) => handleFinish(id))
+    else waitAndClaim(claim, config, wallet, handleFinish)
   }
 
   return (
