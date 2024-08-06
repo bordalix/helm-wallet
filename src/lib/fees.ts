@@ -3,7 +3,6 @@ import { selectCoins } from './coinSelection'
 import { Wallet } from '../providers/wallet'
 import { NetworkName } from './network'
 
-// export const satsVbyte = 0.11
 export const satsVbyte = (network: NetworkName): number => (network === NetworkName.Liquid ? 0.01 : 0.1)
 
 const vbyteSize = (numCoins: number) => 2418 + numCoins * 85
