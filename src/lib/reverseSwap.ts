@@ -9,7 +9,7 @@ import * as ecc from '@bitcoinerlab/secp256k1'
 import { getNetwork } from './network'
 import { Wallet } from '../providers/wallet'
 import { getBoltzApiUrl, getBoltzWsUrl } from './boltz'
-import { satsVbyte } from './fees'
+import { claimFees } from './fees'
 import { MagicHint } from './lightning'
 import { Config } from '../providers/config'
 import { ClaimInfo, removeClaim, saveClaim } from './claims'
@@ -130,7 +130,7 @@ export const waitAndClaim = async (
         console.log('Creating claim transaction')
 
         // Create a claim transaction to be signed cooperatively via a key path spend
-        claimTx = targetFee(satsVbyte(wallet.network), (fee) =>
+        claimTx = targetFee(claimFees(wallet.network), (fee) =>
           constructClaimTransaction(
             [
               {
