@@ -10,7 +10,6 @@ import Input from '../../../components/Input'
 import Content from '../../../components/Content'
 import Title from '../../../components/Title'
 import Container from '../../../components/Container'
-import { pasteFromClipboard } from '../../../lib/clipboard'
 import { isValidLnUrl } from '../../../lib/lnurl'
 import * as bip21 from '../../../lib/bip21'
 import { WalletContext } from '../../../providers/wallet'
@@ -23,22 +22,27 @@ export default function SendInvoice() {
 
   const defaultLabel = 'Paste invoice or LNURL'
   const [buttonLabel, setButtonLabel] = useState(defaultLabel)
-  const [cameraAllowed, setCameraAllowed] = useState(false)
   const [error, setError] = useState('')
+  const [mediaStream, setMediaStream] = useState(false)
+  const [pasteAllowed, setPasteAllowed] = useState(true)
   const [pastedData, setPastedData] = useState('')
-
-  // Firefox doesn't support navigator.clipboard.readText()
-  const firefox = !navigator.clipboard || !('readText' in navigator.clipboard)
 
   const wrongNetwork = (invoice: string) =>
     (invoice.startsWith('lnbc') && wallet.network !== NetworkName.Liquid) ||
     (!invoice.startsWith('lnbc') && wallet.network === NetworkName.Liquid)
 
   useEffect(() => {
-    if (firefox) return
-    navigator.permissions.query({ name: 'camera' as PermissionName }).then((x) => {
-      if (x.state !== 'denied') setCameraAllowed(true)
-    })
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then((stream) => {
+          setMediaStream(true)
+          stream.getVideoTracks().forEach((track) => track.stop())
+        })
+        .catch((error) => console.error('Permission denied: ', error))
+    } else {
+      console.error('getUserMedia is not supported in this browser.')
+    }
   })
 
   useEffect(() => {
@@ -84,11 +88,18 @@ export default function SendInvoice() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pastedData])
 
-  const handlePaste = async () => {
-    let data = await pasteFromClipboard()
-    setButtonLabel('Pasted')
-    setTimeout(() => setButtonLabel(defaultLabel), 2000)
-    setPastedData(data)
+  const handlePaste = () => {
+    navigator.clipboard
+      .readText()
+      .then((data) => {
+        setPastedData(data)
+        setButtonLabel('Pasted')
+        setTimeout(() => setButtonLabel(defaultLabel), 2000)
+      })
+      .catch((err) => {
+        console.error('Failed to read clipboard contents: ', err)
+        setPasteAllowed(false)
+      })
   }
 
   const handleCancel = () => {
@@ -101,22 +112,23 @@ export default function SendInvoice() {
   return (
     <Container>
       <Content>
-        <Title text='Send' subtext={`${firefox ? 'Paste' : 'Scan or paste'} invoice`} />
+        <Title text='Send' subtext='Scan or paste invoice' />
         <div className='flex flex-col gap-2'>
           <Error error={Boolean(error)} text={error} />
           {error ? null : (
-            <div className='flex flex-col h-full justify-between'>
-              {firefox ? (
-                <Input label='Paste your invoice here' left='&#9889;' onChange={handleChange} />
-              ) : cameraAllowed ? (
+            <div className='flex flex-col h-full justify-between gap-10'>
+              {!pasteAllowed ? <Input label='Paste your invoice here' left='&#9889;' onChange={handleChange} /> : null}
+              {mediaStream ? (
                 <BarcodeScanner setPastedData={setPastedData} setError={setError} />
-              ) : null}
+              ) : (
+                <p>Waiting for camera access</p>
+              )}
             </div>
           )}
         </div>
       </Content>
       <ButtonsOnBottom>
-        {!firefox && <Button onClick={handlePaste} label={buttonLabel} />}
+        <Button onClick={handlePaste} label={buttonLabel} />
         <Button onClick={handleCancel} label='Cancel' secondary />
       </ButtonsOnBottom>
     </Container>
