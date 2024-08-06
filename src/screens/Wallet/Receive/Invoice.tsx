@@ -32,7 +32,6 @@ export default function ReceiveInvoice() {
   const [error, setError] = useState('')
   const [invoice, setInvoice] = useState('')
 
-  const firefox = !navigator.clipboard || !('writeText' in navigator.clipboard)
   const finishedTxIds: string[] = []
 
   const onFinish = (txid: string) => {
@@ -102,7 +101,7 @@ export default function ReceiveInvoice() {
         </div>
       </Content>
       <ButtonsOnBottom>
-        {!firefox && <Button onClick={handleCopy} label={buttonLabel} />}
+        <Button onClick={handleCopy} label={buttonLabel} />
         <Button onClick={handleCancel} label='Cancel' secondary />
       </ButtonsOnBottom>
     </Container>
