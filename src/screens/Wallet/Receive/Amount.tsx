@@ -47,8 +47,8 @@ export default function ReceiveAmount() {
         <Title text='Receive' subtext={`Min: ${prettyNumber(minimal)} · Max: ${prettyNumber(maximal)} sats`} />
         {!showNote ? <InputAmount onChange={setAmount} /> : null}
         {!isMobile || showNote ? <InputComment onChange={setComment} max={120} subtext /> : null}
-        {isMobile && showNote ? <p onClick={() => setShowNote(false)}>Back to amount</p> : null}
-        {isMobile && !showNote ? <p onClick={() => setShowNote(true)}>Add optional note</p> : null}
+        {isMobile && showNote ? <Button onClick={() => setShowNote(false)} label='Back to amount' clean /> : null}
+        {isMobile && !showNote ? <Button onClick={() => setShowNote(true)} label='Add optional note' clean /> : null}
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handleProceed} label={label} disabled={disabled} />

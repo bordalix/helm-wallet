@@ -100,8 +100,12 @@ export default function SendAmount() {
         <Error error={Boolean(error)} text={error} />
         {!showNote ? <InputAmount onChange={setAmount} /> : null}
         {commentAllowed && (!isMobile || showNote) ? <InputComment onChange={setComment} max={commentAllowed} /> : null}
-        {commentAllowed && isMobile && showNote ? <p onClick={() => setShowNote(false)}>Back to amount</p> : null}
-        {commentAllowed && isMobile && !showNote ? <p onClick={() => setShowNote(true)}>Add optional note</p> : null}
+        {commentAllowed && isMobile && showNote ? (
+          <Button onClick={() => setShowNote(false)} label='Back to amount' clean />
+        ) : null}
+        {commentAllowed && isMobile && !showNote ? (
+          <Button onClick={() => setShowNote(true)} label='Add optional note' clean />
+        ) : null}
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handleProceed} label={label} disabled={disabled} />
