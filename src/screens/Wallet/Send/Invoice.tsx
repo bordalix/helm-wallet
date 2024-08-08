@@ -75,6 +75,7 @@ export default function SendInvoice() {
     if (isLnInvoice(data)) {
       try {
         if (wrongNetwork(data)) return setError('Invoice from wrong network')
+        if (!decodeInvoice(data).satoshis) return setError('Invoices without amount are not supported')
         setSendInfo(decodeInvoice(data))
         return navigate(Pages.SendDetails)
       } catch (e) {
