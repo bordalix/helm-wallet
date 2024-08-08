@@ -40,8 +40,8 @@ export default function SendAmount() {
   const { minimal, maximal } = limits // Boltz limit
 
   const [commentAllowed, setCommentAllowed] = useState(0)
-  const [maxSendable, setMaxSendable] = useState(minimal)
-  const [minSendable, setMinSendable] = useState(maximal)
+  const [maxSendable, setMaxSendable] = useState(maximal)
+  const [minSendable, setMinSendable] = useState(minimal)
 
   const handleCancel = () => {
     setSendInfo(emptySendInfo)
