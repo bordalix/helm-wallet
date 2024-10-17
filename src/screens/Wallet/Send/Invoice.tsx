@@ -95,7 +95,7 @@ export default function SendInvoice() {
       .then((data) => {
         setPastedData(data)
         setButtonLabel('Pasted')
-        setTimeout(() => setButtonLabel(defaultLabel), 2000)
+        setTimeout(() => setButtonLabel(defaultLabel), 2100)
       })
       .catch((err) => {
         console.error('Failed to read clipboard contents: ', err)

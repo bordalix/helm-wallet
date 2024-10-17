@@ -24,7 +24,7 @@ export default function Backup() {
   const handleCopy = async () => {
     await copyToClipboard(wallet.mnemonic)
     setButtonLabel('Copied')
-    setTimeout(() => setButtonLabel(label), 2000)
+    setTimeout(() => setButtonLabel(label), 2100)
   }
 
   return (

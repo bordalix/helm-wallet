@@ -54,7 +54,7 @@ export default function ReceiveInvoice() {
   const handleCopy = async () => {
     await copyToClipboard(qrValue ?? '')
     setButtonLabel('Copied')
-    setTimeout(() => setButtonLabel(label), 2000)
+    setTimeout(() => setButtonLabel(label), 2100)
   }
 
   useEffect(() => {
