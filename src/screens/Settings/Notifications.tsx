@@ -5,12 +5,13 @@ import Title from '../../components/Title'
 import { ConfigContext } from '../../providers/config'
 import Select from '../../components/Select'
 import Content from '../../components/Content'
-import { requestPermission, sendTestNotification } from '../../lib/notifications'
+import { isNotificationApiSupported, requestPermission, sendTestNotification } from '../../lib/notifications'
 
 export default function Notifications() {
   const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)
 
   const handleChange = (e: any) => {
+    if (!isNotificationApiSupported) return
     const enable = Boolean(parseInt(e.target.value))
     if (enable) {
       requestPermission().then((notifications) => {
@@ -33,8 +34,14 @@ export default function Notifications() {
           <option value='1'>Allowed</option>
         </Select>
         <div className='flex flex-col gap-6 mt-10'>
-          <p>Get notified when an update is available</p>
-          <p>You'll need to grant permission if asked</p>
+          {isNotificationApiSupported ? (
+            <>
+              <p>Get notified when an update is available or a payment is received</p>
+              <p>You'll need to grant permission if asked</p>
+            </>
+          ) : (
+            <p>Your browser does not support the Notifications API</p>
+          )}
         </div>
       </Content>
       <ButtonsOnBottom>

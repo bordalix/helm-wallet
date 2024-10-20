@@ -1,11 +1,16 @@
 import { prettyNumber } from './format'
 
+export const isNotificationApiSupported =
+  'Notification' in window && 'serviceWorker' in navigator && 'PushManager' in window
+
 export const requestPermission = async (): Promise<boolean> => {
+  if (!isNotificationApiSupported) return false
   const result = await Notification.requestPermission()
   return result === 'granted'
 }
 
 const sendNotification = (title: string, body: string) => {
+  if (!isNotificationApiSupported) return
   const options = { body, icon: '/favicon.png' }
   new Notification(title, options)
 }
