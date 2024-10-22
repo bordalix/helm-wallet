@@ -23,13 +23,13 @@ export default function Notifications() {
     }
   }
 
-  const value = config.notifications ? 1 : 0
+  const value = config.notifications ? '1' : '0'
 
   return (
     <div className='flex flex-col h-full justify-between'>
       <Content>
         <Title text='Notifications' subtext='Allow to receive notifications' />
-        <Select onChange={handleChange} value={value}>
+        <Select onChange={handleChange} value={value} disabled={!isNotificationApiSupported}>
           <option value='0'>Not allowed</option>
           <option value='1'>Allowed</option>
         </Select>
@@ -40,7 +40,10 @@ export default function Notifications() {
               <p>You'll need to grant permission if asked</p>
             </>
           ) : (
-            <p>Your browser does not support the Notifications API</p>
+            <>
+              <p>Your browser does not support the Notifications API</p>
+              <p>If on iOS you'll need to 'Add to homescreen' and be running iOS 16.4 or higher</p>
+            </>
           )}
         </div>
       </Content>
