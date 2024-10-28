@@ -5,7 +5,7 @@ import Title from '../../components/Title'
 import { ConfigContext } from '../../providers/config'
 import Select from '../../components/Select'
 import Content from '../../components/Content'
-import { isNotificationApiSupported, requestPermission, sendTestNotification } from '../../lib/notifications'
+import { isNotificationApiSupported, requestPermission, notifyTestNotification } from '../../lib/notifications'
 
 export default function Notifications() {
   const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)
@@ -16,7 +16,7 @@ export default function Notifications() {
     if (enable) {
       requestPermission().then((notifications) => {
         updateConfig({ ...config, notifications })
-        if (notifications) sendTestNotification()
+        if (notifications) notifyTestNotification()
       })
     } else {
       updateConfig({ ...config, notifications: false })

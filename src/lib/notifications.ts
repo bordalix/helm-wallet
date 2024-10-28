@@ -12,7 +12,15 @@ export const requestPermission = async (): Promise<boolean> => {
 const sendNotification = (title: string, body: string) => {
   if (!isNotificationApiSupported) return
   const options = { body, icon: '/favicon.png' }
-  new Notification(title, options)
+  try {
+    new Notification(title, options)
+  } catch {
+    try {
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.showNotification(title, options)
+      })
+    } catch {}
+  }
 }
 
 export const notifyNewUpdateAvailable = () => {
@@ -21,14 +29,14 @@ export const notifyNewUpdateAvailable = () => {
   sendNotification(title, body)
 }
 
-export const sendTestNotification = () => {
-  const body = 'If you read this, everything is ok'
-  const title = 'Test notification'
-  sendNotification(title, body)
-}
-
 export const notifyPaymentReceived = (sats: number) => {
   const body = `You received ${prettyNumber(sats)} sats`
   const title = 'Payment received'
+  sendNotification(title, body)
+}
+
+export const notifyTestNotification = () => {
+  const body = 'If you read this, everything is ok'
+  const title = 'Test notification'
   sendNotification(title, body)
 }
