@@ -7,13 +7,11 @@ export enum NetworkName {
   Regtest = 'regtest',
 }
 
-export const getNetworkNames = (): [NetworkName, string][] => {
-  return [
-    [NetworkName.Liquid, 'Liquid'],
-    [NetworkName.Testnet, 'Testnet'],
-    [NetworkName.Regtest, 'Regtest'],
-  ]
-}
+export const networkNames: [NetworkName, string][] = [
+  [NetworkName.Liquid, 'Liquid'],
+  [NetworkName.Testnet, 'Testnet'],
+  [NetworkName.Regtest, 'Regtest'],
+]
 
 export const getNetwork = (network: NetworkName): Network => {
   const net = network.toLowerCase()

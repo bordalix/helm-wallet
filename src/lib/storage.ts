@@ -1,6 +1,6 @@
 import { Encrypted, decrypt, encrypt } from './encryption'
 import { Config } from '../providers/config'
-import { getNetworkNames } from './network'
+import { networkNames } from './network'
 import { Wallet } from '../providers/wallet'
 import { CacheInfo } from './cache'
 import { Claims } from './claims'
@@ -27,7 +27,7 @@ export const readWalletFromStorage = (): Wallet | undefined => {
   const data = localStorage.getItem('wallet')
   if (!data) return undefined
   const wallet = JSON.parse(data)
-  for (const [n] of getNetworkNames()) {
+  for (const [n] of networkNames) {
     for (const utxo of wallet.utxos[n]) {
       utxo.blindingPrivateKey = Buffer.from(utxo.blindingPrivateKey.data)
       utxo.blindingPublicKey = Buffer.from(utxo.blindingPublicKey.data)
