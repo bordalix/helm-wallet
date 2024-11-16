@@ -14,6 +14,7 @@ import { isValidLnUrl } from '../../../lib/lnurl'
 import * as bip21 from '../../../lib/bip21'
 import { WalletContext } from '../../../providers/wallet'
 import { NetworkName } from '../../../lib/network'
+import { isLiquidAddress } from '../../../lib/liquid'
 
 export default function SendInvoice() {
   const { navigate } = useContext(NavigationContext)
@@ -47,9 +48,9 @@ export default function SendInvoice() {
 
   useEffect(() => {
     if (!pastedData) return
-    const data = pastedData.toLowerCase()
+    const data = pastedData
     setError('')
-    if (bip21.isBip21(data)) {
+    if (bip21.isBip21(data.toLowerCase())) {
       const { address, amount, invoice, lnurl } = bip21.decode(data)
       if (address) {
         setSendInfo({ address: address, satoshis: amount })
@@ -68,11 +69,11 @@ export default function SendInvoice() {
       }
       return setError('Unable to parse bip21')
     }
-    if (isValidLnUrl(data)) {
+    if (isValidLnUrl(data.toLowerCase())) {
       setSendInfo({ lnurl: data })
       return navigate(Pages.SendAmount)
     }
-    if (isLnInvoice(data)) {
+    if (isLnInvoice(data.toLowerCase())) {
       try {
         if (wrongNetwork(data)) return setError('Invoice from wrong network')
         if (!decodeInvoice(data).satoshis) return setError('Invoices without amount are not supported')
@@ -82,11 +83,13 @@ export default function SendInvoice() {
         console.error(e)
         setError('Invalid invoice')
       }
-    } else {
+    }
+    if (isLiquidAddress(data, wallet.network)) {
       setSendInfo({ address: data })
       return navigate(Pages.SendAmount)
+    } else {
+      return setError('Invalid data')
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pastedData])
 
   const handlePaste = () => {
