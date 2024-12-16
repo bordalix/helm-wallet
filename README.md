@@ -24,12 +24,19 @@ Since all transactions must go on chain and [Boltz](https://boltz.exchange) must
 
 ## Availability
 
-To minimize censorship, this app is available in different urls:
+To minimize censorship, this app is available in different urls. You can restore your 12 words mnemonic on any of this websites and you will get your coins and transaction list:
 
 - [https://helm-wallet.pages.dev](https://helm-wallet.pages.dev)
 - [https://bordalix.gitlab.io/helm-wallet/](https://bordalix.gitlab.io/helm-wallet/)
 
-You can also clone the code and run it on your own machine.
+You can also clone the code and run it on your own machine, is as easy as:
+
+```
+$ git clone bordalix/helm-wallet
+$ cd helm-wallet
+$ yarn
+$ yarn start
+```
 
 To minimize censorship, the code is available from several sources:
 
