@@ -4,7 +4,4 @@ module.exports = {
     '^.+\\.(ts|tsx)?$': 'ts-jest',
     '^.+\\.(js|jsx)$': 'babel-jest',
   },
-  moduleNameMapper: {
-    '^axios$': require.resolve('axios'),
-  },
 }
