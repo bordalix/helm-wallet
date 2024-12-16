@@ -4,8 +4,6 @@
 import qs from 'qs'
 import { toSatoshis } from './format'
 
-const defaultScheme = 'lightning'
-
 export interface Bip21Decoded {
   address?: string
   amount?: number
@@ -42,19 +40,6 @@ export const decode = (uri: string): Bip21Decoded => {
   return { amount, destination }
 }
 
-/** encode a destination into a bip21 uri */
-export const encode = (destination: string, options: any = {}, scheme = defaultScheme) => {
-  const query = qs.stringify(options)
-
-  if (options.amount) {
-    const amount = Number(options.amount)
-    if (!isFinite(amount)) throw new TypeError('Invalid amount')
-    if (amount < 0) throw new TypeError('Invalid amount')
-  }
-
-  return scheme + ':' + destination + (query ? '?' : '') + query
-}
-
 export const isBip21 = (data: string): boolean => {
-  return /^\w+:.+/.test(data) // TODO
+  return /^(bitcoin|lightning|liquidnetwork|liquidtestnet):.+/.test(data.toLowerCase()) // TODO
 }
