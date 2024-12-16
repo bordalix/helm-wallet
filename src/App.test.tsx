@@ -8,6 +8,14 @@ import Wallet from './screens/Wallet/Index'
 import InitNew from './screens/Init/New'
 import InitOld from './screens/Init/Restore'
 import Settings from './screens/Settings/Index'
+import About from './screens/Settings/About'
+import Explorer from './screens/Settings/Explorer'
+import Network from './screens/Settings/Network'
+import Notifications from './screens/Settings/Notifications'
+import Pos from './screens/Settings/Pos'
+import Theme from './screens/Settings/Theme'
+import Tor from './screens/Settings/Tor'
+import ReceiveAmount from './screens/Wallet/Receive/Amount'
 
 const mnemonics = {
   invalid: 'egg egg egg egg egg egg egg egg egg egg egg egg',
@@ -72,9 +80,47 @@ describe('Wallet', () => {
   })
 })
 
+describe('Receive', () => {
+  test('amount and comment inputs are present', () => {
+    render(<ReceiveAmount />)
+    expect(screen.getAllByText(/Amount/)).toBeDefined()
+    expect(screen.getByText(/Comment/)).toBeDefined()
+    expect(screen.getByText(/Optional/)).toBeDefined()
+    expect(document.querySelectorAll('input')?.length).toBe(2)
+  })
+})
+
 describe('Settings', () => {
-  test('has at least 8 options', () => {
+  test('menu has at least 7 options', () => {
     render(<Settings />)
-    expect(document.querySelectorAll('.grow p').length).toBeGreaterThan(7)
+    expect(document.querySelectorAll('.grow p').length).toBeGreaterThan(6)
+  })
+  test('about has some love', () => {
+    render(<About />)
+    expect(document.querySelectorAll('p')[2].innerHTML).toMatch('🧡')
+  })
+  test('explorer has 2 options', () => {
+    render(<Explorer />)
+    expect(document.querySelector('select')?.options.length).toBe(2)
+  })
+  test('network has 3 options', () => {
+    render(<Network />)
+    expect(document.querySelector('select')?.options.length).toBe(3)
+  })
+  test('notification has 2 options', () => {
+    render(<Notifications />)
+    expect(document.querySelector('select')?.options.length).toBe(2)
+  })
+  test('pos has 2 options', () => {
+    render(<Pos />)
+    expect(document.querySelector('select')?.options.length).toBe(2)
+  })
+  test('theme has 2 options', () => {
+    render(<Theme />)
+    expect(document.querySelector('select')?.options.length).toBe(2)
+  })
+  test('tor has 2 options', () => {
+    render(<Tor />)
+    expect(document.querySelector('select')?.options.length).toBe(2)
   })
 })
