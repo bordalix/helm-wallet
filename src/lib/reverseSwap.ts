@@ -24,6 +24,15 @@ import { defaultInvoiceComment } from './constants'
  * 4. user validates lightining invoice
  */
 
+interface ReverseSwapBip21Response {
+  bip21: string
+  signature: string
+}
+
+interface ReverseSwapClaimResponse {
+  pubNonce: string
+  partialSignature: string
+}
 export interface ReverseSwapResponse {
   id: string
   invoice: string
@@ -153,7 +162,7 @@ export const waitAndClaim = async (
 
         console.log('Getting partial signature from Boltz')
 
-        const boltzSig = (
+        const boltzSig: ReverseSwapClaimResponse = (
           await axios.post(
             `${getBoltzApiUrl(wallet.network, config.tor)}/v2/swap/reverse/${createdResponse.id}/claim`,
             {
@@ -242,7 +251,7 @@ export const reverseSwap = async (
   const description = recvInfo.comment === '' ? defaultInvoiceComment : recvInfo.comment
 
   // Create a Reverse Submarine Swap
-  const createdResponse = (
+  const createdResponse: ReverseSwapResponse = (
     await axios.post(`${getBoltzApiUrl(wallet.network, config.tor)}/v2/swap/reverse`, {
       address: destinationAddress,
       addressSignature: signature.toString('hex'),
@@ -254,7 +263,7 @@ export const reverseSwap = async (
       referralId: 'helm',
       to: 'L-BTC',
     })
-  ).data as ReverseSwapResponse
+  ).data
 
   // Show invoice on wallet UI
   onInvoice(createdResponse.invoice)
@@ -279,8 +288,8 @@ export const getLiquidAddress = async (
   config: Config,
   wallet: Wallet,
 ): Promise<string> => {
-  const bip21Data = (await axios.get(`${getBoltzApiUrl(wallet.network, config.tor)}/v2/swap/reverse/${invoice}/bip21`))
-    .data
+  const url = `${getBoltzApiUrl(wallet.network, config.tor)}/v2/swap/reverse/${invoice}/bip21`
+  const bip21Data = (await axios.get(url)).data as ReverseSwapBip21Response
   const bip21Split = bip21Data.bip21.split(':')
   const bip21Address = bip21Split[1].split('?')[0]
 

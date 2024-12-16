@@ -20,6 +20,13 @@ import { Config } from '../providers/config'
  * 4. user validates lightining invoice
  */
 
+interface SubmarineSwapClaimResponse {
+  preimage: string
+  pubNonce: string
+  publicKey: string
+  transactionHash: string
+}
+
 export interface SubmarineSwapResponse {
   id: string
   bip21: string
@@ -104,9 +111,8 @@ export const finalizeSubmarineSwap = (
         console.log('Creating cooperative claim transaction')
 
         // Get the information request to create a partial signature
-        const claimTxDetails = (
-          await axios.get(`${getBoltzApiUrl(wallet.network, config.tor)}/v2/swap/submarine/${swapResponse.id}/claim`)
-        ).data
+        const url = `${getBoltzApiUrl(wallet.network, config.tor)}/v2/swap/submarine/${swapResponse.id}/claim`
+        const claimTxDetails: SubmarineSwapClaimResponse = (await axios.get(url)).data
 
         // Verify that Boltz actually paid the invoice by comparing the preimage hash
         // of the invoice to the SHA256 hash of the preimage from the response
