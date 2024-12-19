@@ -99,6 +99,7 @@
     "jest-environment-node": "27.5.1",
     "prettier": "^2.7.1",
     "tailwindcss": "^3.4.1",
+    "text-encoding": "^0.7.0",
     "ts-jest": "^29.1.2"
   },
   "jest": {

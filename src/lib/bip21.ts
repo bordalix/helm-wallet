@@ -41,5 +41,5 @@ export const decode = (uri: string): Bip21Decoded => {
 }
 
 export const isBip21 = (data: string): boolean => {
-  return /^(bitcoin|lightning|liquidnetwork|liquidtestnet):.+/.test(data.toLowerCase()) // TODO
+  return /^(bitcoin|lightning|liquidnetwork|liquidtestnet):([a-z0-9]{26,}).*$/.test(data.toLowerCase()) // TODO
 }

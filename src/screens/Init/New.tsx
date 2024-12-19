@@ -31,7 +31,8 @@ export default function InitNew() {
         <Title text='Your new wallet' subtext='Write down the following words' />
         <Columns>
           {mnemonic.split(' ').map((word, i) => (
-            <Word key={word} left={i + 1} text={word} />
+            // eslint-disable-next-line react/no-array-index-key
+            <Word key={`${word}-${i}`} left={i + 1} text={word} />
           ))}
         </Columns>
         <div className='flex justify-center align-middle mt-4'>

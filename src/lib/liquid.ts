@@ -14,7 +14,7 @@ const isBase58check = (addr: string, network: Network): boolean => {
   try {
     const { pubKeyHash, scriptHash } = network
     const { hash, version } = fromBase58Check(addr)
-    return [20, 54].includes(hash.length) && [pubKeyHash, scriptHash].includes(version)
+    return [20, 54].includes(hash.length) && [pubKeyHash, scriptHash, 4].includes(version)
   } catch {}
   return false
 }

@@ -45,7 +45,7 @@ const isValidBech32 = (data: string) => {
 }
 
 const isLnUrl = (data: string) => {
-  return data.startsWith('lnurl') && isValidBech32(data)
+  return data.toLowerCase().startsWith('lnurl') && isValidBech32(data)
 }
 
 const isLnAddress = (data: string) => {
@@ -54,7 +54,7 @@ const isLnAddress = (data: string) => {
 
 export const isValidLnUrl = (data: string): boolean => isLnUrl(data) || isLnAddress(data)
 
-export const getCallbackUrl = (lnurl: string) => {
+export const getCallbackUrl = (lnurl: string): string => {
   if (isLnAddress(lnurl)) {
     // Lightning address
     const urlsplit = lnurl.split('@')
