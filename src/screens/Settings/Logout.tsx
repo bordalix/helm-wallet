@@ -8,7 +8,7 @@ import Content from '../../components/Content'
 
 export default function Logout() {
   const { toggleShowConfig } = useContext(ConfigContext)
-  const { logout } = useContext(WalletContext)
+  const { logout, wallet } = useContext(WalletContext)
 
   const handleLogout = () => {
     logout()
@@ -20,9 +20,10 @@ export default function Logout() {
       <Content>
         <Title text='Logout' />
         <p className='mt-10 mb-4 max-w-64 mx-auto'>After logout you'll need to re-enter your password to send funds.</p>
+        {!wallet.mnemonic ? <p className='max-w-64 mx-auto'>You're already logged out.</p> : null}
       </Content>
       <ButtonsOnBottom>
-        <Button onClick={handleLogout} label='Logout' />
+        <Button onClick={handleLogout} label='Logout' disabled={!wallet.mnemonic} />
         <Button onClick={toggleShowConfig} label='Cancel' secondary />
       </ButtonsOnBottom>
     </div>
