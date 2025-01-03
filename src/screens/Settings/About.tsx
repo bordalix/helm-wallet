@@ -8,6 +8,7 @@ import Container from '../../components/Container'
 import { BoltzContext } from '../../providers/boltz'
 import { WalletContext } from '../../providers/wallet'
 import { prettyNumber } from '../../lib/format'
+import { gitCommit } from '../../_gitCommit'
 
 export default function About() {
   const { maxAllowedAmount, maxLiquidAmount } = useContext(BoltzContext)
@@ -20,6 +21,15 @@ export default function About() {
 
   const showSweepAll = wallet.initialized && maxAmount.liquid > 0
 
+  const link = (name: string, url = '') => {
+    if (!url) url = `https://${name}`
+    return (
+      <a className='underline cursor-pointer' href={url}>
+        {name}
+      </a>
+    )
+  }
+
   const { toggleShowConfig } = useContext(ConfigContext)
   return (
     <Container>
@@ -27,22 +37,11 @@ export default function About() {
         <Title text='About' />
         <div className='flex flex-col gap-6 mt-10'>
           <p>
-            A Liquid wallet (for self-custody) that uses{' '}
-            <a className='underline cursor-pointer' href='https://boltz.exchange'>
-              Boltz
-            </a>{' '}
-            swaps to disguise itself as a Lightning wallet that even your grandma can use
+            A Liquid wallet (for self-custody) that uses {link('boltz.exchange')} swaps to disguise itself as a
+            Lightning wallet that even your grandma can use
           </p>
           <p>
-            Uses{' '}
-            <a className='underline cursor-pointer' href='https://mempool.space'>
-              mempool.space
-            </a>{' '}
-            or{' '}
-            <a className='underline cursor-pointer' href='https://blockstream.info'>
-              blockstream.info
-            </a>{' '}
-            to fetch information from the chain
+            Uses {link('mempool.space')} and {link('blockstream.info')} to fetch information from the chain
           </p>
           {showSweepAll ? (
             <p>
@@ -55,16 +54,9 @@ export default function About() {
           ) : null}
           <p>
             Made with 🧡 by{' '}
-            <a
-              className='underline cursor-pointer'
-              href='https://njump.me/npub1vt803quxxq32fuwkp42g2lyaw2t9qupvnl3z0vyc3s9kudkyhn8qt28cxv'
-            >
-              @bordalix
-            </a>
+            {link('@bordalix', 'https://njump.me/npub1vt803quxxq32fuwkp42g2lyaw2t9qupvnl3z0vyc3s9kudkyhn8qt28cxv')}
           </p>
-          <p className='underline cursor-pointer'>
-            <a href='https://github.com/bordalix/helm-wallet'>Github</a>
-          </p>
+          <p>Commit {link(gitCommit, 'https://github.com/bordalix/helm-wallet')}</p>
         </div>
       </Content>
       <ButtonsOnBottom>
