@@ -19,7 +19,9 @@ export default function Logout() {
     <div className='flex flex-col h-full justify-between'>
       <Content>
         <Title text='Logout' />
-        <p className='mt-10 mb-4 max-w-64 mx-auto'>After logout you'll need to re-enter your password to send funds.</p>
+        <p className='mt-10 mb-4 max-w-64 mx-auto'>
+          After logout you'll need to re-enter your password to send funds or backup your mnemonic.
+        </p>
         {!wallet.mnemonic ? <p className='max-w-64 mx-auto'>You're already logged out.</p> : null}
       </Content>
       <ButtonsOnBottom>
