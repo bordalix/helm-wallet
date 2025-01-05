@@ -56,7 +56,7 @@ export default function About() {
             Made with 🧡 by{' '}
             {link('@bordalix', 'https://njump.me/npub1vt803quxxq32fuwkp42g2lyaw2t9qupvnl3z0vyc3s9kudkyhn8qt28cxv')}
           </p>
-          <p>Commit {link(gitCommit, 'https://github.com/bordalix/helm-wallet')}</p>
+          <p>Git commit {link(gitCommit, 'https://github.com/bordalix/helm-wallet')}</p>
         </div>
       </Content>
       <ButtonsOnBottom>
