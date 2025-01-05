@@ -37,8 +37,8 @@ export default function About() {
         <Title text='About' />
         <div className='flex flex-col gap-6 mt-10'>
           <p>
-            A Liquid wallet (for self-custody) that uses {link('boltz.exchange')} swaps to disguise itself as a
-            Lightning wallet that even your grandma can use
+            A Liquid wallet (for self-custody) that uses {link('Boltz', 'https://boltz.exchange')} swaps to disguise
+            itself as a Lightning wallet that even your grandma can use
           </p>
           <p>
             Uses {link('mempool.space')} and {link('blockstream.info')} to fetch information from the chain
