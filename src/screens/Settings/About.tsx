@@ -8,7 +8,6 @@ import Container from '../../components/Container'
 import { BoltzContext } from '../../providers/boltz'
 import { WalletContext } from '../../providers/wallet'
 import { prettyNumber } from '../../lib/format'
-import { gitCommit } from '../../_gitCommit'
 
 export default function About() {
   const { maxAllowedAmount, maxLiquidAmount } = useContext(BoltzContext)
@@ -56,7 +55,6 @@ export default function About() {
             Made with 🧡 by{' '}
             {link('@bordalix', 'https://njump.me/npub1vt803quxxq32fuwkp42g2lyaw2t9qupvnl3z0vyc3s9kudkyhn8qt28cxv')}
           </p>
-          <p>Git commit {link(gitCommit, 'https://github.com/bordalix/helm-wallet')}</p>
         </div>
       </Content>
       <ButtonsOnBottom>
