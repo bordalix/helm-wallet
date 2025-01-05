@@ -9,6 +9,7 @@ import Container from '../../../components/Container'
 import { openInNewTab } from '../../../lib/explorers'
 import { FlowContext } from '../../../providers/flow'
 import { WalletContext } from '../../../providers/wallet'
+import { prettyNumber } from '../../../lib/format'
 
 export default function ReceiveSuccess() {
   const { recvInfo } = useContext(FlowContext)
@@ -25,7 +26,7 @@ export default function ReceiveSuccess() {
   return (
     <Container>
       <Content>
-        <Title text='Success' subtext='Payment received' />
+        <Title text='Success' subtext={`${prettyNumber(recvInfo.total)} sats received`} />
         <div className='flex h-60'>
           <div className='m-auto'>
             <SuccessIcon />
