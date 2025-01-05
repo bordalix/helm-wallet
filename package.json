@@ -52,8 +52,8 @@
     "ws-electrumx-client": "^1.0.5"
   },
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
+    "start": "REACT_APP_CF_SHA=$(git rev-parse HEAD) craco start",
+    "build": "REACT_APP_CF_SHA=${CF_PAGES_COMMIT_SHA} craco build",
     "test": "craco test --detectOpenHandles",
     "lint": "eslint --ext .ts,.tsx src",
     "eject": "craco eject"

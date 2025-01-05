@@ -13,6 +13,8 @@ export default function About() {
   const { maxAllowedAmount, maxLiquidAmount } = useContext(BoltzContext)
   const { wallet } = useContext(WalletContext)
 
+  const gitCommit = (process.env.REACT_APP_CF_SHA || '').slice(0, 7)
+
   const maxAmount = {
     boltz: maxAllowedAmount(wallet),
     liquid: maxLiquidAmount(wallet),
@@ -55,6 +57,7 @@ export default function About() {
             Made with 🧡 by{' '}
             {link('@bordalix', 'https://njump.me/npub1vt803quxxq32fuwkp42g2lyaw2t9qupvnl3z0vyc3s9kudkyhn8qt28cxv')}
           </p>
+          {gitCommit ? <p>Git commit {link(gitCommit, 'https://github.com/bordalix/helm-wallet')}</p> : null}
         </div>
       </Content>
       <ButtonsOnBottom>
