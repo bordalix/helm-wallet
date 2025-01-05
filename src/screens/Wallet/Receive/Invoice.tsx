@@ -18,6 +18,7 @@ import { ElectrumHistory } from '../../../lib/chainsource'
 import Loading from '../../../components/Loading'
 import { ConfigContext } from '../../../providers/config'
 import { notifyPaymentReceived } from '../../../lib/notifications'
+import { getTransactionAmount } from '../../../lib/transactions'
 
 export default function ReceiveInvoice() {
   const { config } = useContext(ConfigContext)
@@ -34,15 +35,26 @@ export default function ReceiveInvoice() {
 
   const finishedTxIds: string[] = []
 
-  const onFinish = (txid: string) => {
+  const updateReceivedAmount = async (total: number, txid: string): Promise<number> => {
+    try {
+      const hex = await chainSource.fetchSingleTransaction(txid)
+      if (!address || !hex) return total
+      return await getTransactionAmount(address, hex, chainSource)
+    } catch {
+      return total
+    }
+  }
+
+  const onFinish = async (txid: string): Promise<void> => {
     // avoid double call to onFinish for same txid
     if (finishedTxIds.includes(txid)) return
     finishedTxIds.push(txid)
     increaseIndex()
     setTimeout(() => reloadWallet(wallet), someSeconds)
     setTimeout(() => reloadWallet(wallet), inOneMinute)
-    setRecvInfo({ ...recvInfo, txid })
-    notifyPaymentReceived(recvInfo.total)
+    const total = await updateReceivedAmount(recvInfo.total, txid)
+    setRecvInfo({ ...recvInfo, total, txid })
+    notifyPaymentReceived(total)
     navigate(Pages.ReceiveSuccess)
   }
 
@@ -60,21 +72,28 @@ export default function ReceiveInvoice() {
   useEffect(() => {
     if (!invoice) {
       try {
-        generateAddress(wallet).then((addr) => {
-          setAddress(addr)
-          reverseSwap(recvInfo, addr.confidentialAddress, config, wallet, onFinish, setInvoice)
-          chainSource.waitForAddressReceivesTx(addr.address).then(() => {
-            chainSource.fetchHistories([addr.script]).then((histories: ElectrumHistory[]) => {
-              const newTx = histories.find((tx) => tx.height <= 0)
-              if (newTx) onFinish(newTx.tx_hash ?? '')
-            })
+        generateAddress(wallet).then(setAddress)
+      } catch (error) {
+        setError(extractError(error))
+      }
+    }
+  }, [invoice])
+
+  useEffect(() => {
+    if (address) {
+      try {
+        reverseSwap(recvInfo, address.confidentialAddress, config, wallet, onFinish, setInvoice)
+        chainSource.waitForAddressReceivesTx(address.address).then(() => {
+          chainSource.fetchHistories([address.script]).then((histories: ElectrumHistory[]) => {
+            const newTx = histories.find((tx) => tx.height <= 0)
+            if (newTx) onFinish(newTx.tx_hash ?? '')
           })
         })
       } catch (error) {
         setError(extractError(error))
       }
     }
-  }, [invoice])
+  }, [address])
 
   const qrValue = Math.floor(clickCounter / 3) % 2 === 0 ? invoice : address?.confidentialAddress
 
