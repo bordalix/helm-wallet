@@ -22,7 +22,7 @@ export default function ReceiveAmount() {
   const { setRecvInfo } = useContext(FlowContext)
   const { limits } = useContext(BoltzContext)
 
-  const [amount, setAmount] = useState(0)
+  const [sats, setSats] = useState(0)
   const [comment, setComment] = useState('')
   const [showNote, setShowNote] = useState(false)
 
@@ -32,21 +32,21 @@ export default function ReceiveAmount() {
   }
 
   const handleProceed = () => {
-    setRecvInfo({ amount, comment, total: 0 })
+    setRecvInfo({ amount: sats, comment, total: 0 })
     navigate(Pages.ReceiveFees)
   }
 
   const { minimal, maximal } = limits
-  const disabled = amount < minimal || amount > maximal
-  const label = amount < limits.minimal ? ButtonLabel.Low : amount > limits.maximal ? ButtonLabel.High : ButtonLabel.Ok
+  const disabled = sats < minimal || sats > maximal
+  const label = sats < limits.minimal ? ButtonLabel.Low : sats > limits.maximal ? ButtonLabel.High : ButtonLabel.Ok
   const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints // TODO
 
   return (
     <Container>
       <Content>
         <Title text='Receive' subtext={`Min: ${prettyNumber(minimal)} · Max: ${prettyNumber(maximal)} sats`} />
-        {!showNote ? <InputAmount onChange={setAmount} /> : null}
-        {!isMobile || showNote ? <InputComment onChange={setComment} max={120} subtext /> : null}
+        {!showNote ? <InputAmount sats={sats} setSats={setSats} /> : null}
+        {!isMobile || showNote ? <InputComment comment={comment} setComment={setComment} max={120} subtext /> : null}
         {isMobile && showNote ? <Button onClick={() => setShowNote(false)} label='Back to amount' clean /> : null}
         {isMobile && !showNote ? <Button onClick={() => setShowNote(true)} label='Add optional note' clean /> : null}
       </Content>

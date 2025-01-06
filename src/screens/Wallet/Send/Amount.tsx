@@ -31,7 +31,7 @@ export default function SendAmount() {
   const { limits } = useContext(BoltzContext)
   const { wallet } = useContext(WalletContext)
 
-  const [amount, setAmount] = useState(0)
+  const [sats, setSats] = useState(0)
   const [comment, setComment] = useState('')
   const [error, setError] = useState('')
   const [showNote, setShowNote] = useState(false)
@@ -51,12 +51,12 @@ export default function SendAmount() {
   const handleProceed = async () => {
     if (!sendInfo.lnurl && !sendInfo.address) return
     if (sendInfo.address) {
-      setSendInfo({ ...sendInfo, comment, satoshis: amount })
+      setSendInfo({ ...sendInfo, comment, satoshis: sats })
       navigate(Pages.SendDetails)
     }
     if (sendInfo.lnurl) {
       try {
-        const invoice = await fetchLnUrl(sendInfo.lnurl, amount, comment)
+        const invoice = await fetchLnUrl(sendInfo.lnurl, sats, comment)
         setSendInfo({ ...decodeInvoice(invoice), comment })
         navigate(Pages.SendDetails)
       } catch (err: any) {
@@ -80,13 +80,13 @@ export default function SendAmount() {
   }, [])
 
   const label =
-    amount > balance
+    sats > balance
       ? ButtonLabel.Poor
       : error
       ? ButtonLabel.Nok
-      : amount < minSendable
+      : sats < minSendable
       ? ButtonLabel.Low
-      : amount > maxSendable
+      : sats > maxSendable
       ? ButtonLabel.High
       : ButtonLabel.Ok
 
@@ -98,8 +98,10 @@ export default function SendAmount() {
       <Content>
         <Title text='Send' subtext={`Min: ${prettyNumber(minSendable)} · Max: ${prettyNumber(maxSendable)} sats`} />
         <Error error={Boolean(error)} text={error} />
-        {!showNote ? <InputAmount onChange={setAmount} /> : null}
-        {commentAllowed && (!isMobile || showNote) ? <InputComment onChange={setComment} max={commentAllowed} /> : null}
+        {!showNote ? <InputAmount sats={sats} setSats={setSats} /> : null}
+        {commentAllowed && (!isMobile || showNote) ? (
+          <InputComment comment={comment} setComment={setComment} max={commentAllowed} />
+        ) : null}
         {commentAllowed && isMobile && showNote ? (
           <Button onClick={() => setShowNote(false)} label='Back to amount' clean />
         ) : null}

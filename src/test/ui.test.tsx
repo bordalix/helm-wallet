@@ -73,7 +73,7 @@ describe('Restore wallet', () => {
 describe('Wallet', () => {
   test('has balance and buttons', () => {
     render(<Wallet />)
-    expect(screen.getByText(/sats/)).toBeDefined()
+    expect(screen.getByText(/Sats/)).toBeDefined()
     expect(screen.getByText(/BTC/)).toBeDefined()
     expect(screen.getByText(/Receive/)).toBeDefined()
     expect(screen.getByText(/Send/)).toBeDefined()
