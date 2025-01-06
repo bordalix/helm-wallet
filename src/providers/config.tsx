@@ -1,16 +1,10 @@
 import { ReactNode, createContext, useEffect, useState } from 'react'
 import { readConfigFromStorage, saveConfigToStorage } from '../lib/storage'
+import { Unit } from '../lib/units'
 
 export enum Themes {
   Dark = 'Dark',
   Light = 'Light',
-}
-
-export enum Unit {
-  BTC = 'btc',
-  EUR = 'eur',
-  USD = 'usd',
-  SAT = 'sat',
 }
 
 export interface Config {
