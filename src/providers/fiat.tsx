@@ -7,8 +7,8 @@ import { Satoshis } from '../lib/types'
 type FiatContextProps = {
   fromEuro: (fiat: number) => Satoshis
   fromUSD: (fiat: number) => Satoshis
-  toEuro: (sats: number) => number
-  toUSD: (sats: number) => number
+  toEuro: (sats: Satoshis) => number
+  toUSD: (sats: Satoshis) => number
   updateFiatPrices: () => void
 }
 
