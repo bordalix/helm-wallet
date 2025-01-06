@@ -1,18 +1,14 @@
-import { useEffect, useState } from 'react'
 import Label from './Label'
 
 interface InputCommentProps {
   max: number
-  onChange: (arg0: any) => void
+  comment: string
+  setComment: (arg0: any) => void
   subtext?: boolean
 }
 
-export default function InputComment({ max, onChange, subtext }: InputCommentProps) {
-  const [comment, setComment] = useState('')
-
-  useEffect(() => {
-    onChange(comment)
-  }, [comment])
+export default function InputComment({ max, comment, setComment, subtext }: InputCommentProps) {
+  const maxChars = `${comment.length}/${max}`
 
   return (
     <fieldset className='text-left text-gray-800 dark:text-gray-100 w-full mb-4'>
@@ -30,7 +26,7 @@ export default function InputComment({ max, onChange, subtext }: InputCommentPro
         />
       </div>
       <div className='flex justify-between items-center text-xs mt-1'>
-        <p>Max chars: {max}</p>
+        <p>Max chars: {maxChars}</p>
         {subtext ? <p className='text-center text-xs my-1'>Will be visible on invoice</p> : null}
       </div>
     </fieldset>
