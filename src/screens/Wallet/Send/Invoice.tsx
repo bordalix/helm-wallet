@@ -1,12 +1,10 @@
 import { useContext, useEffect, useState } from 'react'
 import Button from '../../../components/Button'
-import BarcodeScanner from '../../../components/BarcodeScanner'
 import { decodeInvoice, isLnInvoice } from '../../../lib/lightning'
 import Error from '../../../components/Error'
 import ButtonsOnBottom from '../../../components/ButtonsOnBottom'
 import { NavigationContext, Pages } from '../../../providers/navigation'
 import { FlowContext, emptySendInfo } from '../../../providers/flow'
-import Input from '../../../components/Input'
 import Content from '../../../components/Content'
 import Title from '../../../components/Title'
 import Container from '../../../components/Container'
@@ -15,6 +13,7 @@ import * as bip21 from '../../../lib/bip21'
 import { WalletContext } from '../../../providers/wallet'
 import { NetworkName } from '../../../lib/network'
 import { isLiquidAddress } from '../../../lib/liquid'
+import InputDestination from '../../../components/InputDestination'
 
 export default function SendInvoice() {
   const { navigate } = useContext(NavigationContext)
@@ -22,29 +21,15 @@ export default function SendInvoice() {
   const { wallet } = useContext(WalletContext)
 
   const defaultLabel = 'Paste invoice or LNURL'
+
   const [buttonLabel, setButtonLabel] = useState(defaultLabel)
   const [error, setError] = useState('')
-  const [mediaStream, setMediaStream] = useState(false)
-  const [pasteAllowed, setPasteAllowed] = useState(true)
   const [pastedData, setPastedData] = useState('')
+  const [text, setText] = useState('')
 
   const wrongNetwork = (invoice: string) =>
     (invoice.startsWith('lnbc') && wallet.network !== NetworkName.Liquid) ||
     (!invoice.startsWith('lnbc') && wallet.network === NetworkName.Liquid)
-
-  useEffect(() => {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices
-        .getUserMedia({ video: true })
-        .then((stream) => {
-          setMediaStream(true)
-          stream.getVideoTracks().forEach((track) => track.stop())
-        })
-        .catch((error) => console.error('Permission denied: ', error))
-    } else {
-      console.error('getUserMedia is not supported in this browser.')
-    }
-  })
 
   useEffect(() => {
     if (!pastedData) return
@@ -92,7 +77,13 @@ export default function SendInvoice() {
     }
   }, [pastedData])
 
+  const handleChange = (data: string) => {
+    setButtonLabel(data ? 'Continue' : defaultLabel)
+    setText(data)
+  }
+
   const handlePaste = () => {
+    if (text) return setPastedData(text)
     navigator.clipboard
       .readText()
       .then((data) => {
@@ -102,7 +93,6 @@ export default function SendInvoice() {
       })
       .catch((err) => {
         console.error('Failed to read clipboard contents: ', err)
-        setPasteAllowed(false)
       })
   }
 
@@ -111,24 +101,13 @@ export default function SendInvoice() {
     navigate(Pages.Wallet)
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setPastedData(e.target.value)
-
   return (
     <Container>
       <Content>
         <Title text='Send' subtext='Scan or paste invoice' />
         <div className='flex flex-col gap-2'>
           <Error error={Boolean(error)} text={error} />
-          {error ? null : (
-            <div className='flex flex-col h-full justify-between gap-10'>
-              {!pasteAllowed ? <Input label='Paste your invoice here' left='&#9889;' onChange={handleChange} /> : null}
-              {mediaStream ? (
-                <BarcodeScanner setPastedData={setPastedData} setError={setError} />
-              ) : (
-                <p>Waiting for camera access</p>
-              )}
-            </div>
-          )}
+          <InputDestination onChange={handleChange} onError={setError} onScan={setPastedData} />
         </div>
       </Content>
       <ButtonsOnBottom>
