@@ -40,5 +40,5 @@ export default function BarcodeScanner({ setError, setPastedData }: BarcodeScann
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [videoRef])
 
-  return <video className='aspect-[1/1] mx-auto mb-2' ref={videoRef} />
+  return <video className='mx-auto mb-2 rounded-md' ref={videoRef} />
 }
