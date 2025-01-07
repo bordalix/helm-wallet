@@ -45,7 +45,7 @@ export default function TransactionsList({ short }: { short?: boolean }) {
   const claims = getRetriableClaims(wallet.network)
   const transactions = wallet.transactions[wallet.network]
 
-  if (transactions?.length + claims.length === 0) return <></>
+  if (transactions?.length + claims.length === 0) return <p>No transactions</p>
 
   const showMax = 3
   const txSorted = transactions.sort((a, b) => (!a.unixdate ? -1 : !b.unixdate ? 1 : b.unixdate - a.unixdate))
