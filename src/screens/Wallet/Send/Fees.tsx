@@ -92,7 +92,7 @@ export default function SendFees() {
     ['Total', prettyTotal],
   ]
 
-  if (!wallet.mnemonic) return <NeedsPassword onMnemonic={setMnemonic} />
+  if (!wallet.mnemonic) return <NeedsPassword onClose={handleCancel} onMnemonic={setMnemonic} />
 
   const UpdatingFees = () => (
     <>
