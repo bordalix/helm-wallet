@@ -20,6 +20,7 @@ import { feesToSendSats } from '../../../lib/fees'
 import { getLiquidAddress } from '../../../lib/reverseSwap'
 import Loading from '../../../components/Loading'
 import { ConfigContext } from '../../../providers/config'
+import { Unit, unitLabels } from '../../../lib/units'
 
 export default function SendFees() {
   const { config } = useContext(ConfigContext)
@@ -70,7 +71,7 @@ export default function SendFees() {
   useEffect(() => {
     if (sendInfo.total) {
       if (getBalance(wallet) < totalNeeded)
-        setError(`Insufficient funds, you just have ${prettyNumber(getBalance(wallet))} sats`)
+        setError(`Insufficient funds, you just have ${prettyNumber(getBalance(wallet))} ${unitLabels[Unit.SAT]}`)
     }
   }, [sendInfo.total])
 
@@ -103,7 +104,7 @@ export default function SendFees() {
   return (
     <Container>
       <Content>
-        <Title text='Payment fees' subtext={`You pay ${prettyTotal} sats`} />
+        <Title text='Payment fees' subtext={`You pay ${prettyTotal} ${unitLabels[Unit.SAT]}`} />
         <div className='flex flex-col gap-2'>
           <Error error={Boolean(error)} text={error} />
           {boltzFees < 0 || !sendInfo.txFees ? <UpdatingFees /> : <Table data={data} />}

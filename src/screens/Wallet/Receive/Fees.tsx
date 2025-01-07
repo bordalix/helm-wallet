@@ -9,6 +9,7 @@ import { FlowContext, emptyRecvInfo } from '../../../providers/flow'
 import { prettyNumber } from '../../../lib/format'
 import Table from '../../../components/Table'
 import { BoltzContext } from '../../../providers/boltz'
+import { unitLabels, Unit } from '../../../lib/units'
 
 export default function ReceiveFees() {
   const { expectedFees } = useContext(BoltzContext)
@@ -39,7 +40,7 @@ export default function ReceiveFees() {
   return (
     <Container>
       <Content>
-        <Title text='Expected fees' subtext={`You receive ${prettyNumber(total)} sats`} />
+        <Title text='Expected fees' subtext={`You receive ${prettyNumber(total)} ${unitLabels[Unit.SAT]}`} />
         <Table data={data} />
       </Content>
       <ButtonsOnBottom>

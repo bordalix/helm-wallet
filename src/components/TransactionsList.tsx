@@ -10,9 +10,10 @@ import { ClaimInfo, getRetriableClaims, removeClaim } from '../lib/claims'
 import { waitAndClaim } from '../lib/reverseSwap'
 import { ConfigContext } from '../providers/config'
 import { FlowContext } from '../providers/flow'
+import { unitLabels, Unit } from '../lib/units'
 
 const TransactionLine = ({ data, wallet }: { data: Transaction; wallet: Wallet }) => {
-  const amount = `${data.amount > 0 ? '+' : '-'} ${prettyNumber(Math.abs(data.amount))} sats`
+  const amount = `${data.amount > 0 ? '+' : '-'} ${prettyNumber(Math.abs(data.amount))} ${unitLabels[Unit.SAT]}`
   const date = data.unixdate ? prettyAgo(data.unixdate) : 'just now'
   const divClass = 'border cursor-pointer p-2 flex justify-between w-full rounded-md'
   return (
@@ -27,7 +28,7 @@ const PendingClaim = ({ claim, onClick }: { claim: ClaimInfo; onClick: any }) =>
   const divClass = 'border border-red-500 bg-red-500/50 cursor-pointer p-2 flex justify-between w-full rounded-md'
   return (
     <div className={divClass} onClick={onClick}>
-      <p>{`+ ${prettyNumber(Math.abs(claim.createdResponse.onchainAmount))} sats`}</p>
+      <p>{`+ ${prettyNumber(Math.abs(claim.createdResponse.onchainAmount))} ${unitLabels[Unit.SAT]}`}</p>
       <p className='mr-2'>Retry</p>
     </div>
   )

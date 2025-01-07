@@ -15,6 +15,7 @@ import { sendSats } from '../../../lib/transactions'
 import Error from '../../../components/Error'
 import Loading from '../../../components/Loading'
 import { ConfigContext } from '../../../providers/config'
+import { unitLabels, Unit } from '../../../lib/units'
 
 export default function SendPayment() {
   const { config } = useContext(ConfigContext)
@@ -54,7 +55,7 @@ export default function SendPayment() {
   return (
     <Container>
       <Content>
-        <Title text='Pay' subtext={`Paying ${prettyNumber(total ?? 0)} sats`} />
+        <Title text='Pay' subtext={`Paying ${prettyNumber(total ?? 0)} ${unitLabels[Unit.SAT]}`} />
         {error ? <Error error={Boolean(error)} text={error} /> : wallet.mnemonic ? <Loading /> : null}
       </Content>
       <ButtonsOnBottom>

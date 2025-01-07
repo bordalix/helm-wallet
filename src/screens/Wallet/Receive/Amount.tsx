@@ -10,6 +10,7 @@ import { BoltzContext } from '../../../providers/boltz'
 import Container from '../../../components/Container'
 import { prettyNumber } from '../../../lib/format'
 import InputComment from '../../../components/InputComment'
+import { unitLabels, Unit } from '../../../lib/units'
 
 enum ButtonLabel {
   Low = 'Amount too low',
@@ -44,7 +45,10 @@ export default function ReceiveAmount() {
   return (
     <Container>
       <Content>
-        <Title text='Receive' subtext={`Min: ${prettyNumber(minimal)} · Max: ${prettyNumber(maximal)} sats`} />
+        <Title
+          text='Receive'
+          subtext={`Min: ${prettyNumber(minimal)} · Max: ${prettyNumber(maximal)} ${unitLabels[Unit.SAT]}`}
+        />
         {!showNote ? <InputAmount sats={sats} setSats={setSats} /> : null}
         {!isMobile || showNote ? <InputComment comment={comment} setComment={setComment} max={120} subtext /> : null}
         {isMobile && showNote ? <Button onClick={() => setShowNote(false)} label='Back to amount' clean /> : null}

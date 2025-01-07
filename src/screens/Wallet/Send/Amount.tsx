@@ -16,6 +16,7 @@ import { decodeInvoice } from '../../../lib/lightning'
 import { WalletContext } from '../../../providers/wallet'
 import { getBalance } from '../../../lib/wallet'
 import InputComment from '../../../components/InputComment'
+import { unitLabels, Unit } from '../../../lib/units'
 
 enum ButtonLabel {
   High = 'Amount too high',
@@ -96,9 +97,12 @@ export default function SendAmount() {
   return (
     <Container>
       <Content>
-        <Title text='Send' subtext={`Min: ${prettyNumber(minSendable)} · Max: ${prettyNumber(maxSendable)} sats`} />
+        <Title
+          text='Send'
+          subtext={`Min: ${prettyNumber(minSendable)} · Max: ${prettyNumber(maxSendable)} ${unitLabels[Unit.SAT]}`}
+        />
         <Error error={Boolean(error)} text={error} />
-        {!showNote ? <InputAmount sats={sats} setSats={setSats} /> : null}
+        {!showNote ? <InputAmount balance={balance} sats={sats} setSats={setSats} /> : null}
         {commentAllowed && (!isMobile || showNote) ? (
           <InputComment comment={comment} setComment={setComment} max={commentAllowed} />
         ) : null}

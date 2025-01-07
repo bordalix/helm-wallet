@@ -1,4 +1,5 @@
 import { prettyNumber } from './format'
+import { unitLabels, Unit } from './units'
 
 export const isNotificationApiSupported =
   'Notification' in window && 'serviceWorker' in navigator && 'PushManager' in window
@@ -30,7 +31,7 @@ export const notifyNewUpdateAvailable = () => {
 }
 
 export const notifyPaymentReceived = (sats: number) => {
-  const body = `You received ${prettyNumber(sats)} sats`
+  const body = `You received ${prettyNumber(sats)} ${unitLabels[Unit.SAT]}`
   const title = 'Payment received'
   sendNotification(title, body)
 }
