@@ -10,7 +10,7 @@ interface InputDestinationProps {
 }
 
 export default function InputDestination({ onChange, onError, onScan }: InputDestinationProps) {
-  const [mediaStream, setMediaStream] = useState(false)
+  const [stream, setStream] = useState(false)
   const [scan, setScan] = useState(false)
   const [text, setText] = useState('')
 
@@ -21,7 +21,7 @@ export default function InputDestination({ onChange, onError, onScan }: InputDes
       navigator.mediaDevices
         .getUserMedia({ video: true })
         .then((stream) => {
-          setMediaStream(true)
+          setStream(true)
           stream.getVideoTracks().forEach((track) => track.stop())
         })
         .catch((error) => console.error('Permission denied: ', error))
@@ -44,8 +44,8 @@ export default function InputDestination({ onChange, onError, onScan }: InputDes
         <Label text='Destination' />
         <InputWithAction onChange={handleChange} onClick={handleClick} pill='Scan' text={text} />
       </fieldset>
-      {scan && mediaStream ? <BarcodeScanner setPastedData={onScan} setError={onError} /> : null}
-      {scan && !mediaStream ? <p className='mt-4'>Waiting for camera access</p> : null}
+      {scan && stream ? <BarcodeScanner setPastedData={onScan} setError={onError} /> : null}
+      {scan && !stream ? <p className='mt-4'>Waiting for camera access</p> : null}
     </div>
   )
 }
