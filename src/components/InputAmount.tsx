@@ -8,11 +8,12 @@ import Columns from './Columns'
 import Label from './Label'
 
 interface InputAmountProps {
+  balance?: Satoshis
   sats: Satoshis
   setSats: (arg0: Satoshis) => void
 }
 
-export default function InputAmount({ sats, setSats }: InputAmountProps) {
+export default function InputAmount({ balance, sats, setSats }: InputAmountProps) {
   const { fromEuro, fromUSD, toEuro, toUSD } = useContext(FiatContext)
 
   const [lock, setLock] = useState(false)
@@ -32,7 +33,7 @@ export default function InputAmount({ sats, setSats }: InputAmountProps) {
   const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints // TODO
 
   const inputClassName =
-    'w-full p-3 pr-6 text-sm text-right font-semibold rounded-l-md -mr-4 bg-gray-100 dark:bg-gray-800 focus-visible:outline-none'
+    'w-full p-3 text-sm text-right font-semibold rounded-l-md bg-gray-100 dark:bg-gray-800 focus-visible:outline-none'
 
   const handleInputChange = (ev: any) => {
     setText(ev.target.value)
@@ -88,7 +89,11 @@ export default function InputAmount({ sats, setSats }: InputAmountProps) {
 
   return (
     <fieldset className='text-left text-gray-800 dark:text-gray-100 w-full'>
-      <Label text='Amount' />
+      <div className='flex justify-between'>
+        <Label text='Amount' />
+        {balance ? <p className='text-xs my-1'>{`Balance: ${prettyNumber(balance)} ${unitLabels[Unit.SAT]}`}</p> : null}
+      </div>
+
       <div className='flex items-center h-12 rounded-l-md bg-gray-100 dark:bg-gray-800'>
         {isMobile ? (
           <p className={inputClassName}>{text}</p>
