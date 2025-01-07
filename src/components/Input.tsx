@@ -34,3 +34,29 @@ export default function Input({ label, left, onChange, optional, placeholder, ri
     </fieldset>
   )
 }
+
+interface InputWithActionProps {
+  onChange: React.ChangeEventHandler<HTMLInputElement>
+  onClick: React.MouseEventHandler<HTMLDivElement>
+  pill: string
+  text: string
+}
+
+export function InputWithAction({ onChange, onClick, pill, text }: InputWithActionProps) {
+  return (
+    <div className='flex items-center h-12 rounded-l-md bg-gray-100 dark:bg-gray-800'>
+      <input
+        type='text'
+        value={text}
+        onChange={onChange}
+        className='w-full p-3 text-sm font-semibold rounded-l-md bg-gray-100 dark:bg-gray-800 focus-visible:outline-none'
+      />
+      <div
+        className='w-16 h-full flex items-center rounded-r-md cursor-pointer text-sm bg-gray-800 dark:bg-gray-100 text-gray-100 dark:text-gray-800 border-gray-200 dark:border-gray-700'
+        onClick={onClick}
+      >
+        <div className='mx-auto font-semibold'>{pill}</div>
+      </div>
+    </div>
+  )
+}
