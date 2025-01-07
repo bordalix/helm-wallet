@@ -35,7 +35,7 @@ export default function About() {
   return (
     <Container>
       <Content>
-        <Title text='About' />
+        <Title text='About' subtext='Helm wallet' />
         <div className='flex flex-col gap-6 mt-10'>
           <p>
             A Liquid wallet (for self-custody) that uses {link('Boltz', 'https://boltz.exchange')} swaps to disguise

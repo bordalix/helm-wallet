@@ -18,7 +18,7 @@ export default function Logout() {
   return (
     <div className='flex flex-col h-full justify-between'>
       <Content>
-        <Title text='Logout' />
+        <Title text='Logout' subtext='Require password again' />
         <p className='mt-10 mb-4 max-w-64 mx-auto'>
           After logout you'll need to re-enter your password to send funds or backup your mnemonic.
         </p>

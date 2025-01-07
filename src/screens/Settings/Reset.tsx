@@ -19,7 +19,7 @@ export default function Restore({ backup }: { backup: () => void }) {
   return (
     <Container>
       <Content>
-        <Title text='Reset wallet' />
+        <Title text='Reset wallet' subtext='Delete everything' />
         <div className='flex flex-col gap-6 mt-10'>
           <p>
             Did you{' '}
