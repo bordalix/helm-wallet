@@ -19,6 +19,7 @@ export interface Wallet {
   gapLimit: number
   initialized: boolean
   lastUpdate: number
+  lockedByBiometrics?: boolean
   masterBlindingKey?: string
   mnemonic: Mnemonic
   network: NetworkName
@@ -61,13 +62,13 @@ interface WalletContextProps {
   chainSource: ChainSource
   changeExplorer: (e: ExplorerName) => void
   changeNetwork: (n: NetworkName) => void
-  loadingWallet: boolean
-  reloading: boolean
-  restoring: number
   increaseIndex: () => void
+  loadingWallet: boolean
   logout: () => void
   reconnectChainSource: (w: Wallet) => void
   reloadWallet: (w: Wallet, quick?: boolean) => void
+  reloading: boolean
+  restoring: number
   restoreWallet: (w: Wallet) => void
   resetWallet: () => void
   setMnemonic: (m: Mnemonic) => void
@@ -80,11 +81,11 @@ export const WalletContext = createContext<WalletContextProps>({
   chainSource,
   changeExplorer: () => {},
   changeNetwork: () => {},
+  increaseIndex: () => {},
   loadingWallet: true,
+  logout: () => {},
   reloading: false,
   restoring: 0,
-  increaseIndex: () => {},
-  logout: () => {},
   reconnectChainSource: () => {},
   reloadWallet: () => {},
   restoreWallet: () => {},
