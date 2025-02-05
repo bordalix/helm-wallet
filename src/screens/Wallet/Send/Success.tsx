@@ -9,6 +9,7 @@ import Container from '../../../components/Container'
 import { openInNewTab } from '../../../lib/explorers'
 import { FlowContext } from '../../../providers/flow'
 import { WalletContext } from '../../../providers/wallet'
+import CenterScreen from '../../../components/CenterScreen'
 
 export default function SendSuccess() {
   const { sendInfo } = useContext(FlowContext)
@@ -26,11 +27,9 @@ export default function SendSuccess() {
     <Container>
       <Content>
         <Title text='Success' subtext='Payment sent' />
-        <div className='flex h-60'>
-          <div className='m-auto'>
-            <SuccessIcon />
-          </div>
-        </div>
+        <CenterScreen>
+          <SuccessIcon />
+        </CenterScreen>
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handleExplorer} label='View on explorer' />

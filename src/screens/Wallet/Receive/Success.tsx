@@ -10,6 +10,7 @@ import { openInNewTab } from '../../../lib/explorers'
 import { FlowContext } from '../../../providers/flow'
 import { WalletContext } from '../../../providers/wallet'
 import { prettyNumber } from '../../../lib/format'
+import CenterScreen from '../../../components/CenterScreen'
 
 export default function ReceiveSuccess() {
   const { recvInfo } = useContext(FlowContext)
@@ -27,11 +28,9 @@ export default function ReceiveSuccess() {
     <Container>
       <Content>
         <Title text='Success' subtext={`${prettyNumber(recvInfo.total)} sats received`} />
-        <div className='flex h-60'>
-          <div className='m-auto'>
-            <SuccessIcon />
-          </div>
-        </div>
+        <CenterScreen>
+          <SuccessIcon />
+        </CenterScreen>
       </Content>
       <ButtonsOnBottom>
         <Button onClick={handleExplorer} label='View on explorer' />
