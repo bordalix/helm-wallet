@@ -22,31 +22,14 @@ export default function NeedsPassword({ onClose, onMnemonic }: NeedsPasswordProp
   const [open, setOpen] = useState(true)
   const [pass, setPass] = useState('')
 
-  useEffect(() => {
-    if (!wallet.lockedByBiometrics) return
-    authenticateUser()
-      .then(handleProceed)
-      .catch(() => setError('Biometrics failed'))
-  }, [wallet.lockedByBiometrics])
-
-  useEffect(() => {
-    setDisabled(Boolean(error))
-  }, [error])
-
-  const handleChange = (e: any) => {
-    setPass(e.target.value)
+  const authenticateUserWithBiometrics = async () => {
     setError('')
+    authenticateUser()
+      .then(proceed)
+      .catch(() => setError('Canceled'))
   }
 
-  const handleClick = () => handleProceed(pass)
-
-  const handleClose = () => {
-    setLoading(false)
-    setOpen(false)
-    if (onClose) onClose()
-  }
-
-  const handleProceed = async (password: string) => {
+  const proceed = async (password: string) => {
     setLoading(true)
     setDisabled(true)
     readMnemonicFromStorage(password).then((mnemonic) => {
@@ -58,6 +41,28 @@ export default function NeedsPassword({ onClose, onMnemonic }: NeedsPasswordProp
     })
   }
 
+  useEffect(() => {
+    if (!wallet.lockedByBiometrics) return
+    authenticateUserWithBiometrics()
+  }, [wallet.lockedByBiometrics])
+
+  useEffect(() => {
+    setDisabled(Boolean(error))
+  }, [error])
+
+  const handleChange = (e: any) => {
+    setPass(e.target.value)
+    setError('')
+  }
+
+  const handleClick = () => proceed(pass)
+
+  const handleClose = () => {
+    setLoading(false)
+    setOpen(false)
+    if (onClose) onClose()
+  }
+
   return (
     <Modal open={open} onClose={handleClose}>
       {loading ? (
@@ -66,7 +71,9 @@ export default function NeedsPassword({ onClose, onMnemonic }: NeedsPasswordProp
         <div className='flex flex-col gap-2'>
           <Error error={Boolean(error)} text={error} />
           {wallet.lockedByBiometrics ? (
-            <FingerprintIcon />
+            <div className='mx-auto' onClick={authenticateUserWithBiometrics}>
+              <FingerprintIcon />
+            </div>
           ) : (
             <>
               <Input label='Insert password' onChange={handleChange} type='password' />

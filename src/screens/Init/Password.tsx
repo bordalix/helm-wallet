@@ -12,7 +12,6 @@ import { FlowContext } from '../../providers/flow'
 import Container from '../../components/Container'
 import { isBiometricsSupported, registerUser } from '../../lib/biometrics'
 import FingerprintIcon from '../../icons/Fingerprint'
-import Error from '../../components/Error'
 import CenterScreen from '../../components/CenterScreen'
 
 export default function InitPassword() {
@@ -20,7 +19,6 @@ export default function InitPassword() {
   const { navigate } = useContext(NavigationContext)
   const { restoreWallet, wallet } = useContext(WalletContext)
 
-  const [error, setError] = useState('')
   const [label, setLabel] = useState('')
   const [password, setPassword] = useState('')
   const [useBiometrics, setUseBiometrics] = useState(isBiometricsSupported)
@@ -33,14 +31,15 @@ export default function InitPassword() {
     })
   }
 
-  useEffect(() => {
-    if (!useBiometrics) return
+  const registerUserBiometrics = () => {
     registerUser()
       .then(proceed)
-      .catch(() => {
-        setError('Biometrics failed, use password instead')
-        setUseBiometrics(false)
-      })
+      .catch(() => {})
+  }
+
+  useEffect(() => {
+    if (!useBiometrics) return
+    registerUserBiometrics()
   }, [useBiometrics])
 
   const handleCancel = () => navigate(Pages.Init)
@@ -51,9 +50,8 @@ export default function InitPassword() {
     <Container>
       <Content>
         <Title text='Password' subtext={useBiometrics ? 'Use biometrics' : 'Define your password'} />
-        <Error error={Boolean(error)} text={error} />
         {useBiometrics ? (
-          <CenterScreen>
+          <CenterScreen onClick={registerUserBiometrics}>
             <FingerprintIcon />
           </CenterScreen>
         ) : (
@@ -61,7 +59,11 @@ export default function InitPassword() {
         )}
       </Content>
       <ButtonsOnBottom>
-        <Button onClick={handleClick} label={label} disabled={!password} />
+        {useBiometrics ? (
+          <Button onClick={() => setUseBiometrics(false)} label='Use password' />
+        ) : (
+          <Button onClick={handleClick} label={label} disabled={!password} />
+        )}
         <Button onClick={handleCancel} label='Cancel' secondary />
       </ButtonsOnBottom>
     </Container>
