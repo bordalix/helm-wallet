@@ -33,9 +33,9 @@ export default function SendInvoice() {
 
   useEffect(() => {
     if (!pastedData) return
-    const data = pastedData
+    const data = pastedData.toLowerCase()
     setError('')
-    if (bip21.isBip21(data.toLowerCase())) {
+    if (bip21.isBip21(data)) {
       const { address, amount, invoice, lnurl } = bip21.decode(data)
       if (address) {
         setSendInfo({ address: address, satoshis: amount })
@@ -54,11 +54,11 @@ export default function SendInvoice() {
       }
       return setError('Unable to parse bip21')
     }
-    if (isValidLnUrl(data.toLowerCase())) {
+    if (isValidLnUrl(data)) {
       setSendInfo({ lnurl: data })
       return navigate(Pages.SendAmount)
     }
-    if (isLnInvoice(data.toLowerCase())) {
+    if (isLnInvoice(data)) {
       try {
         if (wrongNetwork(data)) return setError('Invoice from wrong network')
         if (!decodeInvoice(data).satoshis) return setError('Invoices without amount are not supported')
