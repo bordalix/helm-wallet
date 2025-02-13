@@ -47,3 +47,7 @@ export const prettyAgo = (timestamp: number): string => {
   const seconds = delta
   return `${seconds}s ago`
 }
+
+export const toUint8Array = (str: string): Uint8Array => {
+  return new TextEncoder().encode(str)
+}

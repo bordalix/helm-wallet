@@ -1,7 +1,16 @@
-function generateRandomUint8Array(size: number = 32): Uint8Array {
-  const array = new Uint8Array(size)
+import { toUint8Array } from './format'
+
+function generateRandomChallenge(): Uint8Array {
+  const array = new Uint8Array(32)
   window.crypto.getRandomValues(array)
   return array
+}
+
+function getBrowserId(): string {
+  const userAgent = window.navigator.userAgent
+  const match = userAgent.match(/\(([^)]+)/)
+  if (match?.[1]) return match[1]
+  return 'unknown'
 }
 
 export function isBiometricsSupported(): boolean {
@@ -10,12 +19,13 @@ export function isBiometricsSupported(): boolean {
 
 // Function to register a new user
 export async function registerUser(): Promise<string> {
-  const username = 'Helm'
   const publicKeyCredentialCreationOptions: PublicKeyCredentialCreationOptions = {
     authenticatorSelection: {
       authenticatorAttachment: 'platform',
+      residentKey: 'required',
+      requireResidentKey: true,
     },
-    challenge: generateRandomUint8Array(32),
+    challenge: generateRandomChallenge(),
     pubKeyCredParams: [
       {
         type: 'public-key',
@@ -27,14 +37,14 @@ export async function registerUser(): Promise<string> {
       },
     ],
     rp: {
-      name: username,
+      name: 'Helm',
       id: window.location.hostname,
     },
     timeout: 60000,
     user: {
-      id: new Uint8Array(16),
-      name: username,
-      displayName: username,
+      id: toUint8Array(getBrowserId()),
+      name: getBrowserId(),
+      displayName: 'Helm',
     },
   }
   const credential = await navigator.credentials.create({ publicKey: publicKeyCredentialCreationOptions })
@@ -45,7 +55,7 @@ export async function registerUser(): Promise<string> {
 // Function to authenticate a user
 export async function authenticateUser(): Promise<string> {
   const publicKeyCredentialRequestOptions: PublicKeyCredentialRequestOptions = {
-    challenge: generateRandomUint8Array(32),
+    challenge: generateRandomChallenge(),
     timeout: 60000,
   }
   const credential = await navigator.credentials.get({ publicKey: publicKeyCredentialRequestOptions })
