@@ -10,7 +10,7 @@ import NewPassword from '../../components/NewPassword'
 import { saveMnemonicToStorage } from '../../lib/storage'
 import { FlowContext } from '../../providers/flow'
 import Container from '../../components/Container'
-import { registerUser } from '../../lib/biometrics'
+import { isBiometricsSupported, registerUser } from '../../lib/biometrics'
 import FingerprintIcon from '../../icons/Fingerprint'
 import CenterScreen from '../../components/CenterScreen'
 
@@ -21,7 +21,7 @@ export default function InitPassword() {
 
   const [label, setLabel] = useState('')
   const [password, setPassword] = useState('')
-  const [useBiometrics, setUseBiometrics] = useState(false)
+  const [useBiometrics, setUseBiometrics] = useState(isBiometricsSupported())
 
   const proceed = (password: string, lockedByBiometrics = true) => {
     saveMnemonicToStorage(initInfo.mnemonic, password)

@@ -14,6 +14,7 @@ function getBrowserId(): string {
 }
 
 export function isBiometricsSupported(): boolean {
+  return false // TODO: activate biometrics
   return 'credentials' in navigator
 }
 
