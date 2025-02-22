@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import { fromSatoshis, prettyNumber } from '../lib/format'
 import { nextUnit, satsFromUnit, satsToUnit, Unit, unitLabels } from '../lib/units'
+import { isMobile } from '../lib/window'
 import { FiatContext } from '../providers/fiat'
 import { Satoshis } from '../lib/types'
 import Keyboard from './Keyboard'
@@ -29,8 +30,6 @@ export default function InputAmount({ balance, sats, setSats }: InputAmountProps
     if (lock) return setLock(false)
     setSats(text ? satsFromUnit(Number(text), unit, fromEuro, fromUSD) : 0)
   }, [text])
-
-  const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints // TODO
 
   const inputClassName =
     'w-full p-3 text-sm text-right font-semibold rounded-l-md bg-gray-100 dark:bg-gray-800 focus-visible:outline-none'

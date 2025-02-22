@@ -17,6 +17,7 @@ import { WalletContext } from '../../../providers/wallet'
 import { getBalance } from '../../../lib/wallet'
 import InputComment from '../../../components/InputComment'
 import { unitLabels, Unit } from '../../../lib/units'
+import { isMobile } from '../../../lib/window'
 
 enum ButtonLabel {
   High = 'Amount too high',
@@ -92,7 +93,6 @@ export default function SendAmount() {
       : ButtonLabel.Ok
 
   const disabled = label !== ButtonLabel.Ok
-  const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints // TODO
 
   return (
     <Container>

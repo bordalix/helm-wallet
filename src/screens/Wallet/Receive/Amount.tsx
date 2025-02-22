@@ -11,6 +11,7 @@ import Container from '../../../components/Container'
 import { prettyNumber } from '../../../lib/format'
 import InputComment from '../../../components/InputComment'
 import { unitLabels, Unit } from '../../../lib/units'
+import { isMobile } from '../../../lib/window'
 
 enum ButtonLabel {
   Low = 'Amount too low',
@@ -40,7 +41,6 @@ export default function ReceiveAmount() {
   const { minimal, maximal } = limits
   const disabled = sats < minimal || sats > maximal
   const label = sats < limits.minimal ? ButtonLabel.Low : sats > limits.maximal ? ButtonLabel.High : ButtonLabel.Ok
-  const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints // TODO
 
   return (
     <Container>
