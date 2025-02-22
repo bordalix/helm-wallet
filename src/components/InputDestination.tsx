@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import Label from './Label'
 import { InputWithAction } from './Input'
-import BarcodeScanner from './BarcodeScanner'
+import Scanner from './Scanner'
 
 interface InputDestinationProps {
   onChange: (arg0: string) => void
@@ -44,7 +44,7 @@ export default function InputDestination({ onChange, onError, onScan }: InputDes
         <Label text='Destination' />
         <InputWithAction onChange={handleChange} onClick={handleClick} pill='Scan' text={text} />
       </fieldset>
-      {scan && stream ? <BarcodeScanner setPastedData={onScan} setError={onError} /> : null}
+      {scan && stream ? <Scanner close={() => setScan(false)} setData={onScan} setError={onError} /> : null}
       {scan && !stream ? <p className='mt-4'>Waiting for camera access</p> : null}
     </div>
   )
