@@ -1,4 +1,5 @@
 import { toUint8Array } from './format'
+import { isFirefox, userAgent } from './window'
 
 function generateRandomChallenge(): Uint8Array {
   const array = new Uint8Array(32)
@@ -7,14 +8,13 @@ function generateRandomChallenge(): Uint8Array {
 }
 
 function getBrowserId(): string {
-  const userAgent = window.navigator.userAgent
   const match = userAgent.match(/\(([^)]+)/)
   if (match?.[1]) return match[1]
   return 'unknown'
 }
 
 export function isBiometricsSupported(): boolean {
-  return 'credentials' in navigator
+  return 'credentials' in navigator && !isFirefox
 }
 
 // Function to register a new user
