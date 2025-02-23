@@ -11,20 +11,21 @@ export default function Scanner({ close, setData }: ScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
 
   let camera: any
+  let canvas: QRCanvas
+  let cancel: () => void
 
   useEffect(() => {
-    let cancel: () => void
     const start = async () => {
       if (!videoRef.current) return
       try {
-        const canvas = new QRCanvas()
+        if (canvas) canvas.clear()
+        canvas = new QRCanvas()
         camera = await frontalCamera(videoRef.current)
         const devices = await camera.listDevices()
         await camera.setDevice(devices[devices.length - 1].deviceId)
         cancel = frameLoop(() => {
           const res = camera.readFrame(canvas)
           if (res) {
-            cancel()
             setData(res)
             handleClose()
           }
@@ -34,16 +35,14 @@ export default function Scanner({ close, setData }: ScannerProps) {
 
     start()
 
-    return () => {
-      cancel(), handleClose()
-    }
+    return () => handleClose()
   }, [videoRef])
 
   const handleClose = () => {
-    console.log('handleClose', camera)
+    cancel()
     camera?.stop()
     close()
   }
 
-  return <video className='rounded-md mx-auto' ref={videoRef} />
+  return <video className='aspect-4/3 rounded-md mx-auto' ref={videoRef} />
 }
