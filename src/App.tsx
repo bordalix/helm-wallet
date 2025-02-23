@@ -23,11 +23,30 @@ import SendSuccess from './screens/Wallet/Send/Success'
 import Transactions from './screens/Wallet/Transactions'
 import SendAmount from './screens/Wallet/Send/Amount'
 import { WalletContext } from './providers/wallet'
+import { Toaster } from 'react-hot-toast'
+import * as serviceWorkerRegistration from './serviceWorkerRegistration'
+import { toastNewVersionAvailable } from './components/Toast'
 
 export default function App() {
   const { loadingConfig, showConfig } = useContext(ConfigContext)
   const { screen } = useContext(NavigationContext)
   const { loadingWallet } = useContext(WalletContext)
+
+  useEffect(() => {
+    serviceWorkerRegistration.register({
+      onUpdate: () => {
+        toastNewVersionAvailable()
+      },
+    })
+  }, [])
+
+  useEffect(() => {
+    setInterval(() => {
+      navigator.serviceWorker.getRegistration().then((registration) => {
+        if (registration) registration.update()
+      })
+    }, 1000 * 60 * 60)
+  }, [])
 
   if (loadingConfig || loadingWallet) return <Loading />
   if (showConfig) return <Settings />
