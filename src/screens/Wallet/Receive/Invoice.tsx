@@ -19,6 +19,7 @@ import Loading from '../../../components/Loading'
 import { ConfigContext } from '../../../providers/config'
 import { notifyPaymentReceived } from '../../../lib/notifications'
 import { getTransactionAmount } from '../../../lib/transactions'
+import { toastCopiedToClipboard } from '../../../components/Toast'
 
 export default function ReceiveInvoice() {
   const { config } = useContext(ConfigContext)
@@ -65,6 +66,7 @@ export default function ReceiveInvoice() {
 
   const handleCopy = async () => {
     await copyToClipboard(qrValue ?? '')
+    toastCopiedToClipboard()
     setButtonLabel('Copied')
     setTimeout(() => setButtonLabel(label), 2100)
   }

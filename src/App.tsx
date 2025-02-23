@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import Init from './screens/Init/Init'
 import Wallet from './screens/Wallet/Index'
 import Header from './components/Header'
@@ -54,6 +54,7 @@ export default function App() {
   return (
     <OuterContainer>
       <Header />
+      <Toaster />
       <div className='grow'>
         {screen === Pages.Init && <Init />}
         {screen === Pages.InitNew && <InitNew />}

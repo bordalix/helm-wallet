@@ -9,6 +9,7 @@ import Container from '../../components/Container'
 import NeedsPassword from '../../components/NeedsPassword'
 import { WalletContext } from '../../providers/wallet'
 import { copyToClipboard } from '../../lib/clipboard'
+import { toastCopiedToClipboard } from '../../components/Toast'
 
 export default function Backup() {
   const { toggleShowConfig } = useContext(ConfigContext)
@@ -23,6 +24,7 @@ export default function Backup() {
 
   const handleCopy = async () => {
     await copyToClipboard(wallet.mnemonic)
+    toastCopiedToClipboard()
     setButtonLabel('Copied')
     setTimeout(() => setButtonLabel(label), 2100)
   }

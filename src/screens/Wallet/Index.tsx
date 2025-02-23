@@ -13,6 +13,7 @@ import TransactionsList from '../../components/TransactionsList'
 import { BoltzContext } from '../../providers/boltz'
 import Restoring from '../../components/Restoring'
 import { ConfigContext } from '../../providers/config'
+import { toastNewVersionAvailable } from '../../components/Toast'
 
 export default function Wallet() {
   const { limits, maxAllowedAmount } = useContext(BoltzContext)
@@ -23,6 +24,7 @@ export default function Wallet() {
   const canSend = maxAllowedAmount(wallet) > limits.minimal && !config.pos
 
   const handleSend = () => {
+    toastNewVersionAvailable()
     if (!chainSource.isConnected()) reconnectChainSource(wallet)
     navigate(Pages.SendInvoice)
   }
