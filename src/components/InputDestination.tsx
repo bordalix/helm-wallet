@@ -42,7 +42,7 @@ export default function InputDestination({ onChange, onError, onScan }: InputDes
     <div className='flex flex-col h-full justify-between gap-2'>
       <fieldset className='text-left text-gray-800 dark:text-gray-100 w-full'>
         <Label text='Destination' />
-        <InputWithAction onChange={handleChange} onClick={handleClick} pill='Scan' text={text} />
+        <InputWithAction onChange={handleChange} onClick={handleClick} pill={scan ? 'Close' : 'Scan'} text={text} />
       </fieldset>
       {scan && stream ? <Scanner close={() => setScan(false)} setData={onScan} setError={onError} /> : null}
       {scan && !stream ? <p className='mt-4'>Waiting for camera access</p> : null}
