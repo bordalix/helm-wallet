@@ -117,16 +117,15 @@ export const waitAndClaim = async (
         saveClaim(claimInfo, wallet.network)
 
         const boltzPublicKey = Buffer.from(createdResponse.refundPublicKey, 'hex')
-        // const boltzPublicKey = Buffer.from('4444', 'hex')
 
-        // Create a musig signing session and tweak it with the Taptree of the swap scripts
+        // create a musig signing session and tweak it with the Taptree of the swap scripts
         const musig = new Musig(await zkpInit(), keys, randomBytes(32), [boltzPublicKey, keys.publicKey])
         const tweakedKey = TaprootUtils.tweakMusig(
           musig,
           SwapTreeSerializer.deserializeSwapTree(createdResponse.swapTree).tree,
         )
 
-        // Parse the lockup transaction and find the output relevant for the swap
+        // parse the lockup transaction and find the output relevant for the swap
         const lockupTx = Transaction.fromHex(msg.args[0].transaction.hex)
         console.log(`Got lockup transaction: ${lockupTx.getId()}`)
 
@@ -138,7 +137,7 @@ export const waitAndClaim = async (
 
         console.log('Creating claim transaction')
 
-        // Create a claim transaction to be signed cooperatively via a key path spend
+        // create a claim transaction to be signed cooperatively via a key path spend
         claimTx = targetFee(claimFees(wallet.network), (fee) =>
           constructClaimTransaction(
             [
@@ -243,14 +242,14 @@ export const reverseSwap = async (
   onInvoice: (invoice: string) => void,
 ) => {
   console.log('recvInfo', recvInfo)
-  // Create a random preimage for the swap; has to have a length of 32 bytes
+  // create a random preimage for the swap; has to have a length of 32 bytes
   const preimage = randomBytes(32)
   const keys = ECPairFactory(ecc).makeRandom()
   const signature = keys.signSchnorr(crypto.sha256(Buffer.from(destinationAddress, 'utf-8')))
   const invoiceAmount = Number(recvInfo.amount)
   const description = recvInfo.comment === '' ? defaultInvoiceComment : recvInfo.comment
 
-  // Create a Reverse Submarine Swap
+  // create a Reverse Submarine Swap
   const createdResponse: ReverseSwapResponse = (
     await axios.post(`${getBoltzApiUrl(wallet.network, config.tor)}/v2/swap/reverse`, {
       address: destinationAddress,
