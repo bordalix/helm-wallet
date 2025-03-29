@@ -28,22 +28,22 @@ const explorers: Explorer[] = [
     name: ExplorerName.Blockstream,
     [NetworkName.Liquid]: {
       restApiExplorerURL: 'https://blockstream.info/liquid',
-      webSocketExplorerURL: 'wss://esplora.blockstream.com/liquid/electrum-websocket/api',
+      webSocketExplorerURL: 'https://blockstream.info/liquid/electrum-websocket/api',
     },
     [NetworkName.Testnet]: {
       restApiExplorerURL: 'https://blockstream.info/liquidtestnet',
-      webSocketExplorerURL: 'wss://esplora.blockstream.com/liquidtestnet/electrum-websocket/api',
+      webSocketExplorerURL: 'https://blockstream.info/liquidtestnet/electrum-websocket/api',
     },
   },
   {
     name: ExplorerName.Mempool,
     [NetworkName.Liquid]: {
       restApiExplorerURL: 'https://liquid.network',
-      webSocketExplorerURL: 'wss://esplora.blockstream.com/liquid/electrum-websocket/api',
+      webSocketExplorerURL: 'https://blockstream.info/liquid/electrum-websocket/api',
     },
     [NetworkName.Testnet]: {
       restApiExplorerURL: 'https://liquid.network/liquidtestnet',
-      webSocketExplorerURL: 'wss://esplora.blockstream.com/liquidtestnet/electrum-websocket/api',
+      webSocketExplorerURL: 'https://blockstream.info/liquidtestnet/electrum-websocket/api',
     },
   },
   {
