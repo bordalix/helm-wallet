@@ -22,20 +22,20 @@ export default function Password() {
   const [mnemonic, setMnemonic] = useState('')
   const [password, setPassword] = useState('')
 
-  const proceed = (pass = password, lockedByBiometrics = true) => {
+  const proceed = (pass = password, passkeyId = '') => {
     saveMnemonicToStorage(mnemonic, pass)
-    updateWallet({ ...wallet, lockedByBiometrics })
+    updateWallet({ ...wallet, lockedByBiometrics: passkeyId.length > 0, passkeyId })
     toggleShowConfig()
   }
 
   const handleBiometrics = () => {
     setError('')
     registerUser()
-      .then(proceed)
+      .then(({ password, passkeyId }) => proceed(password, passkeyId))
       .catch(() => setError('Biometrics registration failed'))
   }
 
-  const handleClick = () => proceed(password, false)
+  const handleClick = () => proceed(password)
 
   return (
     <Container>

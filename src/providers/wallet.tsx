@@ -24,6 +24,7 @@ export interface Wallet {
   mnemonic: Mnemonic
   network: NetworkName
   nextIndex: NextIndexes
+  passkeyId?: string
   transactions: Transactions
   utxos: Utxos
   xpubs: XPubs

@@ -13,6 +13,7 @@ import Container from '../../components/Container'
 import { isBiometricsSupported, registerUser } from '../../lib/biometrics'
 import FingerprintIcon from '../../icons/Fingerprint'
 import CenterScreen from '../../components/CenterScreen'
+import { extractError } from '../../lib/error'
 
 export default function InitPassword() {
   const { initInfo } = useContext(FlowContext)
@@ -23,18 +24,25 @@ export default function InitPassword() {
   const [password, setPassword] = useState('')
   const [useBiometrics, setUseBiometrics] = useState(isBiometricsSupported())
 
-  const proceed = (password: string, lockedByBiometrics = true) => {
+  const proceed = (password: string, passkeyId = '') => {
     saveMnemonicToStorage(initInfo.mnemonic, password)
     getMasterKeys(initInfo.mnemonic).then(({ masterBlindingKey, xpubs }) => {
-      restoreWallet({ ...wallet, lockedByBiometrics, masterBlindingKey, xpubs, initialized: true })
+      restoreWallet({
+        ...wallet,
+        lockedByBiometrics: passkeyId.length > 0,
+        masterBlindingKey,
+        passkeyId,
+        xpubs,
+        initialized: true,
+      })
       navigate(Pages.Wallet)
     })
   }
 
   const registerUserBiometrics = () => {
     registerUser()
-      .then(proceed)
-      .catch(() => {})
+      .then(({ password, passkeyId }) => proceed(password, passkeyId))
+      .catch((err) => console.error('Error registering user biometrics:', extractError(err)))
   }
 
   useEffect(() => {
@@ -44,7 +52,7 @@ export default function InitPassword() {
 
   const handleCancel = () => navigate(Pages.Init)
 
-  const handleClick = () => proceed(password, false)
+  const handlePassword = () => proceed(password)
 
   return (
     <Container>
@@ -62,7 +70,7 @@ export default function InitPassword() {
         {useBiometrics ? (
           <Button onClick={() => setUseBiometrics(false)} label='Use password' />
         ) : (
-          <Button onClick={handleClick} label={label} disabled={!password} />
+          <Button onClick={handlePassword} label={label} disabled={!password} />
         )}
         <Button onClick={handleCancel} label='Cancel' secondary />
       </ButtonsOnBottom>

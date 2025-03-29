@@ -16,6 +16,7 @@ interface NeedsPasswordProps {
 
 export default function NeedsPassword({ onClose, onMnemonic }: NeedsPasswordProps) {
   const { wallet } = useContext(WalletContext)
+
   const [disabled, setDisabled] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -24,7 +25,7 @@ export default function NeedsPassword({ onClose, onMnemonic }: NeedsPasswordProp
 
   const authenticateUserWithBiometrics = async () => {
     setError('')
-    authenticateUser()
+    authenticateUser(wallet.passkeyId)
       .then(proceed)
       .catch(() => setError('Canceled'))
   }
