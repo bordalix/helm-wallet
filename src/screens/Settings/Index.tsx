@@ -28,6 +28,7 @@ import TorIcon from '../../icons/Tor'
 import Pos from './Pos'
 import PosIcon from '../../icons/Pos'
 import PasswordIcon from '../../icons/Password'
+import Toast from '../../components/Toast'
 
 enum Options {
   Menu = 'menu',
@@ -116,6 +117,7 @@ export default function Settings() {
 
   return (
     <OuterContainer>
+      <Toast />
       <Header showBack={showBack} setOption={setOption} />
       <div className='grow'>
         {option === Options.Menu && (

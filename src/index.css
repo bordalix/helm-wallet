@@ -52,15 +52,15 @@ body.dark select {
 
 div.toast {
   border-radius: 10px;
-  background: rgb(3 7 18);
-  color: rgb(243 244 246);
+  background: rgb(31, 41, 55); /* bg-gray-800 */
+  color: rgb(243, 244, 246); /* text-gray-100 */
   margin-top: 0.5rem;
   padding: 0;
 }
 
 body.dark div.toast {
-  background: rgb(243 244 246);
-  color: rgb(3 7 18);
+  background: rgb(243 244 246); /* bg-gray-100 */
+  color: rgb(31, 41, 55); /* text-gray-800 */
 }
 
 div.toast [role='status'] {
