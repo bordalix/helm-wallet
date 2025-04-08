@@ -72,8 +72,8 @@ export default function SendAmount() {
     if (!sendInfo.lnurl) return
     checkLnUrlConditions(sendInfo.lnurl)
       .then((conditions) => {
-        const max = Math.floor(conditions.maxSendable / 1000) // from milisatoshis to satoshis
-        const min = Math.floor(conditions.minSendable / 1000) // from milisatoshis to satoshis
+        const max = Math.floor(conditions.maxSendable / 1000) // from millisatoshis to satoshis
+        const min = Math.floor(conditions.minSendable / 1000) // from millisatoshis to satoshis
         setCommentAllowed(conditions.commentAllowed ?? 0)
         setMaxSendable(max > maximal ? maximal : max)
         setMinSendable(min < minimal ? minimal : min)

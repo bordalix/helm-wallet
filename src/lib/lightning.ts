@@ -33,7 +33,7 @@ const extractNote = (data: string): string => {
 export const decodeInvoice = (invoice: string): Invoice => {
   const decoded = bolt11.decode(invoice)
   let satoshis = findTag(decoded, 'satoshis')
-  if (!satoshis) satoshis = Math.floor(Number(findTag(decoded, 'milisatoshis') ?? 0) / 1000)
+  if (!satoshis) satoshis = Math.floor(Number(findTag(decoded, 'millisatoshis') ?? 0) / 1000)
   const routeInfo = findTag(decoded, 'routing_info') ?? []
   return {
     invoice,

@@ -78,7 +78,7 @@ export const checkLnUrlConditions = (lnurl: string): Promise<LnUrlResponse> => {
 export const fetchLnUrl = (lnurl: string, sats: number, note: string): Promise<string> => {
   return new Promise<string>((resolve, reject) => {
     const url = getCallbackUrl(lnurl)
-    const amount = Math.round(sats * 1000) // milisatoshis
+    const amount = Math.round(sats * 1000) // millisatoshis
     fetch(url)
       .then(checkResponse<LnUrlResponse>)
       .then((data) => checkLnUrlResponse(amount, data))
