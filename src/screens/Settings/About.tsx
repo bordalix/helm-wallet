@@ -13,7 +13,7 @@ export default function About() {
   const { maxAllowedAmount, maxLiquidAmount } = useContext(BoltzContext)
   const { wallet } = useContext(WalletContext)
 
-  const gitCommit = (process.env.REACT_APP_CF_SHA || '').slice(0, 7)
+  const gitCommit = (import.meta.env.VITE_CF_SHA || '').slice(0, 7)
 
   const maxAmount = {
     boltz: maxAllowedAmount(wallet),
