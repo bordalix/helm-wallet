@@ -1,10 +1,16 @@
-import { useContext, useEffect } from 'react'
-import Init from './screens/Init/Init'
-import Wallet from './screens/Wallet/Index'
+import { useContext } from 'react'
+import { WalletContext } from './providers/wallet'
+import { register } from 'register-service-worker'
+import { ConfigContext } from './providers/config'
+import { NavigationContext, Pages } from './providers/navigation'
 import Header from './components/Header'
 import Footer from './components/Footer'
-import Settings from './screens/Settings/Index'
 import Loading from './components/Loading'
+import OuterContainer from './components/OuterContainer'
+import Toast from './components/Toast'
+import Init from './screens/Init/Init'
+import Wallet from './screens/Wallet/Index'
+import Settings from './screens/Settings/Index'
 import SendInvoice from './screens/Wallet/Send/Invoice'
 import SendDetails from './screens/Wallet/Send/Details'
 import SendPayment from './screens/Wallet/Send/Pay'
@@ -14,38 +20,18 @@ import InitNew from './screens/Init/New'
 import InitOld from './screens/Init/Restore'
 import SendFees from './screens/Wallet/Send/Fees'
 import ReceiveSuccess from './screens/Wallet/Receive/Success'
-import { ConfigContext } from './providers/config'
-import { NavigationContext, Pages } from './providers/navigation'
 import InitPassword from './screens/Init/Password'
-import OuterContainer from './components/OuterContainer'
 import ReceiveFees from './screens/Wallet/Receive/Fees'
 import SendSuccess from './screens/Wallet/Send/Success'
 import Transactions from './screens/Wallet/Transactions'
 import SendAmount from './screens/Wallet/Send/Amount'
-import { WalletContext } from './providers/wallet'
-import * as serviceWorkerRegistration from './serviceWorkerRegistration'
-import Toast, { toastNewVersionAvailable } from './components/Toast'
 
 export default function App() {
   const { loadingConfig, showConfig } = useContext(ConfigContext)
   const { screen } = useContext(NavigationContext)
   const { loadingWallet } = useContext(WalletContext)
 
-  useEffect(() => {
-    serviceWorkerRegistration.register({
-      onUpdate: () => {
-        toastNewVersionAvailable()
-      },
-    })
-  }, [])
-
-  useEffect(() => {
-    setInterval(() => {
-      navigator.serviceWorker.getRegistration().then((registration) => {
-        if (registration) registration.update()
-      })
-    }, 1000 * 60 * 60)
-  }, [])
+  register('/sw.js')
 
   if (loadingConfig || loadingWallet) return <Loading />
   if (showConfig) return <Settings />
