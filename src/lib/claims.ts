@@ -64,6 +64,7 @@ export const getRetriableClaims = (network: NetworkName): ClaimInfo[] => {
 }
 
 export const removeClaim = (claim: ClaimInfo, network: NetworkName): void => {
+  console.log('removing claim', claim)
   const claims = readClaimsFromStorage()
   if (!claims[network]) return
   claims[network] = claims[network].filter((c) => c.createdResponse.id !== claim.createdResponse.id)
