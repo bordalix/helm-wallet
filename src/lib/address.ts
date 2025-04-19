@@ -5,6 +5,7 @@ import * as liquid from 'liquidjs-lib'
 import { BlindingKeyPair } from './blinder'
 import { Wallet } from '../providers/wallet'
 import { deriveBlindingKeys } from './wallet'
+import { hex } from '@scure/base'
 
 const bip32 = BIP32Factory(ecc)
 
@@ -35,5 +36,5 @@ export const generateAddress = async (wallet: Wallet, index?: number): Promise<N
 
 /** generate a reversed sha256 of a script, to use with electrumx */
 export const toScriptHash = (script: Buffer): string => {
-  return liquid.crypto.sha256(script).reverse().toString('hex')
+  return hex.encode(liquid.crypto.sha256(script).reverse())
 }

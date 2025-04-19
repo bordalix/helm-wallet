@@ -11,6 +11,7 @@ import { getBoltzApiUrl, getBoltzWsUrl } from './boltz'
 import { sendSats } from './transactions'
 import { NetworkName } from './network'
 import { Config } from '../providers/config'
+import { hex } from '@scure/base'
 
 /**
  * Submarine swap flow:
@@ -139,8 +140,8 @@ export const finalizeSubmarineSwap = (
 
         // Give our public nonce and the partial signature to Boltz
         await axios.post(`${getBoltzApiUrl(wallet.network, config.tor)}/v2/swap/submarine/${swapResponse.id}/claim`, {
-          pubNonce: Buffer.from(musig.getPublicNonce()).toString('hex'),
-          partialSignature: Buffer.from(musig.signPartial()).toString('hex'),
+          pubNonce: hex.encode(Uint8Array.from(musig.getPublicNonce())),
+          partialSignature: hex.encode(Uint8Array.from(musig.signPartial())),
         })
 
         break

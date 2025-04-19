@@ -4,6 +4,7 @@ import { ChainSource } from './chainsource'
 import { getTransactionAmount } from './transactions'
 import { getUnblindedOutput } from './output'
 import { AddressesHistory, getCachedBlockHeader, getCachedElectrumTransactions } from './cache'
+import { hex } from '@scure/base'
 
 export const restore = async (chainSource: ChainSource, histories: AddressesHistory[], update?: () => void) => {
   const transactions: Transaction[] = []
@@ -44,7 +45,7 @@ export const restore = async (chainSource: ChainSource, histories: AddressesHist
         ...u,
         ...unblinded,
         address: address.address,
-        asset: Buffer.from(unblinded.asset).reverse().toString('hex'),
+        asset: hex.encode(Uint8Array.from(unblinded.asset).reverse()),
         blindingPublicKey: address.blindingKeys.publicKey,
         blindingPrivateKey: address.blindingKeys.privateKey,
         nextIndex: address.nextIndex,

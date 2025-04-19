@@ -12,6 +12,7 @@ import { NewAddress } from './address'
 import { getOutputValue } from './output'
 import { Config } from '../providers/config'
 import { getCachedTransaction } from './cache'
+import { hex } from '@scure/base'
 
 export const sendSats = async (
   sats: number,
@@ -38,15 +39,15 @@ export const getTransactionAmount = async (address: NewAddress, txHex: string, c
   let amount = 0
   const tx = liquid.Transaction.fromHex(txHex)
   for (const vin of tx.ins) {
-    const witnessPubkey = vin.witness[1] ? vin.witness[1].toString('hex') : undefined
-    if (witnessPubkey === address.pubkey.toString('hex')) {
-      const hex = await getCachedTransaction(Buffer.from(vin.hash).reverse().toString('hex'), chainSource)
-      const value = await getOutputValue(vin.index, hex, address.blindingKeys)
+    const witnessPubkey = vin.witness[1] ? hex.encode(vin.witness[1]) : undefined
+    if (witnessPubkey === hex.encode(address.pubkey)) {
+      const hexTx = await getCachedTransaction(hex.encode(Uint8Array.from(vin.hash).reverse()), chainSource)
+      const value = await getOutputValue(vin.index, hexTx, address.blindingKeys)
       amount -= Number(value)
     }
   }
   for (const [idx, vout] of tx.outs.entries()) {
-    if (vout.script.toString('hex') === address.script.toString('hex')) {
+    if (hex.encode(vout.script) === hex.encode(address.script)) {
       const value = await getOutputValue(idx, txHex, address.blindingKeys)
       amount += Number(value)
     }

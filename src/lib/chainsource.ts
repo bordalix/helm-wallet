@@ -4,6 +4,7 @@ import { NetworkName } from './network'
 import { MVUtxo } from './types'
 import { ExplorerName, getWebSocketExplorerURL } from './explorers'
 import { toScriptHash } from './address'
+import { hex } from '@scure/base'
 
 type ElectrumUnspent = {
   height: number
@@ -160,8 +161,8 @@ export class WsElectrumChainSource implements ChainSource {
 
 const DYNAFED_HF_MASK = 2147483648
 
-function deserializeBlockHeader(hex: string): ElectrumBlockHeader {
-  const buffer = Buffer.from(hex, 'hex')
+function deserializeBlockHeader(hexStr: string): ElectrumBlockHeader {
+  const buffer = Buffer.from(hexStr, 'hex')
   let offset = 0
 
   let version = buffer.readUInt32LE(offset)
@@ -172,13 +173,10 @@ function deserializeBlockHeader(hex: string): ElectrumBlockHeader {
     version = version & ~DYNAFED_HF_MASK
   }
 
-  const previousBlockHash = buffer
-    .subarray(offset, offset + 32)
-    .reverse()
-    .toString('hex')
+  const previousBlockHash = hex.encode(buffer.subarray(offset, offset + 32).reverse())
   offset += 32
 
-  const merkleRoot = buffer.subarray(offset, offset + 32).toString('hex')
+  const merkleRoot = hex.encode(buffer.subarray(offset, offset + 32))
   offset += 32
 
   const timestamp = buffer.readUInt32LE(offset)

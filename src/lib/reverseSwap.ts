@@ -15,6 +15,7 @@ import { Config } from '../providers/config'
 import { ClaimInfo, removeClaim, saveClaim } from './claims'
 import { RecvInfo } from '../providers/flow'
 import { defaultInvoiceComment } from './constants'
+import { hex } from '@scure/base'
 
 /**
  * Reverse swap flow:
@@ -167,8 +168,8 @@ export const waitAndClaim = async (
             {
               index: 0,
               transaction: claimTx.toHex(),
-              preimage: preimage.toString('hex'),
-              pubNonce: Buffer.from(musig.getPublicNonce()).toString('hex'),
+              preimage: hex.encode(preimage),
+              pubNonce: hex.encode(Uint8Array.from(musig.getPublicNonce())),
             },
           )
         ).data
@@ -253,12 +254,12 @@ export const reverseSwap = async (
   const createdResponse: ReverseSwapResponse = (
     await axios.post(`${getBoltzApiUrl(wallet.network, config.tor)}/v2/swap/reverse`, {
       address: destinationAddress,
-      addressSignature: signature.toString('hex'),
-      claimPublicKey: keys.publicKey.toString('hex'),
+      addressSignature: hex.encode(signature),
+      claimPublicKey: hex.encode(keys.publicKey),
       description,
       from: 'BTC',
       invoiceAmount,
-      preimageHash: crypto.sha256(preimage).toString('hex'),
+      preimageHash: hex.encode(crypto.sha256(preimage)),
       referralId: 'helm',
       to: 'L-BTC',
     })

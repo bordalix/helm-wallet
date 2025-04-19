@@ -7,6 +7,7 @@ import { Transaction, Utxo } from './types'
 import * as liquid from 'liquidjs-lib'
 import { defaultGapLimit } from './constants'
 import { getOutputValue, getUnblindedOutput } from './output'
+import { hex } from '@scure/base'
 
 export const fetchURL = async (url: string): Promise<any> => {
   const res = await fetch(url)
@@ -86,7 +87,7 @@ export const fetchHistory = async (wallet: Wallet): Promise<HistoryResponse> => 
           ...utxo,
           ...unblinded,
           address,
-          asset: Buffer.from(unblinded.asset).reverse().toString('hex'),
+          asset: hex.encode(Uint8Array.from(unblinded.asset).reverse()),
           blindingPublicKey: blindingKeys.publicKey,
           blindingPrivateKey: blindingKeys.privateKey,
           nextIndex,

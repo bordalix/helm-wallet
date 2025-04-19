@@ -8,6 +8,7 @@ import { Wallet } from '../providers/wallet'
 import * as liquid from 'liquidjs-lib'
 import { SLIP77Factory } from 'slip77'
 import { BlindingKeyPair } from './blinder'
+import { hex } from '@scure/base'
 
 const bip32 = BIP32Factory(ecc)
 const slip77 = SLIP77Factory(ecc)
@@ -50,7 +51,7 @@ export const getMasterKeys = async (mnemonic: Mnemonic): Promise<{ masterBlindin
   const slip77 = SLIP77Factory(ecc)
   const seed = await mnemonicToSeed(mnemonic)
   if (!seed) throw new Error('Could not get seed from mnemonic')
-  const masterBlindingKey = slip77.fromSeed(seed.toString('hex')).masterKey.toString('hex')
+  const masterBlindingKey = hex.encode(slip77.fromSeed(seed).masterKey)
   if (!masterBlindingKey) throw new Error('Could not get masterBlindingKey')
   return {
     masterBlindingKey,

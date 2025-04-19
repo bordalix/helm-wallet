@@ -21,6 +21,7 @@ import { getLiquidAddress } from '../../../lib/reverseSwap'
 import Loading from '../../../components/Loading'
 import { ConfigContext } from '../../../providers/config'
 import { Unit, unitLabels } from '../../../lib/units'
+import { hex } from '@scure/base'
 
 export default function SendFees() {
   const { config } = useContext(ConfigContext)
@@ -35,7 +36,7 @@ export default function SendFees() {
   const totalNeeded = (total ?? 0) + (txFees ?? 0)
 
   const keys = ECPairFactory(ecc).makeRandom()
-  const refundPublicKey = keys.publicKey.toString('hex')
+  const refundPublicKey = hex.encode(keys.publicKey)
 
   useEffect(() => {
     if (wallet.mnemonic && satoshis) {
