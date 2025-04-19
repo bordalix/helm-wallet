@@ -15,7 +15,7 @@ import { unitLabels, Unit } from '../lib/units'
 const TransactionLine = ({ data, wallet }: { data: Transaction; wallet: Wallet }) => {
   const amount = `${data.amount > 0 ? '+' : '-'} ${prettyNumber(Math.abs(data.amount))} ${unitLabels[Unit.SAT]}`
   const date = data.unixdate ? prettyAgo(data.unixdate) : 'just now'
-  const divClass = 'border cursor-pointer p-2 flex justify-between w-full rounded-md'
+  const divClass = 'border border-gray-200 cursor-pointer p-2 flex justify-between w-full rounded-md'
   return (
     <div className={divClass} onClick={() => openInNewTab(data.txid, wallet)}>
       <p>{amount}</p>
@@ -95,7 +95,7 @@ export default function TransactionsList({ short }: { short?: boolean }) {
           ),
         )}
         {short && transactions.length > showMax ? (
-          <div className='border bg-gray-100 dark:bg-gray-800 p-2 flex justify-end w-full rounded-md'>
+          <div className='border border-gray-200 bg-gray-100 dark:bg-gray-800 p-2 flex justify-end w-full rounded-md'>
             <div className='flex cursor-pointer' onClick={() => navigate(Pages.Transactions)}>
               <p className='mr-2'>View all {transactions.length} transactions</p>
               <ArrowIcon tiny />

@@ -11,7 +11,7 @@ interface ButtonProps {
 
 export default function Button({ clean, disabled, icon, label, onClick, secondary }: ButtonProps) {
   const className =
-    'px-8 py-3 font-semibold rounded-md w-full disabled:opacity-50 border ' +
+    'cursor-pointer px-8 py-3 font-semibold rounded-md w-full disabled:opacity-50 border ' +
     (secondary
       ? 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 border-gray-200 dark:border-gray-700'
       : clean

@@ -30,7 +30,7 @@ export default function Header({ showBack, setOption }: any) {
   const handleClick = () => navigate(wallet.initialized ? Pages.Wallet : Pages.Init)
   const handleBack = () => setOption('menu')
 
-  const className = 'p-2 rounded-full bg-gray-100 dark:bg-gray-800'
+  const className = 'cursor-pointer p-2 rounded-full bg-gray-100 dark:bg-gray-800'
   const pulse = reloading ? 'animate-pulse ' : ''
 
   const EmptyButton = () => <div className='w-12' />
