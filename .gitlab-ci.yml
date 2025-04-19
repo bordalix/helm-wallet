@@ -2,8 +2,8 @@ build:
   image: node:latest
   stage: build
   script:
-    - yarn install
-    - yarn build
+    - pnpm install
+    - pnpm build
   artifacts:
     paths:
       - build/
@@ -14,7 +14,6 @@ pages:
   variables:
     GIT_STRATEGY: none # Do not clone git repo
   script:
-    # Rename the CRA `build` folder to `public`
     - mv build public
   artifacts:
     paths:
