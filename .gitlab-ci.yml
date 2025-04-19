@@ -1,6 +1,6 @@
 build:
   stage: build
-  image: node@latest
+  image: node:18.17.1
   before_script:
     - corepack enable
     - corepack prepare pnpm@latest-9 --activate
@@ -17,7 +17,6 @@ build:
   artifacts:
     paths:
       - build/
-
 pages:
   image: alpine:latest
   stage: deploy
