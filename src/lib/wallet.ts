@@ -51,7 +51,7 @@ export const getMasterKeys = async (mnemonic: Mnemonic): Promise<{ masterBlindin
   const slip77 = SLIP77Factory(ecc)
   const seed = await mnemonicToSeed(mnemonic)
   if (!seed) throw new Error('Could not get seed from mnemonic')
-  const masterBlindingKey = hex.encode(slip77.fromSeed(seed).masterKey)
+  const masterBlindingKey = hex.encode(slip77.fromSeed(hex.encode(seed)).masterKey)
   if (!masterBlindingKey) throw new Error('Could not get masterBlindingKey')
   return {
     masterBlindingKey,

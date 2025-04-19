@@ -36,7 +36,7 @@ export default function Notifications() {
         <div className='flex flex-col gap-6 mt-10'>
           {isNotificationApiSupported ? (
             <>
-              <p>Get notified when an update is available or a payment is received</p>
+              <p>Get notified when a payment is received</p>
               <p>You'll need to grant permission if asked</p>
             </>
           ) : (
