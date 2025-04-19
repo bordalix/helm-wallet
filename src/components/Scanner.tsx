@@ -1,4 +1,4 @@
-import { QRCanvas, frameLoop, frontalCamera } from '@paulmillr/qr/dom.js'
+import { QRCanvas, frameLoop, frontalCamera } from 'qr/dom.js'
 import { useRef, useEffect } from 'react'
 
 interface ScannerProps {

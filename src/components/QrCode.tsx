@@ -1,5 +1,5 @@
 import { formatInvoice } from '../lib/format'
-import encodeQR from '@paulmillr/qr'
+import encodeQR from 'qr'
 
 interface QrCodeProps {
   value: string
