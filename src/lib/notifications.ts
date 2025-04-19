@@ -24,12 +24,6 @@ const sendNotification = (title: string, body: string) => {
   }
 }
 
-export const notifyNewUpdateAvailable = () => {
-  const body = 'Close all tabs and re-open to update'
-  const title = 'Update available'
-  sendNotification(title, body)
-}
-
 export const notifyPaymentReceived = (sats: number) => {
   const body = `You received ${prettyNumber(sats)} ${unitLabels[Unit.SAT]}`
   const title = 'Payment received'
