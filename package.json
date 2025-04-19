@@ -43,11 +43,11 @@
     "ws-electrumx-client": "^1.0.5"
   },
   "scripts": {
-    "start": "pnpm run git-info; vite",
-    "build": "pnpm run git-info; vite build",
+    "start": "VITE_GIT_COMMIT=$(git rev-parse HEAD) vite",
+    "build:cloudflare": "VITE_GIT_COMMIT=${CF_PAGES_COMMIT_SHA} vite build",
+    "build": "VITE_GIT_COMMIT=$(git rev-parse HEAD) vite build",
     "test": "vite test --detectOpenHandles",
-    "lint": "eslint --ext .ts,.tsx src",
-    "git-info": "echo export const gitCommit = \\'$(cat .git/refs/heads/master | cut -c 1-8)\\' > src/_gitCommit.ts"
+    "lint": "eslint --ext .ts,.tsx src"
   },
   "eslintConfig": {
     "extends": [

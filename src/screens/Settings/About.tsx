@@ -8,11 +8,12 @@ import Container from '../../components/Container'
 import { BoltzContext } from '../../providers/boltz'
 import { WalletContext } from '../../providers/wallet'
 import { prettyNumber } from '../../lib/format'
-import { gitCommit } from '../../_gitCommit'
 
 export default function About() {
   const { maxAllowedAmount, maxLiquidAmount } = useContext(BoltzContext)
   const { wallet } = useContext(WalletContext)
+
+  const gitCommit = (import.meta.env.VITE_GIT_COMMIT ?? '').slice(0, 7)
 
   const maxAmount = {
     boltz: maxAllowedAmount(wallet),
