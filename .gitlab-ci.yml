@@ -7,7 +7,7 @@ build:
     - pnpm config set store-dir .pnpm-store
   script:
     - pnpm install
-    - VITE_GIT_COMMIT=$CI_COMMIT_SHA pnpm build
+    - VITE_GIT_COMMIT=$CI_COMMIT_SHA pnpm build:gitlab
   cache:
     key:
       files:
