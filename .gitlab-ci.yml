@@ -1,13 +1,15 @@
 build:
   stage: build
   image: node:18.17.1
+  variables:
+    GITLAB_COMMIT_SHA: $CI_COMMIT_SHA
   before_script:
     - corepack enable
     - corepack prepare pnpm@latest-9 --activate
     - pnpm config set store-dir .pnpm-store
   script:
     - pnpm install
-    - VITE_GIT_COMMIT=$CI_COMMIT_SHA pnpm build:gitlab
+    - pnpm build:gitlab
   cache:
     key:
       files:

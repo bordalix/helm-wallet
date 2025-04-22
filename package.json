@@ -45,7 +45,7 @@
   "scripts": {
     "start": "VITE_GIT_COMMIT=$(git rev-parse HEAD) vite",
     "build:cloudflare": "VITE_GIT_COMMIT=${CF_PAGES_COMMIT_SHA} vite build",
-    "build:gitlab": "vite build",
+    "build:gitlab": "VITE_GIT_COMMIT=${GITLAB_COMMIT_SHA} vite build",
     "build": "VITE_GIT_COMMIT=$(git rev-parse HEAD) vite build",
     "test": "vite test",
     "lint": "eslint --ext .ts,.tsx src"
