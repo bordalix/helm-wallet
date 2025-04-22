@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [nodePolyfills(), tailwindcss(), react()],
   server: {
     open: true, // automatically open the app in the browser
-    port: 3000,
+    port: 8370,
   },
   build: {
     outDir: 'build',
