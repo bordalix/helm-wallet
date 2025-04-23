@@ -15,12 +15,19 @@ The lightning wallet even your grandma can use.
 
 ## Drawbacks
 
-Since all transactions must go on chain and [Boltz](https://boltz.exchange) must earn something for the service they provide, there are fees to be paid:
+Since all transactions must go on the Liquid chain and [Boltz](https://boltz.exchange) must earn something for the service they provide, there are fees to be paid:
 
 - The minimum cost for sending a payment is around 200 sats;
 - The average cost for sending **or receiving** a payment is around 400 sats plus 0.1% of the amount;
 - Transactions between Helm wallets don’t pay Boltz fees but can take up to 1 minute to complete;
 - Boltz swaps are limited between 1.000 and 25.000.000 sats.
+
+## Main advantages
+
+It's a [PWA](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps), which means it is
+immune to app store censorship. The web app is completely independent, no server required. You can clone it, build it and run it from your own computer. Everything runs on the browser.
+
+You can use [Tor](https://www.torproject.org) to hide your IP address from Boltz and the chain explorers.
 
 ## Availability
 
@@ -35,7 +42,7 @@ You can also clone the code and run it on your own machine, is as easy as:
 $ git clone bordalix/helm-wallet
 $ cd helm-wallet
 $ pnpm install
-$ pnpm run start
+$ pnpm start
 ```
 
 If you prefer Docker:
@@ -83,7 +90,7 @@ Launches the test runner in the interactive watch mode.
 
 `pnpm build`
 
-Builds the app for production to the `build` folder.\
+Builds the app for production into the `build` folder.\
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
 The build is minified and the filenames include the hashes.\
@@ -92,3 +99,5 @@ Your app is ready to be deployed!
 ## Learn More
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+Check the [FAQ](https://helm-wallet.com/#faq).
