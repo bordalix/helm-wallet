@@ -44,7 +44,7 @@ interface InputWithActionProps {
 
 export function InputWithAction({ onChange, onClick, pill, text }: InputWithActionProps) {
   return (
-    <div className='flex items-center h-12 rounded-l-md bg-gray-100 dark:bg-gray-800'>
+    <div className='flex items-center h-12 rounded-md bg-gray-100 dark:bg-gray-800'>
       <input
         type='text'
         value={text}
@@ -52,7 +52,7 @@ export function InputWithAction({ onChange, onClick, pill, text }: InputWithActi
         className='w-full p-3 text-sm font-semibold rounded-l-md bg-gray-100 dark:bg-gray-800 focus-visible:outline-none'
       />
       <div
-        className='w-16 h-full flex items-center rounded-r-md cursor-pointer text-sm bg-gray-800 dark:bg-gray-100 text-gray-100 dark:text-gray-800 border-gray-200 dark:border-gray-700'
+        className='w-16 h-full flex items-center rounded-r-md cursor-pointer text-sm bg-gray-900 dark:bg-gray-100 text-gray-100 dark:text-gray-900 border-gray-200 dark:border-gray-800'
         onClick={onClick}
       >
         <div className='mx-auto font-semibold'>{pill}</div>

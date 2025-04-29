@@ -16,9 +16,9 @@ export default function InputComment({ max, comment, setComment, subtext }: Inpu
         <Label text='Comment' />
         <p className='text-xs'>Optional</p>
       </div>
-      <div className='flex items-center h-12 bg-gray-100 dark:bg-gray-800 rounded-md text-sm'>
+      <div className='flex items-center h-12 bg-gray-100 dark:bg-gray-900 rounded-md text-sm'>
         <input
-          className='w-full p-3 font-semibold bg-gray-100 dark:bg-gray-800 focus-visible:outline-none rounded-md'
+          className='w-full p-3 font-semibold bg-gray-100 dark:bg-gray-900 focus-visible:outline-none rounded-md'
           maxLength={max}
           onChange={(e) => setComment(e.target.value)}
           type='text'

@@ -95,7 +95,7 @@ export default function TransactionsList({ short }: { short?: boolean }) {
           ),
         )}
         {short && transactions.length > showMax ? (
-          <div className='border border-gray-200 bg-gray-100 dark:bg-gray-800 p-2 flex justify-end w-full rounded-md'>
+          <div className='border border-gray-200 bg-gray-100 dark:bg-gray-900 p-2 flex justify-end w-full rounded-md'>
             <div className='flex cursor-pointer' onClick={() => navigate(Pages.Transactions)}>
               <p className='mr-2'>View all {transactions.length} transactions</p>
               <ArrowIcon tiny />

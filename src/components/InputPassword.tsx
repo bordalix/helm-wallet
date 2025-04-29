@@ -24,7 +24,7 @@ export default function InputPassword({ label, onChange }: InputPasswordProps) {
           type={type}
         />
         <div
-          className='w-16 h-full flex items-center rounded-r-md text-sm bg-gray-700 dark:bg-gray-200 text-gray-100 dark:text-gray-800'
+          className='w-16 h-full flex items-center rounded-r-md text-sm bg-gray-900 dark:bg-gray-100 text-gray-100 dark:text-gray-900'
           onClick={toggleVisibility}
         >
           <div className='mx-auto'>{type === 'password' ? <EyeOpenIcon /> : <EyeClosedIcon />}</div>

@@ -38,7 +38,7 @@ export default function NewPassword({ onNewPassword, setLabel }: NewPasswordProp
       <InputPassword onChange={handleChangeInsert} label='Insert password' />
       <div className='relative mb-16 mt-2 text-sm text-gray-500'>
         <div className='w-full bg-gray-200 rounded-full h-1.5 mb-4'>
-          <div className='bg-gray-700 h-1.5 rounded-full' style={{ width: `${strength}%` }} />
+          <div className='bg-gray-900 h-1.5 rounded-full' style={{ width: `${strength}%` }} />
         </div>
         <span className='absolute start-0 -bottom-6'>Weak</span>
         <span className='absolute start-1/2 -translate-x-1/2 -bottom-6'>Enough</span>

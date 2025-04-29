@@ -11,7 +11,7 @@ interface SelectProps {
 
 export default function Select({ children, disabled, label, onChange, value }: SelectProps) {
   const className =
-    'bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100 text-lg rounded-lg w-full p-2.5'
+    'bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-100 text-lg rounded-lg w-full p-2.5'
 
   if (typeof value === 'boolean') value = value ? 1 : 0
 

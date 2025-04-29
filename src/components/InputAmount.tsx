@@ -32,7 +32,7 @@ export default function InputAmount({ balance, sats, setSats }: InputAmountProps
   }, [text])
 
   const inputClassName =
-    'w-full p-3 text-sm text-right font-semibold rounded-l-md bg-gray-100 dark:bg-gray-800 focus-visible:outline-none'
+    'w-full p-3 text-sm text-right font-semibold rounded-l-md bg-gray-100 dark:bg-gray-900 focus-visible:outline-none'
 
   const handleInputChange = (ev: any) => {
     setText(ev.target.value)
@@ -93,14 +93,14 @@ export default function InputAmount({ balance, sats, setSats }: InputAmountProps
         {balance ? <p className='text-xs my-1'>{`Balance: ${prettyNumber(balance)} ${unitLabels[Unit.SAT]}`}</p> : null}
       </div>
 
-      <div className='flex items-center h-12 rounded-l-md bg-gray-100 dark:bg-gray-800'>
+      <div className='flex items-center h-12 rounded-l-md bg-gray-100 dark:bg-gray-900'>
         {isMobile ? (
           <p className={inputClassName}>{text}</p>
         ) : (
           <input type='text' value={text} onChange={handleInputChange} className={inputClassName} />
         )}
         <div
-          className='w-16 h-full flex items-center rounded-r-md cursor-pointer text-sm bg-gray-800 dark:bg-gray-100 text-gray-100 dark:text-gray-800 border-gray-200 dark:border-gray-700'
+          className='w-16 h-full flex items-center rounded-r-md cursor-pointer text-sm bg-gray-900 dark:bg-gray-100 text-gray-100 dark:text-gray-800 border-gray-200 dark:border-gray-700'
           onClick={() => handleUnitChange(nextUnit(unit))}
         >
           <div className='mx-auto font-semibold'>{unitLabels[unit]}</div>
