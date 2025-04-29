@@ -1,16 +1,9 @@
 TODO list:
 
-- [ ] notifications?
 - [ ] qrcode scanner in firefox
 - [ ] more tests
 - [ ] documentation
 - [ ] show blinders on explorer???
-- [ ] use Tor
-- [ ] support LNURL
-- [ ] show fiat value?
-- [ ] handle lightning: urls
-- [ ] dark mode
-- [ ] pass some validations from send details to send invoice
 
 DONE
 
@@ -42,3 +35,10 @@ DONE
 - [x] smart reload
 - [x] show num of tx when restoring
 - [x] copy & paste in mobile
+- [x] notifications?
+- [x] use Tor
+- [x] support LNURL
+- [x] show fiat value
+- [x] handle lightning: urls
+- [x] dark mode
+- [x] pass some validations from send details to send invoice
