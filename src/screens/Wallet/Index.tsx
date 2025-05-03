@@ -43,7 +43,7 @@ export default function Wallet() {
         {restoring ? <Restoring restoring={restoring} /> : <TransactionsList short />}
       </Content>
       <ButtonsOnBottom>
-        <Button icon={<ScanIcon />} label='Sendy' onClick={handleSend} disabled={!canSend} />
+        <Button icon={<ScanIcon />} label='Send' onClick={handleSend} disabled={!canSend} />
         <Button icon={<QRCodeIcon />} label='Receive' onClick={handleReceive} disabled={!canReceive} />
       </ButtonsOnBottom>
     </Container>
