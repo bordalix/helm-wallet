@@ -211,13 +211,13 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     if (loadingWallet) return
     if (offline) {
       if (reloading) setReloading(false)
-      if (chainSource) chainSource.close()
+      if (chainSource) chainSource.close().catch()
     } else {
       reconnectChainSource(wallet, config.tor).then(() => {
         if (wallet.initialized) reloadWallet(wallet)
-        navigate(wallet.initialized ? Pages.Wallet : Pages.Init)
       })
     }
+    navigate(wallet.initialized ? Pages.Wallet : Pages.Init)
   }, [loadingWallet, offline, config.tor])
 
   // if user changes network to testnet or regtest, set tor to false
