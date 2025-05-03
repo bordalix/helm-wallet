@@ -11,8 +11,10 @@ import { ConfigContext } from './config'
 import { cleanCache, getCachedElectrumHistories } from '../lib/cache'
 import { extractError } from '../lib/error'
 import { deleteExpiredClaims } from '../lib/claims'
+import { ConnectionContext } from './connection'
+import { checkTorConnection } from '../lib/tor'
 
-let chainSource = new WsElectrumChainSource(defaultExplorer, defaultNetwork)
+let chainSource: ChainSource
 
 export interface Wallet {
   explorer: ExplorerName
@@ -60,9 +62,9 @@ const defaultWallet: Wallet = {
 }
 
 interface WalletContextProps {
-  chainSource: ChainSource
   changeExplorer: (e: ExplorerName) => void
   changeNetwork: (n: NetworkName) => void
+  getChainSource: () => ChainSource
   increaseIndex: () => void
   loadingWallet: boolean
   logout: () => void
@@ -73,13 +75,12 @@ interface WalletContextProps {
   restoreWallet: (w: Wallet) => void
   resetWallet: () => void
   setMnemonic: (m: Mnemonic) => void
-  toggleTor: (t: boolean) => void
   updateWallet: (w: Wallet) => void
   wallet: Wallet
 }
 
 export const WalletContext = createContext<WalletContextProps>({
-  chainSource,
+  getChainSource: () => chainSource,
   changeExplorer: () => {},
   changeNetwork: () => {},
   increaseIndex: () => {},
@@ -92,13 +93,13 @@ export const WalletContext = createContext<WalletContextProps>({
   restoreWallet: () => {},
   resetWallet: () => {},
   setMnemonic: () => {},
-  toggleTor: () => {},
   updateWallet: () => {},
   wallet: defaultWallet,
 })
 
 export const WalletProvider = ({ children }: { children: ReactNode }) => {
-  const { config, loadingConfig, updateConfig } = useContext(ConfigContext)
+  const { config, loadingConfig } = useContext(ConfigContext)
+  const { offline, setTor } = useContext(ConnectionContext)
   const { navigate } = useContext(NavigationContext)
 
   const [loadingWallet, setLoadingWallet] = useState(true)
@@ -113,26 +114,22 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     setWallet({ ...wallet, mnemonic: m })
   }
 
-  const reconnectChainSource = async (w: Wallet, tor = false) => {
-    chainSource
-      .close()
-      .then(() => (chainSource = new WsElectrumChainSource(w.explorer, w.network, tor)))
-      .catch((e) => console.log('Error reconnecting chainSource', extractError(e)))
-  }
-
   const changeExplorer = async (explorer: ExplorerName) => {
     const clone = { ...wallet, explorer }
     updateWallet(clone)
-    if (clone.explorer !== chainSource.explorer) await reconnectChainSource(clone)
+    if (clone.explorer !== chainSource?.explorer) await reconnectChainSource(clone)
     reloadWallet(clone)
   }
 
   const changeNetwork = async (networkName: NetworkName) => {
     const clone = { ...wallet, network: networkName }
     updateWallet(clone)
-    if (clone.network !== chainSource.network) await reconnectChainSource(clone, config.tor)
+    if (networkName !== NetworkName.Liquid) setTor(false)
+    if (clone.network !== chainSource?.network) await reconnectChainSource(clone, config.tor)
     if (wallet.initialized) reloadWallet(clone)
   }
+
+  const getChainSource = () => chainSource
 
   const increaseIndex = () => {
     const clone = { ...wallet }
@@ -143,6 +140,15 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const logout = () => setMnemonic('')
+
+  const reconnectChainSource = async (w: Wallet, tor = false) => {
+    try {
+      if (chainSource) await chainSource.close()
+      chainSource = new WsElectrumChainSource(w.explorer, w.network, tor)
+    } catch (e) {
+      console.log('Error reconnecting chainSource', extractError(e))
+    }
+  }
 
   const reloadWallet = async (w: Wallet) => {
     if (reloading) return
@@ -185,42 +191,48 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     navigate(Pages.Init)
   }
 
-  const toggleTor = (tor: boolean) => {
-    reconnectChainSource(wallet, tor)
-    updateConfig({ ...config, tor })
-  }
-
   const updateWallet = (data: Wallet) => {
     setWallet({ ...data, mnemonic: mnemonic.current })
     saveWalletToStorage(data)
   }
 
+  // load wallet from storage after config is loaded
   useEffect(() => {
-    const getWalletFromStorage = async () => {
-      if (!loadingWallet) return
-      const wallet = readWalletFromStorage() ?? defaultWallet
-      updateWallet(wallet)
-      if (
-        wallet.explorer !== chainSource.explorer ||
-        wallet.network !== chainSource.network ||
-        (wallet.network === NetworkName.Liquid && config.tor)
-      ) {
-        await reconnectChainSource(wallet, config.tor)
-      }
-      if (wallet.initialized) reloadWallet(wallet)
-      setLoadingWallet(false)
-      navigate(wallet.initialized ? Pages.Wallet : Pages.Init)
+    if (loadingConfig || !loadingWallet) return
+    updateWallet(readWalletFromStorage() ?? defaultWallet)
+    setLoadingWallet(false)
+  }, [loadingConfig])
+
+  // reconnect to websocket server if:
+  // - wallet is loaded
+  // - wallet becomes online/offline
+  // - tor is enabled/disabled
+  useEffect(() => {
+    if (loadingWallet) return
+    if (offline) {
+      if (reloading) setReloading(false)
+      if (chainSource) chainSource.close()
+    } else {
+      reconnectChainSource(wallet, config.tor).then(() => {
+        if (wallet.initialized) reloadWallet(wallet)
+        navigate(wallet.initialized ? Pages.Wallet : Pages.Init)
+      })
     }
-    if (!loadingConfig) getWalletFromStorage()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadingConfig, loadingWallet])
+  }, [loadingWallet, offline, config.tor])
+
+  // if user changes network to testnet or regtest, set tor to false
+  useEffect(() => {
+    if (loadingWallet) return
+    if (config.tor && wallet.network === NetworkName.Liquid) checkTorConnection().then(setTor)
+    else setTor(false)
+  }, [config.tor, loadingWallet, wallet.network])
 
   return (
     <WalletContext.Provider
       value={{
-        chainSource,
         changeExplorer,
         changeNetwork,
+        getChainSource,
         loadingWallet,
         reloading,
         restoring,
@@ -231,7 +243,6 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
         restoreWallet,
         resetWallet,
         setMnemonic,
-        toggleTor,
         updateWallet,
         wallet,
       }}

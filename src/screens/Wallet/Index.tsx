@@ -18,9 +18,10 @@ export default function Wallet() {
   const { limits, maxAllowedAmount } = useContext(BoltzContext)
   const { config } = useContext(ConfigContext)
   const { navigate } = useContext(NavigationContext)
-  const { chainSource, reconnectChainSource, restoring, wallet } = useContext(WalletContext)
+  const { getChainSource, reconnectChainSource, restoring, wallet } = useContext(WalletContext)
 
   const canSend = maxAllowedAmount(wallet) > limits.minimal && !config.pos
+  const chainSource = getChainSource()
 
   const handleSend = () => {
     if (!chainSource.isConnected()) reconnectChainSource(wallet)
