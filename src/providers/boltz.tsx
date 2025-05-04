@@ -55,7 +55,7 @@ export const BoltzContext = createContext<BoltzContextProps>({
 })
 
 export const BoltzProvider = ({ children }: { children: ReactNode }) => {
-  const { config } = useContext(ConfigContext)
+  const { config, loadingConfig } = useContext(ConfigContext)
   const { wallet } = useContext(WalletContext)
 
   const [error, setError] = useState('')
@@ -63,7 +63,10 @@ export const BoltzProvider = ({ children }: { children: ReactNode }) => {
   const [recvFees, setRecvFees] = useState(defaultBoltzFees)
   const [sendFees, setSendFees] = useState(defaultBoltzFees)
 
+  // fetch limits and fees from Boltz API
+  // wait for config to load, to know if user is using Tor
   useEffect(() => {
+    if (loadingConfig) return
     try {
       fetchURL(`${getBoltzApiUrl(wallet.network, config.tor)}/v2/swap/submarine`).then((data) => {
         const { limits, fees } = data['L-BTC'].BTC
@@ -78,7 +81,7 @@ export const BoltzProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       setError(error as string)
     }
-  }, [wallet.network])
+  }, [wallet.network, loadingConfig])
 
   const expectedFees = (amount: Satoshis, flow = 'send'): { boltzFees: Satoshis; minerFees: Satoshis } => {
     const fees = flow === 'send' ? sendFees : recvFees

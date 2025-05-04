@@ -13,22 +13,26 @@ import TransactionsList from '../../components/TransactionsList'
 import { BoltzContext } from '../../providers/boltz'
 import Restoring from '../../components/Restoring'
 import { ConfigContext } from '../../providers/config'
+import { ConnectionContext } from '../../providers/connection'
 
 export default function Wallet() {
   const { limits, maxAllowedAmount } = useContext(BoltzContext)
   const { config } = useContext(ConfigContext)
+  const { offline } = useContext(ConnectionContext)
   const { navigate } = useContext(NavigationContext)
-  const { chainSource, reconnectChainSource, restoring, wallet } = useContext(WalletContext)
+  const { getChainSource, reconnectChainSource, restoring, wallet } = useContext(WalletContext)
 
-  const canSend = maxAllowedAmount(wallet) > limits.minimal && !config.pos
+  const canReceive = !offline
+  const canSend = maxAllowedAmount(wallet) > limits.minimal && !config.pos && !offline
+  const chainSource = getChainSource()
 
   const handleSend = () => {
-    if (!chainSource.isConnected()) reconnectChainSource(wallet)
+    if (!chainSource?.isConnected()) reconnectChainSource(wallet)
     navigate(Pages.SendInvoice)
   }
 
   const handleReceive = () => {
-    if (!chainSource.isConnected()) reconnectChainSource(wallet)
+    if (!chainSource?.isConnected()) reconnectChainSource(wallet)
     navigate(Pages.ReceiveAmount)
   }
 
@@ -40,7 +44,7 @@ export default function Wallet() {
       </Content>
       <ButtonsOnBottom>
         <Button icon={<ScanIcon />} label='Send' onClick={handleSend} disabled={!canSend} />
-        <Button icon={<QRCodeIcon />} label='Receive' onClick={handleReceive} />
+        <Button icon={<QRCodeIcon />} label='Receive' onClick={handleReceive} disabled={!canReceive} />
       </ButtonsOnBottom>
     </Container>
   )

@@ -12,10 +12,12 @@ import { NetworkName } from '../../lib/network'
 import Error from '../../components/Error'
 import { boltzOnionUrl, checkTorConnection, wsOnionUrl } from '../../lib/tor'
 import Loading from '../../components/Loading'
+import { ConnectionContext } from '../../providers/connection'
 
 export default function Tor() {
-  const { config, toggleShowConfig } = useContext(ConfigContext)
-  const { toggleTor, wallet } = useContext(WalletContext)
+  const { config, toggleShowConfig, updateConfig } = useContext(ConfigContext)
+  const { tor } = useContext(ConnectionContext)
+  const { wallet } = useContext(WalletContext)
 
   const [checking, setChecking] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
@@ -31,7 +33,7 @@ export default function Tor() {
       setStartTor(false)
       setChecking(true)
       checkTorConnection().then((ok) => {
-        if (ok) toggleTor(true)
+        if (ok) updateConfig({ ...config, tor: true })
         else setErrorMsg('Unable to connect to Tor')
         setChecking(false)
       })
@@ -40,7 +42,7 @@ export default function Tor() {
 
   const handleChange = async (e: any) => {
     if (e.target.value === '1') setStartTor(true)
-    else toggleTor(false)
+    else updateConfig({ ...config, tor: false })
   }
 
   const disabled = wallet.network !== NetworkName.Liquid
@@ -55,11 +57,9 @@ export default function Tor() {
           <option value={0}>Off</option>
         </Select>
         <div className='flex flex-col gap-6 mt-10'>
-          {config.tor ? (
+          {tor ? (
             <>
-              <p>
-                <span className='font-semibold'>Connected to Tor</span>
-              </p>
+              <p className='font-semibold'>Connected to Tor</p>
               <p>
                 Using{' '}
                 <a className='pointer-cursor underline' href={boltzOnionUrl}>

@@ -25,7 +25,7 @@ export default function ReceiveInvoice() {
   const { config } = useContext(ConfigContext)
   const { recvInfo, setRecvInfo } = useContext(FlowContext)
   const { navigate } = useContext(NavigationContext)
-  const { chainSource, increaseIndex, reloadWallet, wallet } = useContext(WalletContext)
+  const { getChainSource, increaseIndex, reloadWallet, wallet } = useContext(WalletContext)
 
   const label = 'Copy to clipboard'
   const [address, setAddress] = useState<NewAddress>()
@@ -34,6 +34,7 @@ export default function ReceiveInvoice() {
   const [error, setError] = useState('')
   const [invoice, setInvoice] = useState('')
 
+  const chainSource = getChainSource()
   const finishedTxIds: string[] = []
 
   const updateReceivedAmount = async (total: number, txid: string): Promise<number> => {
