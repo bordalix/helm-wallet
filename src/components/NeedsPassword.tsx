@@ -22,6 +22,7 @@ export default function NeedsPassword({ onClose, onMnemonic }: NeedsPasswordProp
   const [error, setError] = useState('')
   const [open, setOpen] = useState(true)
   const [pass, setPass] = useState('')
+  const [useBiometrics, setUseBiometrics] = useState(wallet.lockedByBiometrics)
 
   const authenticateUserWithBiometrics = async () => {
     setError('')
@@ -37,15 +38,18 @@ export default function NeedsPassword({ onClose, onMnemonic }: NeedsPasswordProp
       if (mnemonic) {
         onMnemonic(mnemonic)
         setOpen(false)
-      } else setError('Invalid password')
+      } else {
+        setError('Invalid password')
+        if (useBiometrics) setUseBiometrics(false)
+      }
       setLoading(false)
     })
   }
 
   useEffect(() => {
-    if (!wallet.lockedByBiometrics) return
+    if (!useBiometrics) return
     authenticateUserWithBiometrics()
-  }, [wallet.lockedByBiometrics])
+  }, [useBiometrics])
 
   useEffect(() => {
     setDisabled(Boolean(error))
@@ -71,7 +75,7 @@ export default function NeedsPassword({ onClose, onMnemonic }: NeedsPasswordProp
       ) : (
         <div className='flex flex-col gap-2'>
           <Error error={Boolean(error)} text={error} />
-          {wallet.lockedByBiometrics ? (
+          {useBiometrics ? (
             <div className='mx-auto' onClick={authenticateUserWithBiometrics}>
               <FingerprintIcon />
             </div>
