@@ -94,5 +94,9 @@ export async function authenticateUser(passkeyId: string | undefined): Promise<s
   if (clientDataJSON.challenge !== arrayToBase64(challenge)) throw new Error('Invalid challenge')
   if (clientDataJSON.origin !== window.location.origin) throw new Error('Invalid origin')
 
+  console.log('d7r userHandle array', userHandle)
+  console.log('d7r userHandle length', userHandle.length)
+  console.log('d7r userHandle hex', hex.encode(userHandle))
+
   return hex.encode(userHandle)
 }
