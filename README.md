@@ -101,3 +101,5 @@ Your app is ready to be deployed!
 To learn React, check out the [React documentation](https://reactjs.org/).
 
 Check the [FAQ](https://helm-wallet.com/#faq).
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/bordalix/helm-wallet)
