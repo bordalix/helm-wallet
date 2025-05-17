@@ -9,5 +9,5 @@ export const getBoltzApiUrl = (network: NetworkName, tor = false) => {
   return network === NetworkName.Testnet ? testnetUrl : liquidUrl
 }
 
-export const getBoltzWsUrl = (network: NetworkName) =>
-  `${getBoltzApiUrl(network, false).replace('https://', 'wss://')}/v2/ws`
+export const getBoltzWsUrl = (network: NetworkName, tor = false) =>
+  `${getBoltzApiUrl(network, tor).replace('https://', 'wss://')}/v2/ws`

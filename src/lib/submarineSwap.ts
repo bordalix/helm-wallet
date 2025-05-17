@@ -82,7 +82,7 @@ export const finalizeSubmarineSwap = (
   let txid = ''
 
   // Create a WebSocket and subscribe to updates for the created swap
-  const webSocket = new WebSocket(getBoltzWsUrl(wallet.network))
+  const webSocket = new WebSocket(getBoltzWsUrl(wallet.network, config.tor))
   webSocket.onopen = () => {
     webSocket.send(
       JSON.stringify({
