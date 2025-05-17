@@ -68,8 +68,8 @@ export default function Tor() {
               </p>
               <p>
                 and{' '}
-                <a className='pointer-cursor underline' href={wsOnionUrl}>
-                  {formatInvoice(wsOnionUrl)}
+                <a className='pointer-cursor underline' href={wsOnionUrl()}>
+                  {formatInvoice(wsOnionUrl())}
                 </a>
               </p>
             </>

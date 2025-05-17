@@ -4,7 +4,10 @@ const blockstream = 'explorerzydxu5ecjrkwceayqybizmpjjznk5izmitf2modhcusuqlid.on
 
 export const boltzOnionUrl = 'http://boltzzzbnus4m7mta3cxmflnps4fp7dueu2tgurstbvrbt6xswzcocyd.onion/api'
 export const explorerOnionUrl = `http://${blockstream}/`
-export const wsOnionUrl = `ws://${blockstream}/liquid/electrum-websocket/api`
+export const wsOnionUrl = (): string => {
+  const url = `://${blockstream}/liquid/electrum-websocket/api`
+  return (window.location.protocol === 'https:' ? 'wss' : 'ws') + url
+}
 
 export const checkTorConnection = async (): Promise<boolean> => {
   return new Promise((resolve) => {

@@ -68,7 +68,7 @@ export const getWebSocketExplorerURL = (
   network: NetworkName,
   tor = false,
 ): string | undefined => {
-  if (tor && network === NetworkName.Liquid) return wsOnionUrl
+  if (tor && network === NetworkName.Liquid) return wsOnionUrl()
   const exp = explorers.find((e) => e.name === explorer)
   return exp?.[network]?.webSocketExplorerURL
 }
