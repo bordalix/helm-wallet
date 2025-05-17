@@ -59,7 +59,7 @@ export class WsElectrumChainSource implements ChainSource {
   constructor(public explorer: ExplorerName, public network: NetworkName, public tor = false) {
     const wsUrl = getWebSocketExplorerURL(explorer, network, tor)
     if (!wsUrl) throw new Error('Undefined ws url')
-    this.ws = new ElectrumWS(wsUrl, { verbose: true })
+    this.ws = new ElectrumWS(wsUrl)
   }
 
   async fetchHistories(scripts: Buffer[]): Promise<ElectrumHistory[]> {
