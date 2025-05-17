@@ -56,9 +56,15 @@ export default function About() {
           <p>
             Made with 🧡 by{' '}
             {link('@bordalix', 'https://njump.me/npub1vt803quxxq32fuwkp42g2lyaw2t9qupvnl3z0vyc3s9kudkyhn8qt28cxv')}
+            <br />
+            {gitCommit ? (
+              <>
+                Git commit {link(gitCommit, 'https://github.com/bordalix/helm-wallet')}
+                <br />
+              </>
+            ) : null}
+            {link('FAQ', 'https://helm-wallet.com/#faq')}
           </p>
-          {gitCommit ? <p>Git commit {link(gitCommit, 'https://github.com/bordalix/helm-wallet')}</p> : null}
-          <p>{link('FAQ', 'https://helm-wallet.com/#faq')}</p>
         </div>
       </Content>
       <ButtonsOnBottom>
