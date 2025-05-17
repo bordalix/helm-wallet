@@ -59,6 +59,7 @@ export class WsElectrumChainSource implements ChainSource {
   constructor(public explorer: ExplorerName, public network: NetworkName, public tor = false) {
     const wsUrl = getWebSocketExplorerURL(explorer, network, tor)
     if (!wsUrl) throw new Error('Undefined ws url')
+    console.log('connecting to ws:', wsUrl)
     this.ws = new ElectrumWS(wsUrl)
   }
 
