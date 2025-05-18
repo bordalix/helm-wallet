@@ -1,4 +1,5 @@
 import { extractError } from './error'
+import { consoleError } from './logs'
 import { verify } from './schnorr'
 
 export interface FiatPrices {
@@ -26,6 +27,6 @@ export const getPriceFeed = async (): Promise<FiatPrices | undefined> => {
     if (!verify(data, publickey, signature)) throw new Error('Invalid signature')
     return pricefeed
   } catch (err) {
-    console.log('error fetching fiat prices:', extractError(err))
+    consoleError('Error fetching fiat price', extractError(err))
   }
 }

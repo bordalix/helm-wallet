@@ -34,7 +34,9 @@ async function networkFirst(request) {
   const cache = await caches.open(CACHE_NAME)
   try {
     const response = await fetch(request)
-    cache.put(request, response.clone())
+    if (request.method === 'GET') {
+      cache.put(request, response.clone())
+    }
     return response
   } catch (error) {
     return cache.match(request)

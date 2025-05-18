@@ -16,6 +16,7 @@ import { ClaimInfo, removeClaim, saveClaim } from './claims'
 import { RecvInfo } from '../providers/flow'
 import { defaultInvoiceComment } from './constants'
 import { hex } from '@scure/base'
+import { consoleError, consoleLog } from './logs'
 
 /**
  * Reverse swap flow:
@@ -90,7 +91,6 @@ export const waitAndClaim = async (
 
   webSocket.onmessage = async (rawMsg) => {
     const msg = JSON.parse(rawMsg.data)
-    console.log('msg', msg)
 
     if (msg.event !== 'update') return
 
@@ -105,7 +105,7 @@ export const waitAndClaim = async (
     switch (msg.args[0].status) {
       // "swap.created" means Boltz is waiting for the invoice to be paid
       case 'swap.created': {
-        console.log('Waiting for invoice to be paid')
+        consoleLog('Waiting for invoice to be paid')
         break
       }
 
@@ -128,15 +128,15 @@ export const waitAndClaim = async (
 
         // parse the lockup transaction and find the output relevant for the swap
         const lockupTx = Transaction.fromHex(msg.args[0].transaction.hex)
-        console.log(`Got lockup transaction: ${lockupTx.getId()}`)
+        consoleLog('Got lockup transaction', { lockupTxId: lockupTx.getId() })
 
         const swapOutput = detectSwap(tweakedKey, lockupTx)
         if (swapOutput === undefined) {
-          console.error('No swap output found in lockup transaction')
+          consoleError('No swap output found in lockup transaction')
           return
         }
 
-        console.log('Creating claim transaction')
+        consoleLog('Creating claim transaction')
 
         // create a claim transaction to be signed cooperatively via a key path spend
         claimTx = targetFee(claimFees(wallet.network), (fee) =>
@@ -160,7 +160,7 @@ export const waitAndClaim = async (
           ),
         )
 
-        console.log('Getting partial signature from Boltz')
+        consoleLog('Getting partial sig from Boltz')
 
         const boltzSig: ReverseSwapClaimResponse = (
           await axios.post(
@@ -201,20 +201,21 @@ export const waitAndClaim = async (
         claimInfo.claimTx = claimTx.toHex()
         saveClaim(claimInfo, wallet.network)
 
-        console.log('Broadcasting claim transaction')
+        consoleLog('Broadcasting claim transaction')
 
         await axios.post(`${getBoltzApiUrl(wallet.network, config.tor)}/v2/chain/L-BTC/transaction`, {
           hex: claimTx.toHex(),
         })
 
         claimInfo.claimed = true
+        consoleLog('Transaction claimed', { claimInfo })
         removeClaim(claimInfo, wallet.network)
         onFinish(claimTx.getId())
         break
       }
 
       case 'invoice.settled': {
-        console.log('Invoice was settled')
+        consoleLog('Invoice was settled')
         claimInfo.lastStatus = msg.args[0].status
         if (!claimInfo.claimed) saveClaim(claimInfo, wallet.network)
         webSocket.close()
@@ -225,7 +226,7 @@ export const waitAndClaim = async (
       case 'swap.expired':
       case 'transaction.failed':
       case 'transaction.refunded': {
-        console.log(`Removing claim, swap status = ${msg.args[0].status}`, claimInfo)
+        consoleLog('Expiration, fail or refund', { status: msg.args[0].status, claimInfo })
         removeClaim(claimInfo, wallet.network)
         webSocket.close()
         break
@@ -242,7 +243,6 @@ export const reverseSwap = async (
   onFinish: (txid: string) => void,
   onInvoice: (invoice: string) => void,
 ) => {
-  console.log('recvInfo', recvInfo)
   // create a random preimage for the swap; has to have a length of 32 bytes
   const preimage = randomBytes(32)
   const keys = ECPairFactory(ecc).makeRandom()
@@ -264,6 +264,8 @@ export const reverseSwap = async (
       to: 'L-BTC',
     })
   ).data
+
+  consoleLog(`Reverse swap ${createdResponse.id}`, { createdResponse })
 
   // Show invoice on wallet UI
   onInvoice(createdResponse.invoice)

@@ -29,6 +29,8 @@ import About from './About'
 import Theme from './Theme'
 import Tor from './Tor'
 import Pos from './Pos'
+import Logs from './Logs'
+import MagnifyIcon from '../../icons/Magnify'
 
 enum Options {
   Menu = 'menu',
@@ -36,6 +38,7 @@ enum Options {
   Backup = 'backup',
   Explorer = 'explorer',
   Logout = 'logout',
+  Logs = 'logs',
   Network = 'network',
   Notifications = 'notifications',
   Password = 'password',
@@ -74,6 +77,10 @@ export default function Settings() {
     {
       icon: <LogoutIcon />,
       option: Options.Logout,
+    },
+    {
+      icon: <MagnifyIcon />,
+      option: Options.Logs,
     },
     {
       icon: <NetworkIcon />,
@@ -143,6 +150,7 @@ export default function Settings() {
         {option === Options.Backup && <Backup />}
         {option === Options.Explorer && <Explorer />}
         {option === Options.Logout && <Logout />}
+        {option === Options.Logs && <Logs />}
         {option === Options.Network && <Network />}
         {option === Options.Notifications && <Notifications />}
         {option === Options.Password && <Password />}

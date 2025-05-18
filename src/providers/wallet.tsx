@@ -12,6 +12,8 @@ import { cleanCache, getCachedElectrumHistories } from '../lib/cache'
 import { deleteExpiredClaims } from '../lib/claims'
 import { ConnectionContext } from './connection'
 import { checkTorConnection } from '../lib/tor'
+import { cleanOldLogs, consoleError } from '../lib/logs'
+import { extractError } from '../lib/error'
 
 let chainSource: ChainSource
 
@@ -145,7 +147,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
       if (chainSource) await chainSource.close()
       chainSource = new WsElectrumChainSource(w.explorer, w.network, tor)
     } catch (e) {
-      console.log('Error reconnecting chainSource', e)
+      consoleError('Error reconnecting chainSource', extractError(e))
     }
   }
 
@@ -164,6 +166,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     updateWallet(clone)
     setReloading(false)
     deleteExpiredClaims(chainSource, clone.network)
+    cleanOldLogs()
   }
 
   const restoreWallet = async (w: Wallet) => {
