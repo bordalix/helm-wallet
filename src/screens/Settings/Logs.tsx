@@ -20,7 +20,7 @@ export default function Logs() {
   return (
     <div className='flex flex-col h-full justify-between'>
       <Content>
-        <Title text='Logs' />
+        <Title text='Logs' subtext='Removed after 7 days' />
         {logs.length === 0 ? <p className='text-gray-500 text-center'>No logs available</p> : <LogsList logs={logs} />}
       </Content>
       <ButtonsOnBottom>

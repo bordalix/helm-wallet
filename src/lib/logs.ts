@@ -15,7 +15,8 @@ const addLog = (log: LogLine): void => {
   saveLogsToStorage([...readLogsFromStorage(), log])
 }
 
-export const cleanOldLogs = (maxAgeInSeconds = 30 * 24 * 60 * 60): void => {
+// remove logs older than maxAgeInSeconds - default is 7 days
+export const cleanOldLogs = (maxAgeInSeconds = 7 * 24 * 60 * 60): void => {
   const notOldLogs = getLogs().filter((log) => {
     const now = new Date()
     const logDate = new Date(log.timestamp)
