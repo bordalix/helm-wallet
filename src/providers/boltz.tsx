@@ -31,11 +31,13 @@ const defaultBoltzFees: BoltzFees = {
 export interface BoltzLimits {
   maximal: number
   minimal: number
+  maximalZeroConf: number
 }
 
 const defaultBoltzLimits: BoltzLimits = {
   maximal: 25_000_000,
   minimal: 1_000,
+  maximalZeroConf: 250_000,
 }
 
 interface BoltzContextProps {
