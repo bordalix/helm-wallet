@@ -4,7 +4,6 @@ import { readClaimsFromStorage, saveClaimsToStorage } from './storage'
 import * as ecc from '@bitcoinerlab/secp256k1'
 import { NetworkName } from './network'
 import { ChainSource } from './chainsource'
-import { consoleLog } from './logs'
 
 export type Claims = Record<NetworkName, ClaimInfoStored[]>
 
@@ -75,7 +74,6 @@ export const removeClaim = (claim: ClaimInfo, network: NetworkName): void => {
   if (!claims[network]) return
   claims[network] = claims[network].filter((c) => c.createdResponse.id !== claim.createdResponse.id)
   saveClaimsToStorage(claims)
-  consoleLog('Removed claim from storage', { claim })
 }
 
 export const saveClaim = (claim: ClaimInfo, network: NetworkName): void => {
@@ -86,5 +84,4 @@ export const saveClaim = (claim: ClaimInfo, network: NetworkName): void => {
   if (index === -1) claims[network].push(claimStored)
   else claims[network][index] = claimStored
   saveClaimsToStorage(claims)
-  consoleLog('Saved claim to storage', { claim })
 }

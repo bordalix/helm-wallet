@@ -1,7 +1,6 @@
-import { extractError } from './error'
 import { readLogsFromStorage, saveLogsToStorage } from './storage'
 
-type LogLevel = 'info' | 'warn' | 'error' | 'debug'
+type LogLevel = 'info' | 'warn' | 'error' | 'debug' | 'start' | 'running' | 'success' | 'fail'
 
 export type LogLine = {
   timestamp: number
@@ -38,32 +37,38 @@ export const getLogs = (): Logs => {
   })
 }
 
-export const getLog = (index: number): LogLine => {
-  const logs = getLogs()
-  if (index < 0 || index >= logs.length) {
-    throw new Error('Log index out of bounds')
-  }
-  return logs[index]
-}
-
-export const consoleLog = (message: string, data?: any): void => {
+const logGeneric = (message: string, level: LogLevel, data?: any): void => {
   const log: LogLine = {
-    timestamp: Date.now(),
-    level: 'info',
-    message,
     data: data ? JSON.stringify(data) : undefined,
+    timestamp: Date.now(),
+    message,
+    level,
   }
   addLog(log)
-  console.log(message, data ?? '')
+  if (['fail', 'error'].includes(level)) console.error(message, data ?? '')
+  else console.log(message, data ?? '')
 }
 
-export const consoleError = (message: string, data?: any): void => {
-  const log: LogLine = {
-    timestamp: Date.now(),
-    level: 'error',
-    message,
-    data: data ? JSON.stringify(data) : undefined,
-  }
-  addLog(log)
-  console.error(message, extractError(data))
+export const logInfo = (message: string, data?: any): void => {
+  logGeneric(message, 'info', data)
+}
+
+export const logError = (message: string, data?: any): void => {
+  logGeneric(message, 'error', data)
+}
+
+export const logStart = (message: string, data?: any): void => {
+  logGeneric(message, 'start', data)
+}
+
+export const logRunning = (message: string, data?: any): void => {
+  logGeneric(message, 'running', data)
+}
+
+export const logSuccess = (message: string, data?: any): void => {
+  logGeneric(message, 'success', data)
+}
+
+export const logFail = (message: string, data?: any): void => {
+  logGeneric(message, 'fail', data)
 }

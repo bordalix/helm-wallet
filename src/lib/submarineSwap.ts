@@ -12,7 +12,7 @@ import { sendSats } from './transactions'
 import { NetworkName } from './network'
 import { Config } from '../providers/config'
 import { hex } from '@scure/base'
-import { consoleError, consoleLog } from './logs'
+import { logFail, logRunning, logStart, logSuccess } from './logs'
 
 /**
  * Submarine swap flow:
@@ -67,7 +67,7 @@ export const submarineSwap = async (
     })
   ).data
 
-  consoleLog(`Submarine swap ${swapResponse.id}`, { swapResponse })
+  logStart(`Submarine swap ${swapResponse.id}`, { swapResponse })
   return swapResponse
 }
 
@@ -102,14 +102,14 @@ export const finalizeSubmarineSwap = (
     switch (msg.args[0].status) {
       // "invoice.set" means Boltz is waiting for an onchain transaction to be sent
       case 'invoice.set': {
-        consoleLog('Waiting for onchain transaction')
+        logRunning('Waiting for onchain transaction')
         txid = await sendSats(swapResponse.expectedAmount, swapResponse.address, wallet, config)
         break
       }
 
       // Create a partial signature to allow Boltz to do a key path spend to claim the mainchain coins
       case 'transaction.claim.pending': {
-        consoleLog('Creating claim transaction')
+        logRunning('Creating claim transaction')
 
         // Get the information request to create a partial signature
         const url = `${getBoltzApiUrl(wallet.network, config.tor)}/v2/swap/submarine/${swapResponse.id}/claim`
@@ -122,7 +122,7 @@ export const finalizeSubmarineSwap = (
           'hex',
         )
         if (!crypto.sha256(Buffer.from(claimTxDetails.preimage, 'hex')).equals(invoicePreimageHash)) {
-          consoleError('Boltz provided invalid preimage', claimTxDetails)
+          logFail('Boltz provided invalid preimage', claimTxDetails)
           return
         }
 
@@ -144,13 +144,13 @@ export const finalizeSubmarineSwap = (
           partialSignature: hex.encode(Uint8Array.from(musig.signPartial())),
         })
 
-        consoleLog('Partial sig sent to Boltz')
+        logRunning('Partial sig sent to Boltz')
 
         break
       }
 
       case 'transaction.claimed':
-        consoleLog('Swap successful', { txid })
+        logSuccess('Submarine swap successful', { txid })
         webSocket.close()
         onTxid(txid)
         break

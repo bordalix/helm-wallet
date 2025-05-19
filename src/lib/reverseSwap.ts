@@ -16,7 +16,7 @@ import { ClaimInfo, removeClaim, saveClaim } from './claims'
 import { RecvInfo } from '../providers/flow'
 import { defaultInvoiceComment } from './constants'
 import { hex } from '@scure/base'
-import { consoleError, consoleLog } from './logs'
+import { logError, logFail, logRunning, logStart, logSuccess } from './logs'
 
 /**
  * Reverse swap flow:
@@ -105,7 +105,7 @@ export const waitAndClaim = async (
     switch (msg.args[0].status) {
       // "swap.created" means Boltz is waiting for the invoice to be paid
       case 'swap.created': {
-        consoleLog('Waiting for invoice to be paid')
+        logRunning('Waiting for invoice to be paid')
         break
       }
 
@@ -128,15 +128,15 @@ export const waitAndClaim = async (
 
         // parse the lockup transaction and find the output relevant for the swap
         const lockupTx = Transaction.fromHex(msg.args[0].transaction.hex)
-        consoleLog('Got lockup transaction', { lockupTxId: lockupTx.getId() })
+        logRunning('Got lockup transaction', { lockupTxId: lockupTx.getId() })
 
         const swapOutput = detectSwap(tweakedKey, lockupTx)
         if (swapOutput === undefined) {
-          consoleError('No swap output found in lockup transaction')
+          logError('No swap output found in lockup transaction')
           return
         }
 
-        consoleLog('Creating claim transaction')
+        logRunning('Creating claim transaction')
 
         // create a claim transaction to be signed cooperatively via a key path spend
         claimTx = targetFee(claimFees(wallet.network), (fee) =>
@@ -160,7 +160,7 @@ export const waitAndClaim = async (
           ),
         )
 
-        consoleLog('Getting partial sig from Boltz')
+        logRunning('Getting partial sig from Boltz')
 
         const boltzSig: ReverseSwapClaimResponse = (
           await axios.post(
@@ -201,21 +201,21 @@ export const waitAndClaim = async (
         claimInfo.claimTx = claimTx.toHex()
         saveClaim(claimInfo, wallet.network)
 
-        consoleLog('Broadcasting claim transaction')
+        logRunning('Broadcasting claim transaction')
 
         await axios.post(`${getBoltzApiUrl(wallet.network, config.tor)}/v2/chain/L-BTC/transaction`, {
           hex: claimTx.toHex(),
         })
 
         claimInfo.claimed = true
-        consoleLog('Transaction claimed', { claimInfo })
+        logSuccess('Reverse swap successful', { claimInfo })
         removeClaim(claimInfo, wallet.network)
         onFinish(claimTx.getId())
         break
       }
 
       case 'invoice.settled': {
-        consoleLog('Invoice was settled')
+        logRunning('Invoice was settled')
         claimInfo.lastStatus = msg.args[0].status
         if (!claimInfo.claimed) saveClaim(claimInfo, wallet.network)
         webSocket.close()
@@ -226,7 +226,7 @@ export const waitAndClaim = async (
       case 'swap.expired':
       case 'transaction.failed':
       case 'transaction.refunded': {
-        consoleLog('Expiration, fail or refund', { status: msg.args[0].status, claimInfo })
+        logFail('Expiration, fail or refund', { status: msg.args[0].status, claimInfo })
         removeClaim(claimInfo, wallet.network)
         webSocket.close()
         break
@@ -265,7 +265,7 @@ export const reverseSwap = async (
     })
   ).data
 
-  consoleLog(`Reverse swap ${createdResponse.id}`, { createdResponse })
+  logStart(`Reverse swap ${createdResponse.id}`, { createdResponse })
 
   // Show invoice on wallet UI
   onInvoice(createdResponse.invoice)

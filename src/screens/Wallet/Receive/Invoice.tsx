@@ -20,6 +20,7 @@ import { ConfigContext } from '../../../providers/config'
 import { notifyPaymentReceived } from '../../../lib/notifications'
 import { getTransactionAmount } from '../../../lib/transactions'
 import { toastCopiedToClipboard } from '../../../components/Toast'
+import { logFail } from '../../../lib/logs'
 
 export default function ReceiveInvoice() {
   const { config } = useContext(ConfigContext)
@@ -61,6 +62,7 @@ export default function ReceiveInvoice() {
   }
 
   const handleCancel = () => {
+    logFail('Receive invoice cancelled')
     setRecvInfo(emptyRecvInfo)
     navigate(Pages.Wallet)
   }

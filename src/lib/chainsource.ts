@@ -5,7 +5,7 @@ import { MVUtxo } from './types'
 import { ExplorerName, getWebSocketExplorerURL } from './explorers'
 import { toScriptHash } from './address'
 import { hex } from '@scure/base'
-import { consoleError } from './logs'
+import { logError } from './logs'
 import { extractError } from './error'
 
 type ElectrumUnspent = {
@@ -132,7 +132,7 @@ export class WsElectrumChainSource implements ChainSource {
   }
 
   async close() {
-    if (this.ws.isConnected()) this.ws.close('close').catch((e) => consoleError('error closing ws:', e))
+    if (this.ws.isConnected()) this.ws.close('close').catch((e) => logError('error closing ws:', e))
   }
 
   isConnected() {
@@ -143,7 +143,7 @@ export class WsElectrumChainSource implements ChainSource {
     try {
       await this.ws.unsubscribe(SubscribeStatusMethod, toScriptHash(script))
     } catch (e) {
-      consoleError('error unsubscribing:', extractError(e))
+      logError('error unsubscribing:', extractError(e))
     }
   }
 
