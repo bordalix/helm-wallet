@@ -16,8 +16,10 @@ import Error from '../../../components/Error'
 import Loading from '../../../components/Loading'
 import { ConfigContext } from '../../../providers/config'
 import { unitLabels, Unit } from '../../../lib/units'
+import { BoltzContext } from '../../../providers/boltz'
 
 export default function SendPayment() {
+  const { limits } = useContext(BoltzContext)
   const { config } = useContext(ConfigContext)
   const { navigate } = useContext(NavigationContext)
   const { sendInfo, setSendInfo } = useContext(FlowContext)
@@ -52,11 +54,18 @@ export default function SendPayment() {
     }
   }, [wallet.mnemonic])
 
+  const loadingText =
+    sendInfo.total && sendInfo.total > limits.maximalZeroConf ? 'Large amounts can take up to a minute to complete' : ''
+
   return (
     <Container>
       <Content>
         <Title text='Pay' subtext={`Paying ${prettyNumber(total ?? 0)} ${unitLabels[Unit.SAT]}`} />
-        {error ? <Error error={Boolean(error)} text={error} /> : wallet.mnemonic ? <Loading /> : null}
+        {error ? (
+          <Error error={Boolean(error)} text={error} />
+        ) : wallet.mnemonic ? (
+          <Loading text={loadingText} />
+        ) : null}
       </Content>
       <ButtonsOnBottom>
         <Button onClick={goBackToWallet} label='Back to wallet' secondary />
