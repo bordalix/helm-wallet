@@ -95,20 +95,13 @@ export default function SendFees() {
 
   if (!wallet.mnemonic) return <NeedsPassword onClose={handleCancel} onMnemonic={setMnemonic} />
 
-  const UpdatingFees = () => (
-    <>
-      <Loading />
-      <p>Updating fees</p>
-    </>
-  )
-
   return (
     <Container>
       <Content>
         <Title text='Payment fees' subtext={`You pay ${prettyTotal} ${unitLabels[Unit.SAT]}`} />
         <div className='flex flex-col gap-2'>
           <Error error={Boolean(error)} text={error} />
-          {boltzFees < 0 || !sendInfo.txFees ? <UpdatingFees /> : <Table data={data} />}
+          {boltzFees < 0 || !sendInfo.txFees ? <Loading text='Updating fees' /> : <Table data={data} />}
         </div>
       </Content>
       <ButtonsOnBottom>

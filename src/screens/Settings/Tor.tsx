@@ -74,10 +74,7 @@ export default function Tor() {
               </p>
             </>
           ) : checking ? (
-            <>
-              <Loading />
-              <p>Checking connection...</p>
-            </>
+            <Loading text='Checking connection...' />
           ) : (
             <p>
               To use Tor, open this site on the{' '}

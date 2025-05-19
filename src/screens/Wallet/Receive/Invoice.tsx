@@ -102,13 +102,6 @@ export default function ReceiveInvoice() {
 
   const qrValue = Math.floor(clickCounter / 3) % 2 === 0 ? invoice : address?.confidentialAddress
 
-  const GeneratingInvoice = () => (
-    <>
-      <Loading />
-      <p>Generating invoice</p>
-    </>
-  )
-
   return (
     <Container>
       <Content>
@@ -120,7 +113,7 @@ export default function ReceiveInvoice() {
               <QrCode value={qrValue ?? ''} />
             </div>
           ) : (
-            <GeneratingInvoice />
+            <Loading text='Generating invoice' />
           )}
         </div>
       </Content>

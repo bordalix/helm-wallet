@@ -7,12 +7,8 @@ interface RestoringProps {
 export default function Restoring({ restoring }: RestoringProps) {
   return (
     <>
-      <Loading />
-      <p>
-        Restoring wallet
-        <br />
-        {restoring > 0 ? `${restoring} transaction${restoring > 1 ? 's' : ''} to go` : 'please wait'}
-      </p>
+      <Loading text='Restoring wallet' />
+      <p>{restoring > 0 ? `${restoring} transaction${restoring > 1 ? 's' : ''} to go` : 'please wait'}</p>
     </>
   )
 }

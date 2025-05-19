@@ -5,8 +5,8 @@ interface CenterScreenProps {
 
 export default function CenterScreen({ children, onClick }: CenterScreenProps) {
   return (
-    <div className='flex h-40 text-center' onClick={onClick}>
-      <div className='m-auto'>{children}</div>
+    <div className='flex flex-col justify-center items-center h-40 gap-4' onClick={onClick}>
+      {children}
     </div>
   )
 }
