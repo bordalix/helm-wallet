@@ -17,10 +17,10 @@ The lightning wallet even your grandma can use.
 
 Since all transactions must go on the Liquid chain and [Boltz](https://boltz.exchange) must earn something for the service they provide, there are fees to be paid:
 
-- The minimum cost for sending a payment is around 20 sats;
-- The average cost for sending **or receiving** a payment is around 40 sats plus 0.1% of the amount;
+- The average network fee for sending or receiving a payment is around 47 sats;
+- Boltz fee is 0.1% of the amount for sending to Lightning and 0.25% of the amount for receiving from Lightning;
 - Transactions between Helm wallets don’t pay Boltz fees but can take up to 1 minute to complete;
-- Boltz swaps are limited between 1.000 and 25.000.000 sats.
+- Boltz swaps are limited between 100 and 25.000.000 sats.
 
 ## Main advantages
 
