@@ -1,19 +1,19 @@
 import { useContext } from 'react'
+import { getBalance } from '../../lib/wallet'
+import { BoltzContext } from '../../providers/boltz'
+import { ConfigContext } from '../../providers/config'
+import { ConnectionContext } from '../../providers/connection'
+import { NavigationContext, Pages } from '../../providers/navigation'
+import { WalletContext } from '../../providers/wallet'
 import Balance from '../../components/Balance'
 import Button from '../../components/Button'
 import ButtonsOnBottom from '../../components/ButtonsOnBottom'
-import { NavigationContext, Pages } from '../../providers/navigation'
-import { WalletContext } from '../../providers/wallet'
-import { getBalance } from '../../lib/wallet'
 import Container from '../../components/Container'
 import Content from '../../components/Content'
 import QRCodeIcon from '../../icons/QRCode'
+import Restoring from '../../components/Restoring'
 import ScanIcon from '../../icons/Scan'
 import TransactionsList from '../../components/TransactionsList'
-import { BoltzContext } from '../../providers/boltz'
-import Restoring from '../../components/Restoring'
-import { ConfigContext } from '../../providers/config'
-import { ConnectionContext } from '../../providers/connection'
 
 export default function Wallet() {
   const { limits, maxAllowedAmount } = useContext(BoltzContext)
@@ -22,7 +22,6 @@ export default function Wallet() {
   const { navigate } = useContext(NavigationContext)
   const { getChainSource, reconnectChainSource, restoring, wallet } = useContext(WalletContext)
 
-  const canReceive = !offline
   const canSend = maxAllowedAmount(wallet) > limits.minimal && !config.pos && !offline
   const chainSource = getChainSource()
 
@@ -44,7 +43,7 @@ export default function Wallet() {
       </Content>
       <ButtonsOnBottom>
         <Button icon={<ScanIcon />} label='Send' onClick={handleSend} disabled={!canSend} />
-        <Button icon={<QRCodeIcon />} label='Receive' onClick={handleReceive} disabled={!canReceive} />
+        <Button icon={<QRCodeIcon />} label='Receive' onClick={handleReceive} disabled={offline} />
       </ButtonsOnBottom>
     </Container>
   )
