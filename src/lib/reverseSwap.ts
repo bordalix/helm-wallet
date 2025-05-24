@@ -9,7 +9,6 @@ import * as ecc from '@bitcoinerlab/secp256k1'
 import { getNetwork } from './network'
 import { Wallet } from '../providers/wallet'
 import { getBoltzApiUrl, getBoltzWsUrl } from './boltz'
-import { claimFees } from './fees'
 import { MagicHint } from './lightning'
 import { Config } from '../providers/config'
 import { ClaimInfo, removeClaim, saveClaim } from './claims'
@@ -24,6 +23,24 @@ import { logError, logFail, logRunning, logStart, logSuccess } from './logs'
  * 2. user generates public key and sends to boltz
  * 3. user receives lightning invoice
  * 4. user validates lightining invoice
+ *
+ * The following states are traversed in the course of a Reverse Submarine Swap:
+ *
+ * 1. swap.created: initial state of a newly created Reverse Submarine Swap
+ *
+ * 2. minerfee.paid: optional and currently not enabled on Boltz. If Boltz requires prepaying miner fees via a separate
+ *    Lightning invoice, this state is set when the miner fee invoice was successfully paid
+ *
+ * 3. transaction.mempool: Boltz's lockup transaction is found in the mempool which will only happen after the user
+ *    paid the Lightning hold invoice
+ *
+ * 4. transaction.confirmed: the lockup transaction was included in a block. This state is skipped, if the client
+ *    optionally accepts the transaction without confirmation. Boltz broadcasts chain transactions non-RBF only.
+ *
+ * 5. invoice.settled: the client successfully invoked the API call to get Boltz's partial signature for the claim
+ *    transaction and supplied the preimage and Boltz then used the preimage to settle the Lightning invoice.
+ *    This is the  final status of a successful Reverse Submarine Swap. Boltz does not track if the client broadcasts
+ *    the claim  transaction.
  */
 
 interface ReverseSwapBip21Response {
@@ -139,25 +156,29 @@ export const waitAndClaim = async (
         logRunning('Creating claim transaction')
 
         // create a claim transaction to be signed cooperatively via a key path spend
-        claimTx = targetFee(claimFees(wallet.network), (fee) =>
-          constructClaimTransaction(
-            [
-              {
-                ...swapOutput,
-                keys,
-                preimage,
-                cooperative: true,
-                type: OutputType.Taproot,
-                txHash: lockupTx.getHash(),
-                blindingPrivateKey: Buffer.from(createdResponse.blindingKey, 'hex'),
-              },
-            ],
-            address.toOutputScript(destinationAddress, network),
-            fee,
-            true,
-            network,
-            address.fromConfidential(destinationAddress).blindingKey,
-          ),
+        const discountCT = true
+        claimTx = targetFee(
+          0.1,
+          (fee) =>
+            constructClaimTransaction(
+              [
+                {
+                  ...swapOutput,
+                  keys,
+                  preimage,
+                  cooperative: true,
+                  type: OutputType.Taproot,
+                  txHash: lockupTx.getHash(),
+                  blindingPrivateKey: Buffer.from(createdResponse.blindingKey, 'hex'),
+                },
+              ],
+              address.toOutputScript(destinationAddress, network),
+              fee,
+              true,
+              network,
+              address.fromConfidential(destinationAddress).blindingKey,
+            ),
+          discountCT,
         )
 
         logRunning('Getting partial sig from Boltz')

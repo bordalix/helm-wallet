@@ -20,6 +20,38 @@ import { logFail, logRunning, logStart, logSuccess } from './logs'
  * 2. user generates and sends refund public key to boltz
  * 3. user receives liquid address where to send funds
  * 4. user validates lightining invoice
+ *
+ * When a Normal Submarine Swap is created, it passes through the following states:
+ *
+ * 1. swap.created: initial state of the swap; optionally the initial state can also be invoice.set in case the invoice
+ *    was already specified in the /createswap request. Boltz Web App is an example for a client that sets the invoice
+ *    with /createswap already.
+ *
+ * 2. transaction.mempool: a transaction that sends bitcoin to the chain address is found in the mempool, meaning user
+ *    sent funds to the lockup chain address.
+ *
+ * 3. transaction.confirmed: the lockup transaction was included in a block. For mainchain swaps, Boltz always waits
+ *    for one confirmation before continuing with the swap. The getpairs call provides amount limits for which Boltz
+ *    accepts 0-conf per pair.
+ *
+ * 4. invoice.set: if the invoice was not set as part of the /createswap request, this state confirms that an invoice
+ *    with the correct amount and hash was set.
+ *
+ * 5. Once the user's lockup transaction is included in a block (or found in the mempool if 0-conf applies), Boltz will
+ *    try to pay the invoice provided by the user. When successful, Boltz obtains the preimage needed to claim the
+ *    chain bitcoin. State of the Lightning payment is either:
+ *      - invoice.pending: if paying the invoice is in progress
+ *      - invoice.paid: if paying the invoice was successful or
+ *      - invoice.failedToPay: if paying the invoice failed. In this case the user needs to broadcast a refund
+ *        transaction to reclaim the locked up chain bitcoin.
+ *
+ * 6. transaction.claim.pending: This status indicates that Boltz is ready for the creation of a cooperative signature
+ *    for a key path spend. Taproot Swaps are not claimed immediately by Boltz after the invoice has been paid, but
+ *    instead Boltz waits for the API client to post a signature for a key path spend. If the API client does not
+ *    cooperate in a key path spend, Boltz will eventually claim via the script path.
+ *
+ * 7. transaction.claimed: indicates that after the invoice was successfully paid, the chain bitcoin were successfully
+ *    claimed by Boltz. This is the final status of a successful Normal Submarine Swap.
  */
 
 interface SubmarineSwapClaimResponse {
