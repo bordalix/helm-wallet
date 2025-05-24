@@ -1,5 +1,6 @@
 import { QRCanvas, frameLoop, frontalCamera } from 'qr/dom.js'
 import { useRef, useEffect } from 'react'
+import { logError } from '../lib/logs'
 
 interface ScannerProps {
   close: () => void
@@ -30,7 +31,9 @@ export default function Scanner({ close, setData }: ScannerProps) {
             handleClose()
           }
         })
-      } catch {}
+      } catch (e) {
+        logError('Error starting camera', e)
+      }
     }
 
     start()
@@ -44,5 +47,5 @@ export default function Scanner({ close, setData }: ScannerProps) {
     close()
   }
 
-  return <video className='aspect-4/3 rounded-md mx-auto' ref={videoRef} />
+  return <video className='rounded-md mx-auto' ref={videoRef} />
 }
