@@ -38,9 +38,9 @@ export default function ReceiveAmount() {
     navigate(Pages.ReceiveFees)
   }
 
-  const { minimal, maximal } = limits
+  const { minimal, maximal } = limits.recv
   const disabled = sats < minimal || sats > maximal
-  const label = sats < limits.minimal ? ButtonLabel.Low : sats > limits.maximal ? ButtonLabel.High : ButtonLabel.Ok
+  const label = sats < minimal ? ButtonLabel.Low : sats > maximal ? ButtonLabel.High : ButtonLabel.Ok
 
   return (
     <Container>

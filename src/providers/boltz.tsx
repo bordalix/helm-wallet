@@ -28,16 +28,32 @@ const defaultBoltzFees: BoltzFees = {
   percentage: 0,
 }
 
-export interface BoltzLimits {
+interface BoltzLimitsReverse {
+  maximal: number
+  minimal: number
+}
+
+interface BoltzLimitsSubmarine {
   maximal: number
   minimal: number
   maximalZeroConf: number
 }
 
+export interface BoltzLimits {
+  recv: BoltzLimitsReverse
+  send: BoltzLimitsSubmarine
+}
+
 const defaultBoltzLimits: BoltzLimits = {
-  maximal: 25_000_000,
-  minimal: 1_000,
-  maximalZeroConf: 250_000,
+  recv: {
+    maximal: 25_000_000,
+    minimal: 100,
+  },
+  send: {
+    maximal: 25_000_000,
+    minimal: 1_000,
+    maximalZeroConf: 250_000,
+  },
 }
 
 interface BoltzContextProps {
@@ -61,7 +77,7 @@ export const BoltzProvider = ({ children }: { children: ReactNode }) => {
   const { wallet } = useContext(WalletContext)
 
   const [error, setError] = useState('')
-  const [limits, setLimits] = useState(defaultBoltzLimits)
+  const [limits, setLimits] = useState<BoltzLimits>(defaultBoltzLimits)
   const [recvFees, setRecvFees] = useState(defaultBoltzFees)
   const [sendFees, setSendFees] = useState(defaultBoltzFees)
 
@@ -74,11 +90,13 @@ export const BoltzProvider = ({ children }: { children: ReactNode }) => {
         const { limits, fees } = data['L-BTC'].BTC
         const { minerFees, percentage } = fees
         setSendFees({ minerFees, percentage })
-        setLimits(limits)
+        setLimits((l) => ({ ...l, send: limits }))
       })
       fetchURL(`${getBoltzApiUrl(wallet.network, config.tor)}/v2/swap/reverse`).then((data) => {
-        const { minerFees, percentage } = data.BTC['L-BTC'].fees
+        const { limits, fees } = data.BTC['L-BTC']
+        const { minerFees, percentage } = fees
         setRecvFees({ minerFees: minerFees.claim + minerFees.lockup, percentage })
+        setLimits((l) => ({ ...l, recv: limits }))
       })
     } catch (error) {
       setError(error as string)

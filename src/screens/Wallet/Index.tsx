@@ -22,7 +22,7 @@ export default function Wallet() {
   const { navigate } = useContext(NavigationContext)
   const { getChainSource, reconnectChainSource, restoring, wallet } = useContext(WalletContext)
 
-  const canSend = maxAllowedAmount(wallet) > limits.minimal && !config.pos && !offline
+  const canSend = maxAllowedAmount(wallet) > limits.send.minimal && !config.pos && !offline
   const chainSource = getChainSource()
 
   const handleSend = () => {

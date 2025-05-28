@@ -55,7 +55,9 @@ export default function SendPayment() {
   }, [wallet.mnemonic])
 
   const loadingText =
-    sendInfo.total && sendInfo.total > limits.maximalZeroConf ? 'Large amounts can take up to a minute to complete' : ''
+    sendInfo.total && sendInfo.total > limits.send.maximalZeroConf
+      ? 'Large amounts can take up to a minute to complete'
+      : ''
 
   return (
     <Container>

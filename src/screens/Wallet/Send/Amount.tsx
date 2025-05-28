@@ -39,7 +39,7 @@ export default function SendAmount() {
   const [showNote, setShowNote] = useState(false)
 
   const balance = getBalance(wallet)
-  const { minimal, maximal } = limits // Boltz limit
+  const { minimal, maximal } = limits.send
 
   const [commentAllowed, setCommentAllowed] = useState(0)
   const [maxSendable, setMaxSendable] = useState(maximal)
