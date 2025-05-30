@@ -16,6 +16,7 @@ import { RecvInfo } from '../providers/flow'
 import { defaultInvoiceComment } from './constants'
 import { hex } from '@scure/base'
 import { logError, logFail, logRunning, logStart, logSuccess } from './logs'
+import { claimFees, discountCT } from './fees'
 
 /**
  * Reverse swap flow:
@@ -156,9 +157,8 @@ export const waitAndClaim = async (
         logRunning('Creating claim transaction')
 
         // create a claim transaction to be signed cooperatively via a key path spend
-        const discountCT = true
         claimTx = targetFee(
-          0.1,
+          claimFees,
           (fee) =>
             constructClaimTransaction(
               [
