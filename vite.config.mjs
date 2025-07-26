@@ -12,5 +12,8 @@ export default defineConfig({
   },
   build: {
     outDir: 'build',
+    rollupOptions: {
+      external: ['unenv/node/process'],
+    },
   },
 })
