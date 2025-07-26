@@ -1,6 +1,5 @@
-import { QRCanvas, frameLoop, frontalCamera } from 'qr/dom.js'
-import { useRef, useEffect } from 'react'
-import { logError } from '../lib/logs'
+import { useState } from 'react'
+import BarcodeScanner from 'react-qr-barcode-scanner'
 
 interface ScannerProps {
   close: () => void
@@ -8,44 +7,31 @@ interface ScannerProps {
   setError: (arg0: string) => void
 }
 
-export default function Scanner({ close, setData }: ScannerProps) {
-  const videoRef = useRef<HTMLVideoElement>(null)
+export default function Scanner({ close, setData, setError }: ScannerProps) {
+  const [stopStream, setStopStream] = useState(false)
 
-  let camera: any
-  let canvas: QRCanvas
-  let cancel: () => void
-
-  useEffect(() => {
-    const start = async () => {
-      if (!videoRef.current) return
-      try {
-        if (canvas) canvas.clear()
-        canvas = new QRCanvas()
-        camera = await frontalCamera(videoRef.current)
-        const devices = await camera.listDevices()
-        await camera.setDevice(devices[devices.length - 1].deviceId)
-        cancel = frameLoop(() => {
-          const res = camera.readFrame(canvas)
-          if (res) {
-            setData(res)
-            handleClose()
-          }
-        })
-      } catch (e) {
-        logError('Error starting camera', e)
-      }
-    }
-
-    start()
-
-    return () => handleClose()
-  }, [videoRef])
-
-  const handleClose = () => {
-    cancel()
-    camera?.stop()
+  const onError = (error: any) => {
+    setError(error.message || 'An error occurred while scanning')
+    setStopStream(true)
     close()
   }
 
-  return <video className='rounded-md mx-auto' ref={videoRef} />
+  const onUpdate = (err: any, result: any) => {
+    if (result) {
+      setData(result.getText())
+      setStopStream(true)
+      close()
+    }
+  }
+
+  return (
+    <BarcodeScanner
+      delay={300}
+      width={500}
+      height={500}
+      onError={onError}
+      onUpdate={onUpdate}
+      stopStream={stopStream}
+    />
+  )
 }

@@ -67,3 +67,7 @@ body.dark div.toast {
 div.toast [role='status'] {
   margin: 6px;
 }
+
+video {
+  border-radius: var(--radius-md);
+}

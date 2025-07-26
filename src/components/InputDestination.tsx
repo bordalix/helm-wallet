@@ -24,13 +24,18 @@ export default function InputDestination({ onChange, onError, onScan }: InputDes
           setStream(true)
           stream.getVideoTracks().forEach((track) => track.stop())
         })
-        .catch((error) => console.error('Permission denied: ', error))
+        .catch((error) => {
+          setScan(false)
+          onError('Permission denied')
+          console.error('getUserMedia error:', error)
+        })
     } else {
       console.error('getUserMedia is not supported in this browser.')
     }
   }
 
   const handleClick = () => {
+    onError('')
     if (scan) return setScan(false)
     getUserMedia()
     setScan(true)
