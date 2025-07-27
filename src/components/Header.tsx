@@ -77,7 +77,7 @@ export default function Header({ showBack, setOption }: any) {
   )
 
   return (
-    <header className='flex justify-between w-full mb-3 sm:mb-10'>
+    <header className='flex justify-between w-full mb-3'>
       <LeftButton />
       <Pills />
       <RightButton />

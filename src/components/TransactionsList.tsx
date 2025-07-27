@@ -47,7 +47,7 @@ export default function TransactionsList({ short }: { short?: boolean }) {
 
   if (transactions?.length + claims.length === 0) return <p>No transactions</p>
 
-  const showMax = 3
+  const showMax = 5
   const txSorted = transactions.sort((a, b) => (!a.unixdate ? -1 : !b.unixdate ? 1 : b.unixdate - a.unixdate))
   const lines = [...claims, ...txSorted]
   const showLines = short ? lines.slice(0, showMax) : lines
@@ -86,7 +86,7 @@ export default function TransactionsList({ short }: { short?: boolean }) {
           <Label onClick={handleReload} pointer text={`Updated ${prettyAgo(wallet.lastUpdate)}`} />
         )}
       </div>
-      <div className='flex flex-col gap-2 h-72 overflow-auto'>
+      <div className='flex flex-col gap-2 h-80 lg:h-96 overflow-auto'>
         {showLines.map((l: any) =>
           l.txid ? (
             <TransactionLine key={`${l.amount} ${l.txid}`} data={l} wallet={wallet} />

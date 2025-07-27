@@ -8,7 +8,7 @@ import { FlowContext, emptySendInfo } from '../../../providers/flow'
 import Content from '../../../components/Content'
 import Title from '../../../components/Title'
 import Container from '../../../components/Container'
-import { isValidLnUrl } from '../../../lib/lnurl'
+import { checkLnUrlConditions, isValidLnUrl } from '../../../lib/lnurl'
 import * as bip21 from '../../../lib/bip21'
 import { WalletContext } from '../../../providers/wallet'
 import { NetworkName } from '../../../lib/network'
@@ -55,8 +55,16 @@ export default function SendInvoice() {
       return setError('Unable to parse bip21')
     }
     if (isValidLnUrl(data)) {
-      setSendInfo({ lnurl: data })
-      return navigate(Pages.SendAmount)
+      checkLnUrlConditions(data)
+        .then(() => {
+          setSendInfo({ lnurl: data })
+          return navigate(Pages.SendAmount)
+        })
+        .catch((err) => {
+          console.error(err)
+          setError('Invalid LNURL')
+        })
+      return
     }
     if (isLnInvoice(data)) {
       try {
@@ -78,6 +86,7 @@ export default function SendInvoice() {
   }, [pastedData])
 
   const handleChange = (data: string) => {
+    setError('')
     setButtonLabel(data ? 'Continue' : defaultLabel)
     setText(data)
   }

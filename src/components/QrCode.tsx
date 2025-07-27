@@ -14,7 +14,7 @@ export default function QrCode({ value }: QrCodeProps) {
   }
 
   return (
-    <div className='w-[420px] max-w-full mx-auto select-none'>
+    <div className='w-[420px] max-w-full mx-auto select-none p-4'>
       {value ? (
         <div className='bg-white p-[10px] rounded-md'>
           <img alt='QR Code' className='w-full' src={qrGifDataUrl(value)} />

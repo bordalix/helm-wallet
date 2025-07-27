@@ -4,7 +4,7 @@ interface ErrorProps {
 }
 
 export default function Error({ error, text }: ErrorProps) {
-  return error ? (
-    <p className='bg-red-500 font-semibold md:p-x-4 p-1 rounded-md text-sm text-white first-letter:uppercase'>{text}</p>
-  ) : null
+  let className = error ? 'bg-red-500' : ''
+  className += ' font-semibold md:p-x-4 p-1 rounded-md text-sm text-white first-letter:uppercase'
+  return <p className={className}>&nbsp; {text} &nbsp;</p>
 }
