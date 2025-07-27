@@ -27,7 +27,8 @@ export default function InitOld() {
   useEffect(() => {
     const completed = [...passphrase].filter((a) => a)?.length === 12
     if (!completed) return setLabel(ButtonLabel.Incomplete)
-    const valid = validateMnemonic(passphrase.join(' '))
+    const mnemonic = passphrase.map((p) => p.trim()).join(' ')
+    const valid = validateMnemonic(mnemonic)
     setLabel(valid ? ButtonLabel.Ok : ButtonLabel.Invalid)
   }, [passphrase])
 
