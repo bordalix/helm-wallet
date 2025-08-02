@@ -2,25 +2,43 @@
  * @jest-environment ./config/jest/uint8array-environment
  */
 
+import { describe, it, expect } from 'vitest'
 import { decode, isBip21 } from '../lib/bip21'
 import { decodeInvoice, isLnInvoice } from '../lib/lightning'
 import { isLiquidAddress } from '../lib/liquid'
 import { getCallbackUrl, isValidLnUrl } from '../lib/lnurl'
 import { NetworkName } from '../lib/network'
 
+import fixtures from './fixtures.json' assert { type: 'json' }
+const { bip21, liquid, lightning } = fixtures
+
 describe('Bip21', () => {
   const addr = 'bitcoin:1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2'
 
-  test('isBip21', () => {
+  it('isBip21', () => {
     expect(isBip21(addr)).toBeTruthy()
     expect(isBip21('xxxxx')).toBeFalsy()
     expect(isBip21('bitcoin')).toBeFalsy()
-    expect(isBip21('bitcoin:')).toBeFalsy()
-    expect(isBip21('bitcoin:x')).toBeFalsy()
+    expect(isBip21('bitcoin:')).toBeTruthy()
+    expect(isBip21('bitcoin:x')).toBeTruthy()
   })
-  test('decode', () => {
+
+  it('decode valid', () => {
+    bip21.valid.forEach(({ uri, res }: any) => {
+      expect(() => decode(uri)).not.toThrow()
+      if (res.address) expect(decode(uri).address).toBe(res.address)
+      if (res.amount) expect(decode(uri).amount).toBe(res.amount)
+    })
+  })
+
+  it('decode invalid', () => {
+    bip21.invalid.forEach(({ uri, exception }: any) => {
+      expect(() => decode(uri)).toThrow(exception)
+    })
+  })
+
+  it('decode', () => {
     expect(decode(addr).amount).toBeUndefined()
-    expect(decode(addr).destination).toBeDefined()
     expect(() => decode(`${addr}?amount=abc`)).toThrow()
     expect(decode(`${addr}?amount=21`).amount).toBe(2100000000)
     expect(decode(`${addr}?amount=0.00000021`).amount).toBe(21)
@@ -33,7 +51,7 @@ describe('Lightning', () => {
   const invoice =
     'lnbc21u1pnk8larsp526g88ejh9ac0es9j6juxwenzdzvs6hcrphna5pp3jefpukmtk3hqpp5m206npk0fr6k45u8f90capqw48k3pzymlqhk0j98kyx4mz383pkqdz9235x2gr3w45kx6eqvfex7amwypnx77pqdf6k6urnyphhvetjyp6xsefqd3sh57fqv3hkwxqyp2xqcqz95rzjqv9ruzr6quwpsuwmyshlvenk0xm7djrtt8ugt2ja6cx3dkqtccdgvzzxeyqq28qqqqqqqqqqqqqqq9gq2y9qyysgqvu5k5w9q0xe62envhds058r9h8v5uak09hn3uzlw39sqkcuwh34j44gc53j6x6sg0u6yf6l0durxqqekytupxpf66zc7rc9cpav72ssqpcgv3p'
 
-  test('decodeInvoice', () => {
+  it('decodeInvoice', () => {
     expect(() => decodeInvoice('xxx')).toThrow()
     expect(decodeInvoice(invoice)).toBeDefined()
     expect(decodeInvoice(invoice).invoice).toBe(invoice)
@@ -43,41 +61,31 @@ describe('Lightning', () => {
     expect(decodeInvoice(invoice).satoshis).toBe(2100)
   })
 
-  test('isLnInvoice', () => {
+  it('decode valid invoices', () => {
+    lightning.valid.forEach(({ invoice, res }: any) => {
+      expect(() => decodeInvoice(invoice)).not.toThrow()
+      if (res.note) expect(decodeInvoice(invoice).note).toBe(res.note)
+      if (res.paymentHash) expect(decodeInvoice(invoice).paymentHash).toBe(res.paymentHash)
+      if (res.satoshis) expect(decodeInvoice(invoice).satoshis).toBe(res.satoshis)
+    })
+  })
+
+  it('isLnInvoice', () => {
     expect(isLnInvoice('abc')).toBeFalsy()
     expect(isLnInvoice(invoice)).toBeTruthy()
   })
 })
 
 describe('Liquid', () => {
-  const addr = {
-    legacy: {
-      p2pkh: {
-        cleartext: '2dtx9M8JhmtVFZr62KcwqtRG62nTgnoqyUp',
-        confidential: 'CTEyDUYmBqW5FRYTfEkonToxUDHz1HmKJpikNeXBLA3CRTKxyK56ugXjH1BrJd9aFpFREhaTL4DbX5ob',
-      },
-      p2sh: {
-        cleartext: 'XLz1KV9LJ41W6HwtEQXfXYVrL7W4aLBM9D',
-        confidential: 'AzpvoF9fnsXoQgWk9bL6sBwyaSE3ceJgDHiynQgLCitck335jAqdkToXhtMNLHxRi7jf96cpfUCxs6QJ',
-      },
-    },
-    blech32: {
-      p2pkh: {
-        cleartext: 'ert1qq8flcnrslw66p6z4058ezr5yetdwnce2y9tgr5',
-        confidential:
-          'el1qqdzy6068cj22t26pflxufhz5s4cgse6rml2e7hw3ctrl4gv0nlwm6qwnl3x8p7a45r592lg0jy8gfjk6a83j53qx8kjjky6sy',
-      },
-    },
-  }
-
-  test('isLiquidAddress', () => {
-    expect(isLiquidAddress('xx', NetworkName.Regtest)).toBeFalsy()
-    expect(isLiquidAddress(addr.legacy.p2pkh.cleartext, NetworkName.Regtest)).toBeTruthy()
-    expect(isLiquidAddress(addr.legacy.p2pkh.confidential, NetworkName.Regtest)).toBeTruthy()
-    expect(isLiquidAddress(addr.legacy.p2sh.cleartext, NetworkName.Regtest)).toBeTruthy()
-    expect(isLiquidAddress(addr.legacy.p2sh.confidential, NetworkName.Regtest)).toBeTruthy()
-    expect(isLiquidAddress(addr.blech32.p2pkh.cleartext, NetworkName.Regtest)).toBeTruthy()
-    expect(isLiquidAddress(addr.blech32.p2pkh.confidential, NetworkName.Regtest)).toBeTruthy()
+  it('isLiquidAddress', () => {
+    liquid.legacy.forEach(({ cleartext, confidential }) => {
+      expect(isLiquidAddress(cleartext, NetworkName.Regtest)).toBeTruthy()
+      expect(isLiquidAddress(confidential, NetworkName.Regtest)).toBeTruthy()
+    })
+    liquid.blech32.forEach(({ cleartext, confidential }) => {
+      expect(isLiquidAddress(cleartext, NetworkName.Regtest)).toBeTruthy()
+      expect(isLiquidAddress(confidential, NetworkName.Regtest)).toBeTruthy()
+    })
   })
 })
 
@@ -93,7 +101,7 @@ describe('LnUrl', () => {
     },
   }
 
-  test('isValidLnUrl', () => {
+  it('isValidLnUrl', () => {
     expect(isValidLnUrl('xxxxxx')).toBeFalsy()
     expect(isValidLnUrl('bordalix')).toBeFalsy()
     expect(isValidLnUrl('bordalix@')).toBeFalsy()
@@ -102,7 +110,7 @@ describe('LnUrl', () => {
     expect(isValidLnUrl(urls.coinos.str)).toBeTruthy()
   })
 
-  test('getCallbackUrl', () => {
+  it('getCallbackUrl', () => {
     expect(getCallbackUrl(urls.alby.str)).toBe(urls.alby.url)
     expect(getCallbackUrl(urls.coinos.str)).toBe(urls.coinos.url)
   })

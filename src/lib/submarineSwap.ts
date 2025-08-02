@@ -5,7 +5,6 @@ import { Musig, SwapTreeSerializer } from 'boltz-core'
 import { randomBytes } from 'crypto'
 import { Wallet } from '../providers/wallet'
 import { TaprootUtils } from 'boltz-core/dist/lib/liquid'
-import bolt11 from 'bolt11'
 import { SendInfo } from '../providers/flow'
 import { getBoltzApiUrl, getBoltzWsUrl } from './boltz'
 import { sendSats } from './transactions'
@@ -13,6 +12,7 @@ import { NetworkName } from './network'
 import { Config } from '../providers/config'
 import { hex } from '@scure/base'
 import { logFail, logRunning, logStart, logSuccess } from './logs'
+import { decodeInvoice } from './lightning'
 
 /**
  * Submarine swap flow:
@@ -117,10 +117,7 @@ export const finalizeSubmarineSwap = (
 
         // Verify that Boltz actually paid the invoice by comparing the preimage hash
         // of the invoice to the SHA256 hash of the preimage from the response
-        const invoicePreimageHash = Buffer.from(
-          bolt11.decode(invoice).tags.find((tag) => tag.tagName === 'payment_hash')!.data as string,
-          'hex',
-        )
+        const invoicePreimageHash = Buffer.from(decodeInvoice(invoice).paymentHash || '', 'hex')
         if (!crypto.sha256(Buffer.from(claimTxDetails.preimage, 'hex')).equals(invoicePreimageHash)) {
           logFail('Boltz provided invalid preimage', claimTxDetails)
           return

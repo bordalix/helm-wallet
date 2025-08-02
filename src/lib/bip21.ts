@@ -1,45 +1,71 @@
 // https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki
 // bitcoin:<address>[?amount=<amount>][?label=<label>][?message=<message>]
 
-import qs from 'qs'
 import { toSatoshis } from './format'
 
 export interface Bip21Decoded {
   address?: string
   amount?: number
-  destination?: string
   invoice?: string
   lnurl?: string
 }
 
 /** decode a bip21 uri */
 export const decode = (uri: string): Bip21Decoded => {
-  if (!isBip21(uri)) throw new Error('Invalid BIP21 URI: ' + uri)
-  let amount, destination, options, query
-  const [scheme, rest] = uri.split(':')
-  if (rest.indexOf('?') !== -1) {
-    const split = rest.split('?')
-    destination = split[0]
-    query = split[1]
-  } else {
-    destination = rest
+  const result: Bip21Decoded = {
+    address: undefined,
+    amount: undefined,
+    invoice: undefined,
+    lnurl: undefined,
   }
-  if (query) options = qs.parse(query)
-  if (options?.amount) {
-    amount = Number(options.amount)
-    if (isNaN(amount) || !isFinite(amount) || amount < 0) throw new Error('Invalid amount')
-    amount = toSatoshis(amount)
+
+  // use lowercase for consistency
+  const bip21Url = uri.toLowerCase().trim()
+
+  if (!bip21Url.startsWith('bitcoin:')) {
+    throw new Error('Invalid BIP21 URI')
   }
-  if (scheme === 'lightning') {
-    if (destination.startsWith('lnurl')) return { amount, lnurl: destination }
-    if (destination.startsWith('ln')) return { amount, invoice: destination }
+
+  // remove 'bitcoin:' prefix
+  const urlWithoutPrefix = bip21Url.slice(8)
+
+  // split address and query parameters
+  const queryString = urlWithoutPrefix.split('?')[1]
+
+  if (queryString) {
+    const params = new URLSearchParams(queryString)
+
+    if (params.has('amount')) {
+      const amount = parseFloat(params.get('amount')!)
+      if (isNaN(amount) || amount < 0) throw new Error('Invalid amount')
+      result.amount = toSatoshis(amount)
+    }
+
+    if (params.has('lightning')) {
+      if (params.get('lightning')?.startsWith('lnurl')) {
+        result.lnurl = params.get('lightning')!
+      } else if (params.get('lightning')?.startsWith('ln')) {
+        result.invoice = params.get('lightning')!
+      }
+    }
+
+    if (params.has('liquidtestnet')) {
+      result.address = params.get('liquidtestnet')!
+    }
+
+    if (params.has('liquidnetwork')) {
+      result.address = params.get('liquidnetwork')!
+    }
   }
-  if (scheme === 'liquidnetwork') return { amount, address: destination }
-  if (scheme === 'liquidtestnet') return { amount, address: destination }
-  if (scheme === 'bitcoin' && options?.liquidnetwork) return { amount, address: options.liquidnetwork as string }
-  return { amount, destination }
+
+  return result
 }
 
 export const isBip21 = (data: string): boolean => {
-  return /^(bitcoin|lightning|liquidnetwork|liquidtestnet):([a-z0-9]{26,}).*$/.test(data.toLowerCase())
+  try {
+    decode(data)
+    return true
+  } catch (e) {
+    return false
+  }
 }

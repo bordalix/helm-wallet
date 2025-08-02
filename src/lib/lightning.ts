@@ -1,5 +1,5 @@
 // @ts-ignore
-import bolt11 from 'bolt11'
+import bolt11 from 'light-bolt11-decoder'
 
 export interface MagicHint {
   cltv_expiry_delta: number
@@ -16,11 +16,6 @@ export interface Invoice {
   satoshis?: number
 }
 
-const findTag = (decoded: any, tag: string) => {
-  if (decoded[tag]) return decoded[tag]
-  return decoded.tags.find((a: any) => a.tagName === tag)?.data
-}
-
 const extractNote = (data: string): string => {
   if (!/^\[/.test(data)) return data
   try {
@@ -32,16 +27,17 @@ const extractNote = (data: string): string => {
 
 export const decodeInvoice = (invoice: string): Invoice => {
   const decoded = bolt11.decode(invoice)
-  let satoshis = findTag(decoded, 'satoshis')
-  if (!satoshis) satoshis = Math.floor(Number(findTag(decoded, 'millisatoshis') ?? 0) / 1000)
-  const routeInfo = findTag(decoded, 'routing_info') ?? []
+  const millisats = Number(decoded.sections.find((s) => s.name === 'amount')?.value ?? '0')
+  const description = decoded.sections.find((s) => s.name === 'description')?.value ?? ''
+  const paymentHash = decoded.sections.find((s) => s.name === 'payment_hash')?.value ?? ''
+  const routeHint = decoded.sections.find((s) => s.name === 'route_hint')?.value ?? []
   return {
     invoice,
-    paymentHash: findTag(decoded, 'payment_hash'),
-    note: extractNote(findTag(decoded, 'description')),
-    magicHint: routeInfo.find((x: any) => x.short_channel_id === '0846c900051c0000'),
-    satoshis,
+    paymentHash,
+    note: extractNote(description),
+    magicHint: routeHint.find((x: any) => x.short_channel_id === '0846c900051c0000'),
+    satoshis: Math.floor(millisats / 1000),
   }
 }
 
-export const isLnInvoice = (data: string) => data.startsWith('ln')
+export const isLnInvoice = (data: string) => data.toLowerCase().startsWith('ln')

@@ -19,17 +19,16 @@
     "bip66": "^1.1.5",
     "bitcoinjs-lib": "^6.1.7",
     "bn.js": "^5.2.1",
-    "bolt11": "^1.4.1",
     "boltz-core": "^3.0.0",
     "bs58check": "^4.0.0",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
     "decimal.js": "^10.4.3",
     "ecpair": "2.1.0",
+    "light-bolt11-decoder": "^3.2.0",
     "liquidjs-lib": "6.0.2-liquid.37",
     "path-browserify": "^1.0.1",
     "qr": "^0.5.0",
-    "qs": "^6.14.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.5.2",
@@ -46,7 +45,7 @@
     "build:cloudflare": "VITE_GIT_COMMIT=${CF_PAGES_COMMIT_SHA} vite build",
     "build:gitlab": "VITE_GIT_COMMIT=${GITLAB_COMMIT_SHA} vite build",
     "build": "VITE_GIT_COMMIT=$(git rev-parse HEAD) vite build",
-    "test": "vite test",
+    "test": "vitest run",
     "lint": "eslint --ext .ts,.tsx src"
   },
   "eslintConfig": {
@@ -99,7 +98,8 @@
     "vite": "^7.0.6",
     "vite-plugin-commonjs": "^0.10.4",
     "vite-plugin-node-polyfills": "^0.24.0",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.2.4"
   },
   "jest": {
     "moduleNameMapper": {
