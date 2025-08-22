@@ -40,4 +40,11 @@ export const decodeInvoice = (invoice: string): Invoice => {
   }
 }
 
-export const isLnInvoice = (data: string) => data.toLowerCase().startsWith('ln')
+export const isLnInvoice = (data: string): boolean => {
+  try {
+    bolt11.decode(data)
+  } catch {
+    return false
+  }
+  return true
+}

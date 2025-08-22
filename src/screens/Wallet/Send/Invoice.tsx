@@ -23,9 +23,8 @@ export default function SendInvoice() {
   const defaultLabel = 'Paste invoice or LNURL'
 
   const [buttonLabel, setButtonLabel] = useState(defaultLabel)
-  const [error, setError] = useState('')
   const [pastedData, setPastedData] = useState('')
-  const [text, setText] = useState('')
+  const [error, setError] = useState('')
 
   const wrongNetwork = (invoice: string) =>
     (invoice.startsWith('lnbc') && wallet.network !== NetworkName.Liquid) ||
@@ -33,7 +32,7 @@ export default function SendInvoice() {
 
   useEffect(() => {
     if (!pastedData) return
-    const data = pastedData.toLowerCase()
+    const data = pastedData.toLowerCase().replace(/^lightning:/, '')
     setError('')
     if (bip21.isBip21(data)) {
       const { address, amount, invoice, lnurl } = bip21.decode(data)
@@ -88,11 +87,10 @@ export default function SendInvoice() {
   const handleChange = (data: string) => {
     setError('')
     setButtonLabel(data ? 'Continue' : defaultLabel)
-    setText(data)
+    setPastedData(data)
   }
 
   const handlePaste = () => {
-    if (text) return setPastedData(text)
     navigator.clipboard
       .readText()
       .then((data) => {
