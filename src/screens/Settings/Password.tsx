@@ -41,7 +41,7 @@ export default function Password() {
     <Container>
       <Content>
         <Title text='Password' subtext='Change your password' />
-        <Error error={Boolean(error)} text={error} />
+        <Error text={error} />
         {mnemonic ? <NewPassword onNewPassword={setPassword} setLabel={setLabel} /> : null}
       </Content>
       <ButtonsOnBottom>

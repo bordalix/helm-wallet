@@ -62,7 +62,7 @@ export default function SendDetails() {
       <Content>
         <Title text='Payment details' />
         <div className='flex flex-col gap-2'>
-          <Error error={Boolean(error)} text={error} />
+          <Error text={error} />
           <PaymentDetails details={details} />
         </div>
       </Content>

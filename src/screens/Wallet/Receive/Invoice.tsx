@@ -107,7 +107,7 @@ export default function ReceiveInvoice() {
       <Content>
         <Title text='Invoice' subtext='Scan or copy to clipboard' />
         <div className='flex flex-col gap-2'>
-          <Error error={Boolean(error)} text={error} />
+          <Error text={error} />
           {invoice ? (
             <div onClick={() => setClickCounter((c) => c + 1)}>
               <QrCode value={qrValue ?? ''} />

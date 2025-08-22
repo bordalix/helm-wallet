@@ -70,7 +70,7 @@ export default function NeedsPassword({ onClose, onMnemonic }: NeedsPasswordProp
         <LoadingIcon small />
       ) : (
         <div className='flex flex-col gap-2'>
-          {Boolean(error) ? <Error error={Boolean(error)} text={error} /> : null}
+          {Boolean(error) ? <Error text={error} /> : null}
           {wallet.lockedByBiometrics ? (
             <div className='mx-auto' onClick={authenticateUserWithBiometrics}>
               <FingerprintIcon />

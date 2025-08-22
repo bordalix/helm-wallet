@@ -115,7 +115,7 @@ export default function SendInvoice() {
       <Content>
         <Title text='Send' subtext='Scan or paste invoice' />
         <div className='flex flex-col gap-2'>
-          <Error error={Boolean(error)} text={error} />
+          <Error text={error} />
           <InputDestination onChange={handleChange} onError={setError} onScan={setPastedData} />
         </div>
       </Content>

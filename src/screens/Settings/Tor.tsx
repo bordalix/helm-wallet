@@ -51,7 +51,7 @@ export default function Tor() {
     <Container>
       <Content>
         <Title text='Tor' subtext='Go fully anonymous' />
-        <Error error={Boolean(errorMsg)} text={errorMsg} />
+        <Error text={errorMsg} />
         <Select disabled={disabled} onChange={handleChange} value={config.tor}>
           <option value={1}>On</option>
           <option value={0}>Off</option>

@@ -101,7 +101,7 @@ export default function SendAmount() {
           text='Send'
           subtext={`Min: ${prettyNumber(minSendable)} · Max: ${prettyNumber(maxSendable)} ${unitLabels[Unit.SAT]}`}
         />
-        <Error error={Boolean(error)} text={error} />
+        <Error text={error} />
         {!showNote ? <InputAmount balance={balance} sats={sats} setSats={setSats} /> : null}
         {commentAllowed && (!isMobile || showNote) ? (
           <InputComment comment={comment} setComment={setComment} max={commentAllowed} />

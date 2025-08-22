@@ -52,13 +52,14 @@ export default function InitOld() {
   }
 
   const disabled = label !== ButtonLabel.Ok
+  const error = label === ButtonLabel.Invalid ? ButtonLabel.Invalid : ''
 
   return (
     <Container>
       <Content>
         <Title text='Restore wallet' subtext='Insert your secret words' />
         <div className='flex flex-col gap-2'>
-          <Error error={label === ButtonLabel.Invalid} text={label} />
+          <Error text={error} />
           <Columns>
             {[...passphrase].map((word, i) => (
               // eslint-disable-next-line react/no-array-index-key

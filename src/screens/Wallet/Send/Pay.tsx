@@ -28,7 +28,7 @@ export default function SendPayment() {
   const [error, setError] = useState('')
 
   const { invoice, keys, total } = sendInfo
-  if (invoice && !keys) return <Error error text='Missing keys' />
+  if (invoice && !keys) return <Error text='Missing keys' />
 
   const onTxid = (txid: string) => {
     if (!txid) return setError('Error broadcasting transaction')
@@ -61,11 +61,7 @@ export default function SendPayment() {
     <Container>
       <Content>
         <Title text='Pay' subtext={`Paying ${prettyNumber(total ?? 0)} ${unitLabels[Unit.SAT]}`} />
-        {error ? (
-          <Error error={Boolean(error)} text={error} />
-        ) : wallet.mnemonic ? (
-          <Loading text={loadingText} />
-        ) : null}
+        {error ? <Error text={error} /> : wallet.mnemonic ? <Loading text={loadingText} /> : null}
       </Content>
       <ButtonsOnBottom>
         <Button onClick={goBackToWallet} label='Back to wallet' secondary />

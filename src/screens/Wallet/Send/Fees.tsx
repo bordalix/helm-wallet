@@ -100,7 +100,7 @@ export default function SendFees() {
       <Content>
         <Title text='Payment fees' subtext={`You pay ${prettyTotal} ${unitLabels[Unit.SAT]}`} />
         <div className='flex flex-col gap-2'>
-          <Error error={Boolean(error)} text={error} />
+          <Error text={error} />
           {boltzFees < 0 || !sendInfo.txFees ? <Loading text='Updating fees' /> : <Table data={data} />}
         </div>
       </Content>
