@@ -45,6 +45,26 @@ export default function SendAmount() {
   const [maxSendable, setMaxSendable] = useState(maximal)
   const [minSendable, setMinSendable] = useState(minimal)
 
+  useEffect(() => {
+    if (!sendInfo.lnurl) return
+    checkLnUrlConditions(sendInfo.lnurl)
+      .then((conditions) => {
+        const max = Math.floor(conditions.maxSendable / 1000) // from millisatoshis to satoshis
+        const min = Math.floor(conditions.minSendable / 1000) // from millisatoshis to satoshis
+        setCommentAllowed(conditions.commentAllowed ?? 0)
+        setMaxSendable(max > maximal ? maximal : max)
+        setMinSendable(min < minimal ? minimal : min)
+      })
+      .catch(() => {})
+  }, [])
+
+  // update minimum sendable limit if onchain transaction
+  useEffect(() => {
+    if (!sendInfo.address) return
+    setMinSendable(21) // liquid dust limit
+    setMaxSendable(balance)
+  }, [])
+
   const handleCancel = () => {
     setSendInfo(emptySendInfo)
     navigate(Pages.Wallet)
@@ -67,19 +87,6 @@ export default function SendAmount() {
       }
     }
   }
-
-  useEffect(() => {
-    if (!sendInfo.lnurl) return
-    checkLnUrlConditions(sendInfo.lnurl)
-      .then((conditions) => {
-        const max = Math.floor(conditions.maxSendable / 1000) // from millisatoshis to satoshis
-        const min = Math.floor(conditions.minSendable / 1000) // from millisatoshis to satoshis
-        setCommentAllowed(conditions.commentAllowed ?? 0)
-        setMaxSendable(max > maximal ? maximal : max)
-        setMinSendable(min < minimal ? minimal : min)
-      })
-      .catch(() => {})
-  }, [])
 
   const label =
     sats > balance
