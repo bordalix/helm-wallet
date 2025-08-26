@@ -27,7 +27,7 @@ export default function SendPayment() {
 
   const [error, setError] = useState('')
 
-  const { invoice, keys, total } = sendInfo
+  const { invoice, keys, txFees, total } = sendInfo
   if (invoice && !keys) return <Error text='Missing keys' />
 
   const onTxid = (txid: string) => {
@@ -57,10 +57,12 @@ export default function SendPayment() {
   const loadingText =
     sendInfo.total && sendInfo.total > limits.maximalZeroConf ? 'Large amounts can take up to a minute to complete' : ''
 
+  const totalNeeded = (total ?? 0) + (txFees ?? 0)
+
   return (
     <Container>
       <Content>
-        <Title text='Pay' subtext={`Paying ${prettyNumber(total ?? 0)} ${unitLabels[Unit.SAT]}`} />
+        <Title text='Pay' subtext={`Paying ${prettyNumber(totalNeeded)} ${unitLabels[Unit.SAT]}`} />
         {error ? <Error text={error} /> : wallet.mnemonic ? <Loading text={loadingText} /> : null}
       </Content>
       <ButtonsOnBottom>
