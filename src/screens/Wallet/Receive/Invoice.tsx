@@ -48,8 +48,8 @@ export default function ReceiveInvoice() {
     }
   }
 
-  const onFinish = async (txid: string): Promise<void> => {
-    // avoid double call to onFinish for same txid
+  const handleTxid = async (txid: string): Promise<void> => {
+    // avoid double call to handleTxid for same txid
     if (finishedTxIds.includes(txid)) return
     finishedTxIds.push(txid)
     increaseIndex()
@@ -87,11 +87,11 @@ export default function ReceiveInvoice() {
   useEffect(() => {
     if (address) {
       try {
-        reverseSwap(recvInfo, address.confidentialAddress, config, wallet, onFinish, setInvoice)
+        reverseSwap(recvInfo, address.confidentialAddress, config, wallet, handleTxid, setInvoice)
         chainSource.waitForAddressReceivesTx(address.address).then(() => {
           chainSource.fetchHistories([address.script]).then((histories: ElectrumHistory[]) => {
             const newTx = histories.find((tx) => tx.height <= 0)
-            if (newTx) onFinish(newTx.tx_hash ?? '')
+            if (newTx) handleTxid(newTx.tx_hash ?? '')
           })
         })
       } catch (error) {
