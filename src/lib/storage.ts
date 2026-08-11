@@ -1,4 +1,4 @@
-import { Encrypted, decrypt, encrypt } from './encryption'
+import { Encrypted, decrypt, encrypt, isLegacyEncrypted } from './encryption'
 import { Config } from '../providers/config'
 import { networkNames } from './network'
 import { Wallet } from '../providers/wallet'
@@ -60,7 +60,17 @@ export const saveMnemonicToStorage = async (mnemonic: string, password: string):
 
 export const readMnemonicFromStorage = async (password: string): Promise<string | undefined> => {
   const encrypted = localStorage.getItem(storageKeys.mnemonic) as string
-  return encrypted ? await decrypt(JSON.parse(encrypted) as Encrypted, password) : undefined
+  if (!encrypted) return undefined
+
+  const parsedEncrypted = JSON.parse(encrypted) as Encrypted
+  const mnemonic = await decrypt(parsedEncrypted, password)
+  if (!mnemonic) return undefined
+
+  if (isLegacyEncrypted(parsedEncrypted)) {
+    await saveMnemonicToStorage(mnemonic, password)
+  }
+
+  return mnemonic
 }
 
 export const saveCacheToStorage = (cache: CacheInfo): void => {
