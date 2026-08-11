@@ -30,7 +30,7 @@ const checkLnUrlResponse = (amount: number, data: LnUrlResponse) => {
 
 const fetchLnUrlInvoice = async (amount: number, note: string, data: LnUrlResponse) => {
   let url = `${data.callback}?amount=${amount}`
-  if (note) url += `&comment=${note}`
+  if (note) url += `&comment=${encodeURIComponent(note)}`
   const res = await fetch(url).then(checkResponse<LnUrlCallbackResponse>)
   return res.pr
 }
