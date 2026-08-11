@@ -80,6 +80,7 @@ export const finalizeSubmarineSwap = (
   const { invoice, keys, swapResponse } = sendInfo
   if (!invoice || !keys || !swapResponse) return
   let txid = ''
+  let lockupTxStarted = false
 
   // Create a WebSocket and subscribe to updates for the created swap
   const webSocket = new WebSocket(getBoltzWsUrl(wallet.network, config.tor))
@@ -102,6 +103,8 @@ export const finalizeSubmarineSwap = (
     switch (msg.args[0].status) {
       // "invoice.set" means Boltz is waiting for an onchain transaction to be sent
       case 'invoice.set': {
+        if (lockupTxStarted) return
+        lockupTxStarted = true
         logRunning('Waiting for onchain transaction')
         txid = await sendSats(swapResponse.expectedAmount, swapResponse.address, wallet, config)
         break
