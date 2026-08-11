@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import Button from '../../../components/Button'
 import Content from '../../../components/Content'
 import Title from '../../../components/Title'
@@ -36,7 +36,7 @@ export default function ReceiveInvoice() {
   const [invoice, setInvoice] = useState('')
 
   const chainSource = getChainSource()
-  const finishedTxIds: string[] = []
+  const finishedTxIds = useRef(new Set<string>())
 
   const updateReceivedAmount = async (total: number, txid: string): Promise<number> => {
     try {
@@ -49,9 +49,9 @@ export default function ReceiveInvoice() {
   }
 
   const handleTxid = async (txid: string): Promise<void> => {
-    // avoid double call to handleTxid for same txid
-    if (finishedTxIds.includes(txid)) return
-    finishedTxIds.push(txid)
+    // Avoid double-processing the same txid across concurrent callbacks.
+    if (finishedTxIds.current.has(txid)) return
+    finishedTxIds.current.add(txid)
     increaseIndex()
     setTimeout(() => reloadWallet(wallet), someSeconds)
     setTimeout(() => reloadWallet(wallet), inOneMinute)
