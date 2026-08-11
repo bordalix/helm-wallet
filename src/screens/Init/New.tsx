@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useMemo } from 'react'
 import Button from '../../components/Button'
 import ButtonsOnBottom from '../../components/ButtonsOnBottom'
 import Columns from '../../components/Columns'
@@ -16,7 +16,7 @@ export default function InitNew() {
   const { navigate } = useContext(NavigationContext)
   const { setInitInfo } = useContext(FlowContext)
 
-  const mnemonic = generateMnemonic() as Mnemonic
+  const mnemonic = useMemo(() => generateMnemonic() as Mnemonic, [])
 
   const handleCancel = () => navigate(Pages.Init)
 
