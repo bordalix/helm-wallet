@@ -9,6 +9,7 @@ export interface MagicHint {
   short_channel_id: string
 }
 export interface Invoice {
+  expiry?: number
   invoice?: string
   paymentHash?: string
   note?: string
@@ -34,6 +35,7 @@ export const decodeInvoice = (invoice: string): Invoice => {
   return {
     invoice,
     paymentHash,
+    expiry: decoded.expiry,
     note: extractNote(description),
     magicHint: routeHint.find((x: any) => x.short_channel_id === '0846c900051c0000'),
     satoshis: Math.floor(millisats / 1000),

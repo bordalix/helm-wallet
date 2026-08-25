@@ -1,4 +1,5 @@
 import { bech32, utf8 } from '@scure/base'
+import { decodeInvoice } from './lightning'
 
 const emailRegex =
   /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -52,6 +53,23 @@ const isLnAddress = (data: string) => {
   return data.includes('@') && emailRegex.test(data)
 }
 
+const isValidLnInvoice = (invoice: string, satoshis: number) => {
+  try {
+    const now = Math.round(Date.now() / 1000)
+    const decoded = decodeInvoice(invoice)
+    return (
+      decoded.paymentHash !== undefined &&
+      decoded.satoshis !== undefined &&
+      decoded.satoshis === satoshis &&
+      decoded.invoice !== undefined &&
+      decoded.expiry !== undefined &&
+      decoded.expiry > now
+    )
+  } catch {
+    return false
+  }
+}
+
 export const isValidLnUrl = (data: string): boolean => isLnUrl(data) || isLnAddress(data)
 
 export const getCallbackUrl = (lnurl: string): string => {
@@ -83,6 +101,10 @@ export const fetchLnUrl = (lnurl: string, sats: number, note: string): Promise<s
       .then(checkResponse<LnUrlResponse>)
       .then((data) => checkLnUrlResponse(amount, data))
       .then((data) => fetchLnUrlInvoice(amount, note, data))
+      .then((invoice) => {
+        if (!isValidLnInvoice(invoice, sats)) throw new Error('Invalid LN invoice returned.')
+        return invoice
+      })
       .then(resolve)
       .catch(reject)
   })

@@ -106,6 +106,10 @@ export const finalizeSubmarineSwap = (
         if (lockupTxStarted) return
         lockupTxStarted = true
         logRunning('Waiting for onchain transaction')
+        if (swapResponse.expectedAmount <= 0) {
+          logFail('Invalid expected amount from Boltz', { swapResponse })
+          return
+        }
         txid = await sendSats(swapResponse.expectedAmount, swapResponse.address, wallet, config)
         break
       }

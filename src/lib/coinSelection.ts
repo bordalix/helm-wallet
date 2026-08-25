@@ -112,6 +112,7 @@ export interface CoinsSelected {
 }
 /** select coins for given amount */
 export const selectCoins = (amount: number, utxos: Utxo[]): CoinsSelected => {
+  if (amount <= 0) throw new Error('Amount must be greater than 0')
   // find best coins combo to pay this amount
   let changeAmount = 0,
     coins = utxos,

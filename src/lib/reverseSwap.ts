@@ -248,6 +248,7 @@ export const reverseSwap = async (
   const keys = ECPairFactory(ecc).makeRandom()
   const signature = keys.signSchnorr(crypto.sha256(Buffer.from(destinationAddress, 'utf-8')))
   const invoiceAmount = Number(recvInfo.amount)
+  if (invoiceAmount <= 0) throw new Error('Invoice amount must be greater than 0')
   const description = recvInfo.comment === '' ? defaultInvoiceComment : recvInfo.comment
 
   // create a Reverse Submarine Swap
