@@ -8,3 +8,5 @@ export const defaultInvoiceComment = 'Helm invoice'
 export const dustLimit = 450
 export const someSeconds = 10_000
 export const inOneMinute = 60_000
+
+export const boltzIsDown = true

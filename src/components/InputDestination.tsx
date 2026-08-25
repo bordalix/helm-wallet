@@ -7,9 +7,10 @@ interface InputDestinationProps {
   onChange: (arg0: string) => void
   onError: (arg0: string) => void
   onScan: (arg0: string) => void
+  label?: string
 }
 
-export default function InputDestination({ onChange, onError, onScan }: InputDestinationProps) {
+export default function InputDestination({ onChange, onError, onScan, label }: InputDestinationProps) {
   const [stream, setStream] = useState(false)
   const [scan, setScan] = useState(false)
   const [text, setText] = useState('')
@@ -46,7 +47,7 @@ export default function InputDestination({ onChange, onError, onScan }: InputDes
   return (
     <div className='flex flex-col h-full justify-between gap-2'>
       <fieldset className='text-left text-gray-800 dark:text-gray-100 w-full'>
-        <Label text='Destination' />
+        <Label text={label || 'Destination'} />
         <InputWithAction onChange={handleChange} onClick={handleClick} pill={scan ? 'Close' : 'Scan'} text={text} />
       </fieldset>
       {scan && stream ? <Scanner close={() => setScan(false)} setData={onScan} setError={onError} /> : null}

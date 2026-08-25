@@ -1,0 +1,111 @@
+import { useContext, useEffect, useRef, useState } from 'react'
+import Button from '../../../components/Button'
+import Content from '../../../components/Content'
+import Title from '../../../components/Title'
+import QrCode from '../../../components/QrCode'
+import Container from '../../../components/Container'
+import ButtonsOnBottom from '../../../components/ButtonsOnBottom'
+import Error from '../../../components/Error'
+import { FlowContext, emptyRecvInfo } from '../../../providers/flow'
+import { NavigationContext, Pages } from '../../../providers/navigation'
+import { extractError } from '../../../lib/error'
+import { WalletContext } from '../../../providers/wallet'
+import { copyToClipboard } from '../../../lib/clipboard'
+import { inOneMinute, someSeconds } from '../../../lib/constants'
+import { NewAddress, generateAddress } from '../../../lib/address'
+import { ElectrumHistory } from '../../../lib/chainsource'
+import { notifyPaymentReceived } from '../../../lib/notifications'
+import { getTransactionAmount } from '../../../lib/transactions'
+import { toastCopiedToClipboard } from '../../../components/Toast'
+
+export default function ReceiveLiquid() {
+  const { recvInfo, setRecvInfo } = useContext(FlowContext)
+  const { navigate } = useContext(NavigationContext)
+  const { getChainSource, increaseIndex, reloadWallet, wallet } = useContext(WalletContext)
+
+  const label = 'Copy to clipboard'
+  const [address, setAddress] = useState<NewAddress>()
+  const [buttonLabel, setButtonLabel] = useState(label)
+  const [error, setError] = useState('')
+
+  const chainSource = getChainSource()
+  const finishedTxIds = useRef(new Set<string>())
+
+  const updateReceivedAmount = async (total: number, txid: string): Promise<number> => {
+    try {
+      const hex = await chainSource.fetchSingleTransaction(txid)
+      if (!address || !hex) return total
+      return await getTransactionAmount(address, hex, chainSource)
+    } catch {
+      return total
+    }
+  }
+
+  const handleTxid = async (txid: string): Promise<void> => {
+    // Avoid double-processing the same txid across concurrent callbacks.
+    if (finishedTxIds.current.has(txid)) return
+    finishedTxIds.current.add(txid)
+    increaseIndex()
+    setTimeout(() => reloadWallet(wallet), someSeconds)
+    setTimeout(() => reloadWallet(wallet), inOneMinute)
+    const total = await updateReceivedAmount(recvInfo.total, txid)
+    setRecvInfo({ ...recvInfo, total, txid })
+    notifyPaymentReceived(total)
+    navigate(Pages.ReceiveSuccess)
+  }
+
+  const handleCancel = () => {
+    setRecvInfo(emptyRecvInfo)
+    navigate(Pages.Wallet)
+  }
+
+  const handleCopy = async () => {
+    await copyToClipboard(qrValue ?? '')
+    toastCopiedToClipboard()
+    setButtonLabel('Copied')
+    setTimeout(() => setButtonLabel(label), 2100)
+  }
+
+  useEffect(() => {
+    if (!address) {
+      try {
+        generateAddress(wallet).then(setAddress)
+      } catch (error) {
+        setError(extractError(error))
+      }
+    }
+  }, [address])
+
+  useEffect(() => {
+    if (address) {
+      try {
+        chainSource.waitForAddressReceivesTx(address.address).then(() => {
+          chainSource.fetchHistories([address.script]).then((histories: ElectrumHistory[]) => {
+            const newTx = histories.find((tx) => tx.height <= 0)
+            if (newTx) handleTxid(newTx.tx_hash ?? '')
+          })
+        })
+      } catch (error) {
+        setError(extractError(error))
+      }
+    }
+  }, [address])
+
+  const qrValue = address?.confidentialAddress
+
+  return (
+    <Container>
+      <Content>
+        <Title text='Liquid' subtext='Lightning is unavailable' />
+        <div className='flex flex-col gap-2'>
+          <Error text={error} />
+          <QrCode value={qrValue ?? ''} />
+        </div>
+      </Content>
+      <ButtonsOnBottom>
+        <Button onClick={handleCopy} label={buttonLabel} />
+        <Button onClick={handleCancel} label='Cancel' secondary />
+      </ButtonsOnBottom>
+    </Container>
+  )
+}

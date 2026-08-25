@@ -1,5 +1,6 @@
 import { useContext } from 'react'
 import { getBalance } from '../../lib/wallet'
+import { boltzIsDown } from '../../lib/constants'
 import { BoltzContext } from '../../providers/boltz'
 import { ConfigContext } from '../../providers/config'
 import { ConnectionContext } from '../../providers/connection'
@@ -22,17 +23,19 @@ export default function Wallet() {
   const { navigate } = useContext(NavigationContext)
   const { getChainSource, reconnectChainSource, restoring, wallet } = useContext(WalletContext)
 
-  const canSend = maxAllowedAmount(wallet) > limits.minimal && !config.pos && !offline
+  const canSendLightning = maxAllowedAmount(wallet) > limits.minimal && !config.pos && !offline
+  const canSendLiquid = getBalance(wallet) > 0 && !config.pos && !offline
+  const canSend = canSendLightning || canSendLiquid
   const chainSource = getChainSource()
 
   const handleSend = () => {
     if (!chainSource?.isConnected()) reconnectChainSource(wallet)
-    navigate(Pages.SendInvoice)
+    navigate(boltzIsDown ? Pages.SendLiquid : Pages.SendInvoice)
   }
 
   const handleReceive = () => {
     if (!chainSource?.isConnected()) reconnectChainSource(wallet)
-    navigate(Pages.ReceiveAmount)
+    navigate(boltzIsDown ? Pages.ReceiveLiquid : Pages.ReceiveInvoice)
   }
 
   return (
