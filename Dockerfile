@@ -1,7 +1,7 @@
-FROM node:18-alpine AS builder
+FROM node:22-alpine AS builder
 
 # Install pnpm and required build dependencies
-RUN apk add --no-cache python3 make g++
+RUN apk add --no-cache python3 make g++ git
 RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
 
 WORKDIR /app
