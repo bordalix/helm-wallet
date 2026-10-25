@@ -10,7 +10,7 @@ import { formatInvoice } from '../../lib/format'
 import { WalletContext } from '../../providers/wallet'
 import { NetworkName } from '../../lib/network'
 import Error from '../../components/Error'
-import { boltzOnionUrl, checkTorConnection, wsOnionUrl } from '../../lib/tor'
+import { explorerOnionUrl, checkTorConnection, wsOnionUrl } from '../../lib/tor'
 import Loading from '../../components/Loading'
 import { ConnectionContext } from '../../providers/connection'
 
@@ -62,8 +62,8 @@ export default function Tor() {
               <p className='font-semibold'>Connected to Tor</p>
               <p>
                 Using{' '}
-                <a className='pointer-cursor underline' href={boltzOnionUrl}>
-                  {formatInvoice(boltzOnionUrl)}
+                <a className='pointer-cursor underline' href={explorerOnionUrl}>
+                  {formatInvoice(explorerOnionUrl)}
                 </a>
               </p>
               <p>

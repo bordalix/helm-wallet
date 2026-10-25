@@ -8,7 +8,7 @@ export const wsOnionUrl = `ws://${blockstream}/liquid/electrum-websocket/api`
 
 export const checkTorConnection = async (): Promise<boolean> => {
   return new Promise((resolve) => {
-    fetchURL(`${boltzOnionUrl}/v2/swap/submarine`)
+    fetchURL(`${explorerOnionUrl}/api/blocks/tip/height`)
       .then(() => resolve(true))
       .catch(() => resolve(false))
   })
