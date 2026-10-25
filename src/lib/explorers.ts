@@ -1,6 +1,6 @@
 import { Config } from '../providers/config'
 import { Wallet } from '../providers/wallet'
-import { getBoltzApiUrl } from './boltz'
+import { explorerOnionUrl } from './tor'
 import { NetworkName } from './network'
 import { BlindedUtxo } from './types'
 
@@ -177,7 +177,7 @@ export const fetchTxHex = async (txid: string, wallet: Wallet): Promise<string> 
 
 // broadcasts a given transaction using Boltz endpoint
 export const broadcastTxHex = async (txHex: string, wallet: Wallet, config: Config): Promise<{ id: string }> => {
-  const url = `${getBoltzApiUrl(wallet.network, config.tor)}/v2/chain/L-BTC/transaction`
+  const url = config.tor ? explorerOnionUrl : `${getRestApiExplorerURL(wallet)}/api/tx`
   const response = await fetch(url, {
     body: JSON.stringify({ hex: txHex }),
     headers: { 'Content-Type': 'application/json' },
