@@ -27,6 +27,7 @@ import Transactions from './screens/Wallet/Transactions'
 import SendAmount from './screens/Wallet/Send/Amount'
 import SendLiquid from './screens/Wallet/Send/Liquid'
 import ReceiveLiquid from './screens/Wallet/Receive/Liquid'
+import Sunsetting from './screens/Wallet/Sunsetting'
 
 export default function App() {
   const { loadingConfig, showConfig } = useContext(ConfigContext)
@@ -59,6 +60,7 @@ export default function App() {
         {screen === Pages.SendFees && <SendFees />}
         {screen === Pages.SendPayment && <SendPayment />}
         {screen === Pages.SendSuccess && <SendSuccess />}
+        {screen === Pages.Sunsetting && <Sunsetting />}
         {screen === Pages.Transactions && <Transactions />}
         {screen === Pages.Wallet && <Wallet />}
       </div>

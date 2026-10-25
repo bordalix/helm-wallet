@@ -1,4 +1,5 @@
 import { useContext } from 'react'
+import { SunsetNotice } from './Sunsetting'
 import { getBalance } from '../../lib/wallet'
 import { boltzIsDown } from '../../lib/constants'
 import { BoltzContext } from '../../providers/boltz'
@@ -41,6 +42,7 @@ export default function Wallet() {
   return (
     <Container>
       <Content>
+        <SunsetNotice />
         <Balance sats={getBalance(wallet)} />
         {restoring ? <Restoring restoring={restoring} /> : <TransactionsList short />}
       </Content>

@@ -17,6 +17,7 @@ export enum Pages {
   SendFees,
   SendPayment,
   SendSuccess,
+  Sunsetting,
   Transactions,
   Wallet,
 }
